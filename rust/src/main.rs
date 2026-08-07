@@ -15,35 +15,25 @@ fn main() {
     let mut i = 1;
     while i < args.len() {
         match args[i].as_str() {
-            "--dataset" | "-d" => {
-                if i + 1 < args.len() {
-                    dataset_path = args[i + 1].clone();
-                    i += 1;
-                }
+            "--dataset" | "-d" if i + 1 < args.len() => {
+                dataset_path = args[i + 1].clone();
+                i += 1;
             }
-            "--mode" | "-m" => {
-                if i + 1 < args.len() {
-                    mode = args[i + 1].clone();
-                    i += 1;
-                }
+            "--mode" | "-m" if i + 1 < args.len() => {
+                mode = args[i + 1].clone();
+                i += 1;
             }
-            "--impl" | "-i" => {
-                if i + 1 < args.len() {
-                    impl_choice = args[i + 1].clone();
-                    i += 1;
-                }
+            "--impl" | "-i" if i + 1 < args.len() => {
+                impl_choice = args[i + 1].clone();
+                i += 1;
             }
-            "--iterations" | "-n" => {
-                if i + 1 < args.len() {
-                    iterations = args[i + 1].parse().unwrap_or(100);
-                    i += 1;
-                }
+            "--iterations" | "-n" if i + 1 < args.len() => {
+                iterations = args[i + 1].parse().unwrap_or(100);
+                i += 1;
             }
-            "--warmup" | "-w" => {
-                if i + 1 < args.len() {
-                    warmup = args[i + 1].parse().unwrap_or(10);
-                    i += 1;
-                }
+            "--warmup" | "-w" if i + 1 < args.len() => {
+                warmup = args[i + 1].parse().unwrap_or(10);
+                i += 1;
             }
             _ => {}
         }
