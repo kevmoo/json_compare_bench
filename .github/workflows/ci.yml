@@ -38,6 +38,11 @@ jobs:
       # -------------------------------------------------------------
       # 1. Dart Validation
       # -------------------------------------------------------------
+      - name: Dart Pub Get (Subproject)
+        run: |
+          cd dart
+          dart pub get
+
       - name: Dart Pub Get (Root)
         run: dart pub get
 
@@ -50,7 +55,6 @@ jobs:
       - name: Dart Analyze (Subproject)
         run: |
           cd dart
-          dart pub get
           dart analyze --fatal-infos .
 
       # -------------------------------------------------------------
