@@ -47,9 +47,10 @@ sockets, disk files, and database caches.
     push-writer prototype from
     [kevmoo/json_serializable.dart@c73ec8e](https://github.com/kevmoo/json_serializable.dart/tree/c73ec8e9a1e813a00b903205a39ec2c24a01b94b/json_rw).
 * **Rust**:
-  * `serde_json`: Release binary (`cargo build --release`) parsing `&[u8]`
-    slices via `serde_json::from_slice` and emitting `Vec<u8>` via
-    `serde_json::to_vec`.
+  * `serde_json`: Release binary (`cargo build --release`) configured with
+    `mimalloc` as the `#[global_allocator]` (industry standard for
+    high-performance production Rust services), parsing `&[u8]` slices via
+    `serde_json::from_slice` and emitting `Vec<u8>` via `serde_json::to_vec`.
 * **Go**:
   * `encoding/json`: Native binary parsing `[]byte` via `json.Unmarshal`
     and emitting `[]byte` via `json.Marshal`.

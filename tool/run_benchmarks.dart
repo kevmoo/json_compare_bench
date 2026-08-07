@@ -591,6 +591,13 @@ Map<String, dynamic> _harvestToolchainInfo() {
       if (serdeMatch != null) {
         rustPackages['serde'] = serdeMatch.group(1)!;
       }
+      final mimallocMatch = RegExp(
+        r'name\s*=\s*"mimalloc"\s*\nversion\s*=\s*"([^"]+)"',
+      ).firstMatch(content);
+      if (mimallocMatch != null) {
+        rustPackages['mimalloc'] =
+            '${mimallocMatch.group(1)!} (global allocator)';
+      }
     }
     final dartLock = File('$rootDir/dart/pubspec.lock');
     if (dartLock.existsSync()) {

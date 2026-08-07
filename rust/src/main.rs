@@ -1,8 +1,12 @@
+use mimalloc::MiMalloc;
 use std::env;
 use std::fs;
 use std::path::Path;
 use std::process;
 use std::time::Instant;
+
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
