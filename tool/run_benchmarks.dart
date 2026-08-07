@@ -525,7 +525,13 @@ Map<String, dynamic> _harvestToolchainInfo() {
   String rustVersion = 'Unknown';
   String goVersion = 'Unknown';
   String nodeVersion = 'Unknown';
-  final libraries = <String, String>{};
+  final dartPackages = <String, String>{
+    'json_rw':
+        'https://github.com/kevmoo/json_serializable.dart/tree/c73ec8e9a1e813a00b903205a39ec2c24a01b94b/json_rw',
+  };
+  final rustPackages = <String, String>{};
+  final goPackages = <String, String>{'encoding/json': 'Standard Library'};
+  final nodePackages = <String, String>{'v8_builtin': 'V8 C++ Built-in'};
 
   try {
     final rustRes = Process.runSync(
@@ -563,7 +569,11 @@ Map<String, dynamic> _harvestToolchainInfo() {
       final match = RegExp(
         r'name\s*=\s*"serde_json"\s*\nversion\s*=\s*"([^"]+)"',
       ).firstMatch(content);
-      if (match != null) libraries['serde_json'] = match.group(1)!;
+      if (match != null) rustPackages['serde_json'] = match.group(1)!;
+      final serdeMatch = RegExp(
+        r'name\s*=\s*"serde"\s*\nversion\s*=\s*"([^"]+)"',
+      ).firstMatch(content);
+      if (serdeMatch != null) rustPackages['serde'] = serdeMatch.group(1)!;
     }
     final dartLock = File('$rootDir/dart/pubspec.lock');
     if (dartLock.existsSync()) {
@@ -571,16 +581,15 @@ Map<String, dynamic> _harvestToolchainInfo() {
       final match = RegExp(
         r'json_annotation:\s*[\s\S]*?version:\s*"([^"]+)"',
       ).firstMatch(content);
-      if (match != null) libraries['json_annotation'] = match.group(1)!;
+      if (match != null) dartPackages['json_annotation'] = match.group(1)!;
     }
   } catch (_) {}
 
   return {
-    'dart': dartVersion,
-    'rust': rustVersion,
-    'go': goVersion,
-    'node': nodeVersion,
-    'libraries': libraries,
+    'dart': {'version': dartVersion, 'packages': dartPackages},
+    'rust': {'version': rustVersion, 'packages': rustPackages},
+    'go': {'version': goVersion, 'packages': goPackages},
+    'node': {'version': nodeVersion, 'packages': nodePackages},
   };
 }
 
@@ -609,19 +618,34 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
   buffer.writeln(
     '* **Hardware**: ${system['cpu_model']} (${system['logical_cores']} logical cores) | RAM: ${system['total_ram']}',
   );
-  buffer.writeln('* **Toolchains**:');
-  buffer.writeln('  * **Dart**: `${toolchains['dart']}`');
-  buffer.writeln('  * **Rust**: `${toolchains['rust']}`');
-  buffer.writeln('  * **Go**: `${toolchains['go']}`');
-  buffer.writeln('  * **Node.js**: `${toolchains['node']}`');
+  buffer.writeln('* **Toolchains & Packages**:');
 
-  final libs = toolchains['libraries'] as Map<String, dynamic>?;
-  if (libs != null && libs.isNotEmpty) {
-    buffer.writeln(
-      '  * **Key Packages**: ' +
-          libs.entries.map((e) => '`${e.key} ${e.value}`').join(', '),
-    );
+  void printToolchain(String label, String key) {
+    final tc = toolchains[key];
+    if (tc is Map<String, dynamic>) {
+      final ver = tc['version'] ?? 'Unknown';
+      buffer.writeln('  * **$label**: `$ver`');
+      final pkgs = tc['packages'] as Map<String, dynamic>? ?? {};
+      for (final entry in pkgs.entries) {
+        final val = entry.value.toString();
+        if (val.startsWith('http')) {
+          final label = val.contains('c73ec8e')
+              ? 'kevmoo/json_serializable.dart@c73ec8e'
+              : val;
+          buffer.writeln('    * `${entry.key}`: [$label]($val)');
+        } else {
+          buffer.writeln('    * `${entry.key}`: `$val`');
+        }
+      }
+    } else if (tc != null) {
+      buffer.writeln('  * **$label**: `$tc`');
+    }
   }
+
+  printToolchain('Dart', 'dart');
+  printToolchain('Rust', 'rust');
+  printToolchain('Go', 'go');
+  printToolchain('Node.js', 'node');
   buffer.writeln('');
 
   final datasets = rawBenchmarks
