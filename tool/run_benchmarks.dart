@@ -635,9 +635,9 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       'Higher throughput (MB/s) is better. Medals (🥇, 🥈, 🥉) indicate top 3 performance per dataset.\n',
     );
     buffer.writeln(
-      '| Dataset | Dart (AOT / JIT) | Rust (`serde_json`) | Node.js (V8) | Go (`encoding/json`) |',
+      '| Dataset | Dart (convert) | Dart (json_rw) | Rust (`serde_json`) | Node.js (V8) | Go (`encoding/json`) |',
     );
-    buffer.writeln('| :--- | :---: | :---: | :---: | :---: |');
+    buffer.writeln('| :--- | :---: | :---: | :---: | :---: | :---: |');
 
     for (final dataset in datasets) {
       final subset = rawBenchmarks
@@ -645,9 +645,13 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
           .toList();
       if (subset.isEmpty) continue;
 
-      // Extract best scores per language
-      final dartBest = subset
-          .where((r) => r['language'] == 'dart')
+      // Extract best scores per track
+      final dartConvertBest = subset
+          .where(
+            (r) =>
+                r['language'] == 'dart' &&
+                (r['implementation'] as String).startsWith('convert'),
+          )
           .fold<Map<String, dynamic>?>(
             null,
             (prev, curr) =>
@@ -657,18 +661,39 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
                 ? curr
                 : prev,
           );
+
+      final dartRwBest = subset
+          .where(
+            (r) =>
+                r['language'] == 'dart' &&
+                (r['implementation'] as String).startsWith('json_rw'),
+          )
+          .fold<Map<String, dynamic>?>(
+            null,
+            (prev, curr) =>
+                prev == null ||
+                    (curr['throughput_mb_s'] as num) >
+                        (prev['throughput_mb_s'] as num)
+                ? curr
+                : prev,
+          );
+
       final rustBest = subset.where((r) => r['language'] == 'rust').firstOrNull;
       final nodeBest = subset.where((r) => r['language'] == 'node').firstOrNull;
       final goBest = subset.where((r) => r['language'] == 'go').firstOrNull;
 
-      final dartMb = (dartBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final dartConvertMb =
+          (dartConvertBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final dartRwMb =
+          (dartRwBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
       final rustMb = (rustBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
       final nodeMb = (nodeBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
       final goMb = (goBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
 
-      // Determine top 3 medals
+      // Determine top 3 medals across all 5 contenders
       final scores = [
-        ('dart', dartMb),
+        ('dart_convert', dartConvertMb),
+        ('dart_json_rw', dartRwMb),
         ('rust', rustMb),
         ('node', nodeMb),
         ('go', goMb),
@@ -676,23 +701,24 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
 
       final winnerMb = scores.first.$2 > 0 ? scores.first.$2 : 1.0;
 
-      String medal(String lang) {
-        if (scores[0].$1 == lang && scores[0].$2 > 0) return '🥇 ';
-        if (scores[1].$1 == lang && scores[1].$2 > 0) return '🥈 ';
-        if (scores[2].$1 == lang && scores[2].$2 > 0) return '🥉 ';
+      String medal(String key) {
+        if (scores[0].$1 == key && scores[0].$2 > 0) return '🥇 ';
+        if (scores[1].$1 == key && scores[1].$2 > 0) return '🥈 ';
+        if (scores[2].$1 == key && scores[2].$2 > 0) return '🥉 ';
         return '';
       }
 
-      String formatCell(Map<String, dynamic>? item, String lang, double mb) {
+      String formatCell(Map<String, dynamic>? item, String key, double mb) {
         if (item == null || mb == 0) return 'N/A';
-        final m = medal(lang);
+        final m = medal(key);
         final isBold = m.isNotEmpty;
         final mbStr = '${mb.toStringAsFixed(1)} MB/s';
         final impl = item['implementation'] ?? '';
-        final implSuffix = (lang == 'dart' && impl.isNotEmpty)
-            ? ' (`$impl`)'
+        final runtime = item['runtime'] ?? '';
+        final suffix = (key.startsWith('dart') && impl.isNotEmpty)
+            ? ' (`$impl` $runtime)'
             : '';
-        return isBold ? '$m**$mbStr**$implSuffix' : '$mbStr$implSuffix';
+        return isBold ? '$m**$mbStr**$suffix' : '$mbStr$suffix';
       }
 
       String formatPercent(double mb) {
@@ -709,11 +735,11 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
 
       // Row 1: Throughput
       buffer.writeln(
-        '| **`$dataset`** (~$sizeStr) | ${formatCell(dartBest, 'dart', dartMb)} | ${formatCell(rustBest, 'rust', rustMb)} | ${formatCell(nodeBest, 'node', nodeMb)} | ${formatCell(goBest, 'go', goMb)} |',
+        '| **`$dataset`** (~$sizeStr) | ${formatCell(dartConvertBest, 'dart_convert', dartConvertMb)} | ${formatCell(dartRwBest, 'dart_json_rw', dartRwMb)} | ${formatCell(rustBest, 'rust', rustMb)} | ${formatCell(nodeBest, 'node', nodeMb)} | ${formatCell(goBest, 'go', goMb)} |',
       );
       // Row 2: % of Winner
       buffer.writeln(
-        '| ↳ *% of Winner* | ${formatPercent(dartMb)} | ${formatPercent(rustMb)} | ${formatPercent(nodeMb)} | ${formatPercent(goMb)} |',
+        '| ↳ *% of Winner* | ${formatPercent(dartConvertMb)} | ${formatPercent(dartRwMb)} | ${formatPercent(rustMb)} | ${formatPercent(nodeMb)} | ${formatPercent(goMb)} |',
       );
     }
     buffer.writeln('');

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-07T22:36:30.336510Z",
+  "timestamp": "2026-08-07T22:41:46.924679Z",
   "system": {
     "os": "linux (Linux 6.18.14-1rodete4-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.18.14-1rodete4 (2026-06-15))",
     "architecture": "x86_64",
@@ -26,9 +26,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 1641530,
-      "throughput_mb_s": 158.66,
-      "ns_per_op": 3283
+      "elapsed_ns": 1358540,
+      "throughput_mb_s": 191.72,
+      "ns_per_op": 2717
     },
     {
       "language": "go",
@@ -38,9 +38,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 3971489,
-      "throughput_mb_s": 65.56,
-      "ns_per_op": 7942
+      "elapsed_ns": 3846350,
+      "throughput_mb_s": 67.69,
+      "ns_per_op": 7692
     },
     {
       "language": "node",
@@ -50,9 +50,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 2349250,
-      "throughput_mb_s": 110.82,
-      "ns_per_op": 4698
+      "elapsed_ns": 1958180,
+      "throughput_mb_s": 132.96,
+      "ns_per_op": 3916
     },
     {
       "language": "dart",
@@ -62,9 +62,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 2489000,
-      "throughput_mb_s": 104.6,
-      "ns_per_op": 4978,
+      "elapsed_ns": 2647000,
+      "throughput_mb_s": 98.36,
+      "ns_per_op": 5294,
       "runtime": "dart_aot"
     },
     {
@@ -75,9 +75,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 1280000,
-      "throughput_mb_s": 203.4,
-      "ns_per_op": 2560,
+      "elapsed_ns": 1316000,
+      "throughput_mb_s": 197.84,
+      "ns_per_op": 2632,
       "runtime": "dart_aot"
     },
     {
@@ -88,9 +88,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 1635000,
-      "throughput_mb_s": 159.24,
-      "ns_per_op": 3270,
+      "elapsed_ns": 1993000,
+      "throughput_mb_s": 130.63,
+      "ns_per_op": 3986,
       "runtime": "dart_aot"
     },
     {
@@ -101,9 +101,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 3336000,
-      "throughput_mb_s": 78.04,
-      "ns_per_op": 6672,
+      "elapsed_ns": 3970000,
+      "throughput_mb_s": 65.58,
+      "ns_per_op": 7940,
       "runtime": "dart_aot"
     },
     {
@@ -114,9 +114,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 12687000,
-      "throughput_mb_s": 20.52,
-      "ns_per_op": 25374,
+      "elapsed_ns": 13669000,
+      "throughput_mb_s": 19.05,
+      "ns_per_op": 27338,
       "runtime": "dart_jit"
     },
     {
@@ -127,9 +127,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 7437000,
-      "throughput_mb_s": 35.01,
-      "ns_per_op": 14874,
+      "elapsed_ns": 7454000,
+      "throughput_mb_s": 34.93,
+      "ns_per_op": 14908,
       "runtime": "dart_jit"
     },
     {
@@ -140,9 +140,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 12024000,
-      "throughput_mb_s": 21.65,
-      "ns_per_op": 24048,
+      "elapsed_ns": 13563000,
+      "throughput_mb_s": 19.2,
+      "ns_per_op": 27126,
       "runtime": "dart_jit"
     },
     {
@@ -153,9 +153,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 17812000,
-      "throughput_mb_s": 14.62,
-      "ns_per_op": 35624,
+      "elapsed_ns": 19592000,
+      "throughput_mb_s": 13.29,
+      "ns_per_op": 39184,
       "runtime": "dart_jit"
     },
     {
@@ -166,9 +166,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 357790,
-      "throughput_mb_s": 729.28,
-      "ns_per_op": 715
+      "elapsed_ns": 341470,
+      "throughput_mb_s": 763.5,
+      "ns_per_op": 682
     },
     {
       "language": "go",
@@ -178,9 +178,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 2361439,
-      "throughput_mb_s": 110.27,
-      "ns_per_op": 4722
+      "elapsed_ns": 2349540,
+      "throughput_mb_s": 110.84,
+      "ns_per_op": 4699
     },
     {
       "language": "node",
@@ -190,9 +190,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 916100,
-      "throughput_mb_s": 284.2,
-      "ns_per_op": 1832
+      "elapsed_ns": 1046830,
+      "throughput_mb_s": 248.71,
+      "ns_per_op": 2093
     },
     {
       "language": "dart",
@@ -202,9 +202,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 3920000,
-      "throughput_mb_s": 66.42,
-      "ns_per_op": 7840,
+      "elapsed_ns": 3869000,
+      "throughput_mb_s": 67.29,
+      "ns_per_op": 7738,
       "runtime": "dart_aot"
     },
     {
@@ -215,9 +215,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 1809000,
-      "throughput_mb_s": 143.92,
-      "ns_per_op": 3618,
+      "elapsed_ns": 1797000,
+      "throughput_mb_s": 144.88,
+      "ns_per_op": 3594,
       "runtime": "dart_aot"
     },
     {
@@ -228,9 +228,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 5051000,
-      "throughput_mb_s": 51.54,
-      "ns_per_op": 10102,
+      "elapsed_ns": 5157000,
+      "throughput_mb_s": 50.49,
+      "ns_per_op": 10314,
       "runtime": "dart_aot"
     },
     {
@@ -241,9 +241,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 1735000,
-      "throughput_mb_s": 150.06,
-      "ns_per_op": 3470,
+      "elapsed_ns": 1882000,
+      "throughput_mb_s": 138.34,
+      "ns_per_op": 3764,
       "runtime": "dart_aot"
     },
     {
@@ -254,9 +254,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 9781000,
-      "throughput_mb_s": 26.62,
-      "ns_per_op": 19562,
+      "elapsed_ns": 9512000,
+      "throughput_mb_s": 27.37,
+      "ns_per_op": 19024,
       "runtime": "dart_jit"
     },
     {
@@ -267,9 +267,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 11811000,
-      "throughput_mb_s": 22.04,
-      "ns_per_op": 23622,
+      "elapsed_ns": 15408000,
+      "throughput_mb_s": 16.9,
+      "ns_per_op": 30816,
       "runtime": "dart_jit"
     },
     {
@@ -280,9 +280,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 12999000,
-      "throughput_mb_s": 20.03,
-      "ns_per_op": 25998,
+      "elapsed_ns": 13028000,
+      "throughput_mb_s": 19.98,
+      "ns_per_op": 26056,
       "runtime": "dart_jit"
     },
     {
@@ -293,9 +293,9 @@
       "iterations": 500,
       "file_bytes": 546,
       "total_bytes": 273000,
-      "elapsed_ns": 7261000,
-      "throughput_mb_s": 35.86,
-      "ns_per_op": 14522,
+      "elapsed_ns": 7087000,
+      "throughput_mb_s": 36.74,
+      "ns_per_op": 14174,
       "runtime": "dart_jit"
     },
     {
@@ -306,9 +306,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 156836909,
-      "throughput_mb_s": 192.0,
-      "ns_per_op": 3136738
+      "elapsed_ns": 147121168,
+      "throughput_mb_s": 204.68,
+      "ns_per_op": 2942423
     },
     {
       "language": "go",
@@ -318,9 +318,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 374696493,
-      "throughput_mb_s": 80.37,
-      "ns_per_op": 7493929
+      "elapsed_ns": 371187401,
+      "throughput_mb_s": 81.13,
+      "ns_per_op": 7423748
     },
     {
       "language": "node",
@@ -330,9 +330,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 72465775,
-      "throughput_mb_s": 415.55,
-      "ns_per_op": 1449315
+      "elapsed_ns": 71858594,
+      "throughput_mb_s": 419.06,
+      "ns_per_op": 1437171
     },
     {
       "language": "dart",
@@ -342,9 +342,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 215155000,
-      "throughput_mb_s": 139.96,
-      "ns_per_op": 4303100,
+      "elapsed_ns": 229298000,
+      "throughput_mb_s": 131.33,
+      "ns_per_op": 4585960,
       "runtime": "dart_aot"
     },
     {
@@ -355,9 +355,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 125878000,
-      "throughput_mb_s": 239.22,
-      "ns_per_op": 2517560,
+      "elapsed_ns": 128458000,
+      "throughput_mb_s": 234.42,
+      "ns_per_op": 2569160,
       "runtime": "dart_aot"
     },
     {
@@ -368,9 +368,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 213662000,
-      "throughput_mb_s": 140.94,
-      "ns_per_op": 4273240,
+      "elapsed_ns": 273814000,
+      "throughput_mb_s": 109.98,
+      "ns_per_op": 5476280,
       "runtime": "dart_aot"
     },
     {
@@ -381,9 +381,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 303474000,
-      "throughput_mb_s": 99.23,
-      "ns_per_op": 6069480,
+      "elapsed_ns": 373320000,
+      "throughput_mb_s": 80.66,
+      "ns_per_op": 7466400,
       "runtime": "dart_aot"
     },
     {
@@ -394,9 +394,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 252074000,
-      "throughput_mb_s": 119.46,
-      "ns_per_op": 5041480,
+      "elapsed_ns": 241496000,
+      "throughput_mb_s": 124.69,
+      "ns_per_op": 4829920,
       "runtime": "dart_jit"
     },
     {
@@ -407,9 +407,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 166218000,
-      "throughput_mb_s": 181.17,
-      "ns_per_op": 3324360,
+      "elapsed_ns": 159937000,
+      "throughput_mb_s": 188.28,
+      "ns_per_op": 3198740,
       "runtime": "dart_jit"
     },
     {
@@ -420,9 +420,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 199498000,
-      "throughput_mb_s": 150.94,
-      "ns_per_op": 3989960,
+      "elapsed_ns": 262872000,
+      "throughput_mb_s": 114.55,
+      "ns_per_op": 5257440,
       "runtime": "dart_jit"
     },
     {
@@ -433,9 +433,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 180530000,
-      "throughput_mb_s": 166.8,
-      "ns_per_op": 3610600,
+      "elapsed_ns": 239107000,
+      "throughput_mb_s": 125.94,
+      "ns_per_op": 4782140,
       "runtime": "dart_jit"
     },
     {
@@ -446,9 +446,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 27110147,
-      "throughput_mb_s": 1110.77,
-      "ns_per_op": 542202
+      "elapsed_ns": 27725998,
+      "throughput_mb_s": 1086.13,
+      "ns_per_op": 554519
     },
     {
       "language": "go",
@@ -458,9 +458,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 238557792,
-      "throughput_mb_s": 126.23,
-      "ns_per_op": 4771155
+      "elapsed_ns": 233914561,
+      "throughput_mb_s": 128.74,
+      "ns_per_op": 4678291
     },
     {
       "language": "node",
@@ -470,9 +470,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 90532574,
-      "throughput_mb_s": 332.62,
-      "ns_per_op": 1810651
+      "elapsed_ns": 91574852,
+      "throughput_mb_s": 328.83,
+      "ns_per_op": 1831497
     },
     {
       "language": "dart",
@@ -482,9 +482,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 207289000,
-      "throughput_mb_s": 145.27,
-      "ns_per_op": 4145780,
+      "elapsed_ns": 212048000,
+      "throughput_mb_s": 142.01,
+      "ns_per_op": 4240960,
       "runtime": "dart_aot"
     },
     {
@@ -495,9 +495,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 229212000,
-      "throughput_mb_s": 131.38,
-      "ns_per_op": 4584240,
+      "elapsed_ns": 215607000,
+      "throughput_mb_s": 139.67,
+      "ns_per_op": 4312140,
       "runtime": "dart_aot"
     },
     {
@@ -508,9 +508,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 438496000,
-      "throughput_mb_s": 68.67,
-      "ns_per_op": 8769920,
+      "elapsed_ns": 452088000,
+      "throughput_mb_s": 66.61,
+      "ns_per_op": 9041760,
       "runtime": "dart_aot"
     },
     {
@@ -521,9 +521,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 179603000,
-      "throughput_mb_s": 167.66,
-      "ns_per_op": 3592060,
+      "elapsed_ns": 191955000,
+      "throughput_mb_s": 156.87,
+      "ns_per_op": 3839100,
       "runtime": "dart_aot"
     },
     {
@@ -534,9 +534,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 199823000,
-      "throughput_mb_s": 150.7,
-      "ns_per_op": 3996460,
+      "elapsed_ns": 199995000,
+      "throughput_mb_s": 150.57,
+      "ns_per_op": 3999900,
       "runtime": "dart_jit"
     },
     {
@@ -547,9 +547,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 249142000,
-      "throughput_mb_s": 120.87,
-      "ns_per_op": 4982840,
+      "elapsed_ns": 249749000,
+      "throughput_mb_s": 120.57,
+      "ns_per_op": 4994980,
       "runtime": "dart_jit"
     },
     {
@@ -560,9 +560,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 403627000,
-      "throughput_mb_s": 74.61,
-      "ns_per_op": 8072540,
+      "elapsed_ns": 407322000,
+      "throughput_mb_s": 73.93,
+      "ns_per_op": 8146440,
       "runtime": "dart_jit"
     },
     {
@@ -573,9 +573,9 @@
       "iterations": 50,
       "file_bytes": 631514,
       "total_bytes": 31575700,
-      "elapsed_ns": 139079000,
-      "throughput_mb_s": 216.52,
-      "ns_per_op": 2781580,
+      "elapsed_ns": 164600000,
+      "throughput_mb_s": 182.95,
+      "ns_per_op": 3292000,
       "runtime": "dart_jit"
     },
     {
@@ -586,9 +586,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 91649653,
-      "throughput_mb_s": 359.46,
-      "ns_per_op": 4582482
+      "elapsed_ns": 86323503,
+      "throughput_mb_s": 381.63,
+      "ns_per_op": 4316175
     },
     {
       "language": "go",
@@ -598,9 +598,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 377232222,
-      "throughput_mb_s": 87.33,
-      "ns_per_op": 18861611
+      "elapsed_ns": 368562450,
+      "throughput_mb_s": 89.38,
+      "ns_per_op": 18428122
     },
     {
       "language": "node",
@@ -610,9 +610,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 71321335,
-      "throughput_mb_s": 461.91,
-      "ns_per_op": 3566066
+      "elapsed_ns": 72859405,
+      "throughput_mb_s": 452.16,
+      "ns_per_op": 3642970
     },
     {
       "language": "dart",
@@ -622,9 +622,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 167222000,
-      "throughput_mb_s": 197.01,
-      "ns_per_op": 8361100,
+      "elapsed_ns": 177989000,
+      "throughput_mb_s": 185.09,
+      "ns_per_op": 8899450,
       "runtime": "dart_aot"
     },
     {
@@ -635,9 +635,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 91107000,
-      "throughput_mb_s": 361.59,
-      "ns_per_op": 4555350,
+      "elapsed_ns": 96324000,
+      "throughput_mb_s": 342.01,
+      "ns_per_op": 4816200,
       "runtime": "dart_aot"
     },
     {
@@ -648,9 +648,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 186834000,
-      "throughput_mb_s": 176.33,
-      "ns_per_op": 9341700,
+      "elapsed_ns": 240319000,
+      "throughput_mb_s": 137.08,
+      "ns_per_op": 12015950,
       "runtime": "dart_aot"
     },
     {
@@ -661,9 +661,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 232054000,
-      "throughput_mb_s": 141.97,
-      "ns_per_op": 11602700,
+      "elapsed_ns": 298994000,
+      "throughput_mb_s": 110.18,
+      "ns_per_op": 14949700,
       "runtime": "dart_aot"
     },
     {
@@ -674,9 +674,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 192879000,
-      "throughput_mb_s": 170.8,
-      "ns_per_op": 9643950,
+      "elapsed_ns": 184961000,
+      "throughput_mb_s": 178.11,
+      "ns_per_op": 9248050,
       "runtime": "dart_jit"
     },
     {
@@ -687,9 +687,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 135211000,
-      "throughput_mb_s": 243.65,
-      "ns_per_op": 6760550,
+      "elapsed_ns": 129965000,
+      "throughput_mb_s": 253.48,
+      "ns_per_op": 6498250,
       "runtime": "dart_jit"
     },
     {
@@ -700,9 +700,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 164283000,
-      "throughput_mb_s": 200.53,
-      "ns_per_op": 8214150,
+      "elapsed_ns": 210276000,
+      "throughput_mb_s": 156.67,
+      "ns_per_op": 10513800,
       "runtime": "dart_jit"
     },
     {
@@ -713,9 +713,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 127884000,
-      "throughput_mb_s": 257.61,
-      "ns_per_op": 6394200,
+      "elapsed_ns": 169331000,
+      "throughput_mb_s": 194.55,
+      "ns_per_op": 8466550,
       "runtime": "dart_jit"
     },
     {
@@ -726,9 +726,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 14761450,
-      "throughput_mb_s": 2231.81,
-      "ns_per_op": 738072
+      "elapsed_ns": 14988559,
+      "throughput_mb_s": 2198.01,
+      "ns_per_op": 749427
     },
     {
       "language": "go",
@@ -738,9 +738,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 171547807,
-      "throughput_mb_s": 192.04,
-      "ns_per_op": 8577390
+      "elapsed_ns": 160401417,
+      "throughput_mb_s": 205.38,
+      "ns_per_op": 8020070
     },
     {
       "language": "node",
@@ -750,9 +750,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 75956474,
-      "throughput_mb_s": 433.72,
-      "ns_per_op": 3797823
+      "elapsed_ns": 74498404,
+      "throughput_mb_s": 442.21,
+      "ns_per_op": 3724920
     },
     {
       "language": "dart",
@@ -762,9 +762,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 144976000,
-      "throughput_mb_s": 227.24,
-      "ns_per_op": 7248800,
+      "elapsed_ns": 150549000,
+      "throughput_mb_s": 218.82,
+      "ns_per_op": 7527450,
       "runtime": "dart_aot"
     },
     {
@@ -775,9 +775,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 121027000,
-      "throughput_mb_s": 272.2,
-      "ns_per_op": 6051350,
+      "elapsed_ns": 123531000,
+      "throughput_mb_s": 266.68,
+      "ns_per_op": 6176550,
       "runtime": "dart_aot"
     },
     {
@@ -788,9 +788,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 274117000,
-      "throughput_mb_s": 120.18,
-      "ns_per_op": 13705850,
+      "elapsed_ns": 262315000,
+      "throughput_mb_s": 125.59,
+      "ns_per_op": 13115750,
       "runtime": "dart_aot"
     },
     {
@@ -801,9 +801,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 114213000,
-      "throughput_mb_s": 288.44,
-      "ns_per_op": 5710650,
+      "elapsed_ns": 129107000,
+      "throughput_mb_s": 255.17,
+      "ns_per_op": 6455350,
       "runtime": "dart_aot"
     },
     {
@@ -814,9 +814,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 140645000,
-      "throughput_mb_s": 234.23,
-      "ns_per_op": 7032250,
+      "elapsed_ns": 136391000,
+      "throughput_mb_s": 241.54,
+      "ns_per_op": 6819550,
       "runtime": "dart_jit"
     },
     {
@@ -827,9 +827,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 126768000,
-      "throughput_mb_s": 259.87,
-      "ns_per_op": 6338400,
+      "elapsed_ns": 167691000,
+      "throughput_mb_s": 196.46,
+      "ns_per_op": 8384550,
       "runtime": "dart_jit"
     },
     {
@@ -840,9 +840,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 216392000,
-      "throughput_mb_s": 152.24,
-      "ns_per_op": 10819600,
+      "elapsed_ns": 229505000,
+      "throughput_mb_s": 143.54,
+      "ns_per_op": 11475250,
       "runtime": "dart_jit"
     },
     {
@@ -853,9 +853,9 @@
       "iterations": 20,
       "file_bytes": 1727204,
       "total_bytes": 34544080,
-      "elapsed_ns": 65013000,
-      "throughput_mb_s": 506.73,
-      "ns_per_op": 3250650,
+      "elapsed_ns": 64851000,
+      "throughput_mb_s": 507.99,
+      "ns_per_op": 3242550,
       "runtime": "dart_jit"
     },
     {
@@ -866,9 +866,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 279679850,
-      "throughput_mb_s": 153.52,
-      "ns_per_op": 13983992
+      "elapsed_ns": 280678438,
+      "throughput_mb_s": 152.97,
+      "ns_per_op": 14033921
     },
     {
       "language": "go",
@@ -878,9 +878,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 743276456,
-      "throughput_mb_s": 57.77,
-      "ns_per_op": 37163822
+      "elapsed_ns": 740127860,
+      "throughput_mb_s": 58.01,
+      "ns_per_op": 37006393
     },
     {
       "language": "node",
@@ -890,9 +890,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 190332097,
-      "throughput_mb_s": 225.58,
-      "ns_per_op": 9516604
+      "elapsed_ns": 186598085,
+      "throughput_mb_s": 230.1,
+      "ns_per_op": 9329904
     },
     {
       "language": "dart",
@@ -902,9 +902,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 508790000,
-      "throughput_mb_s": 84.39,
-      "ns_per_op": 25439500,
+      "elapsed_ns": 494315000,
+      "throughput_mb_s": 86.86,
+      "ns_per_op": 24715750,
       "runtime": "dart_aot"
     },
     {
@@ -915,9 +915,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 493792000,
-      "throughput_mb_s": 86.95,
-      "ns_per_op": 24689600,
+      "elapsed_ns": 503980000,
+      "throughput_mb_s": 85.19,
+      "ns_per_op": 25199000,
       "runtime": "dart_aot"
     },
     {
@@ -928,9 +928,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 843628000,
-      "throughput_mb_s": 50.89,
-      "ns_per_op": 42181400,
+      "elapsed_ns": 964426000,
+      "throughput_mb_s": 44.52,
+      "ns_per_op": 48221300,
       "runtime": "dart_aot"
     },
     {
@@ -941,9 +941,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 1010388000,
-      "throughput_mb_s": 42.49,
-      "ns_per_op": 50519400,
+      "elapsed_ns": 1174911000,
+      "throughput_mb_s": 36.54,
+      "ns_per_op": 58745550,
       "runtime": "dart_aot"
     },
     {
@@ -954,9 +954,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 493947000,
-      "throughput_mb_s": 86.92,
-      "ns_per_op": 24697350,
+      "elapsed_ns": 468198000,
+      "throughput_mb_s": 91.7,
+      "ns_per_op": 23409900,
       "runtime": "dart_jit"
     },
     {
@@ -967,9 +967,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 532869000,
-      "throughput_mb_s": 80.57,
-      "ns_per_op": 26643450,
+      "elapsed_ns": 520065000,
+      "throughput_mb_s": 82.56,
+      "ns_per_op": 26003250,
       "runtime": "dart_jit"
     },
     {
@@ -980,9 +980,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 759069000,
-      "throughput_mb_s": 56.56,
-      "ns_per_op": 37953450,
+      "elapsed_ns": 812417000,
+      "throughput_mb_s": 52.85,
+      "ns_per_op": 40620850,
       "runtime": "dart_jit"
     },
     {
@@ -993,9 +993,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 865666000,
-      "throughput_mb_s": 49.6,
-      "ns_per_op": 43283300,
+      "elapsed_ns": 897004000,
+      "throughput_mb_s": 47.87,
+      "ns_per_op": 44850200,
       "runtime": "dart_jit"
     },
     {
@@ -1006,9 +1006,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 84701624,
-      "throughput_mb_s": 506.91,
-      "ns_per_op": 4235081
+      "elapsed_ns": 74742484,
+      "throughput_mb_s": 574.45,
+      "ns_per_op": 3737124
     },
     {
       "language": "go",
@@ -1018,9 +1018,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 345051645,
-      "throughput_mb_s": 124.43,
-      "ns_per_op": 17252582
+      "elapsed_ns": 331540643,
+      "throughput_mb_s": 129.5,
+      "ns_per_op": 16577032
     },
     {
       "language": "node",
@@ -1030,9 +1030,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 282285399,
-      "throughput_mb_s": 152.1,
-      "ns_per_op": 14114269
+      "elapsed_ns": 325667784,
+      "throughput_mb_s": 131.84,
+      "ns_per_op": 16283389
     },
     {
       "language": "dart",
@@ -1042,9 +1042,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 748737000,
-      "throughput_mb_s": 57.34,
-      "ns_per_op": 37436850,
+      "elapsed_ns": 799223000,
+      "throughput_mb_s": 53.72,
+      "ns_per_op": 39961150,
       "runtime": "dart_aot"
     },
     {
@@ -1055,9 +1055,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 839679000,
-      "throughput_mb_s": 51.13,
-      "ns_per_op": 41983950,
+      "elapsed_ns": 891123000,
+      "throughput_mb_s": 48.18,
+      "ns_per_op": 44556150,
       "runtime": "dart_aot"
     },
     {
@@ -1068,9 +1068,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 1335433000,
-      "throughput_mb_s": 32.15,
-      "ns_per_op": 66771650,
+      "elapsed_ns": 1353058000,
+      "throughput_mb_s": 31.73,
+      "ns_per_op": 67652900,
       "runtime": "dart_aot"
     },
     {
@@ -1081,9 +1081,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 834469000,
-      "throughput_mb_s": 51.45,
-      "ns_per_op": 41723450,
+      "elapsed_ns": 931391000,
+      "throughput_mb_s": 46.1,
+      "ns_per_op": 46569550,
       "runtime": "dart_aot"
     },
     {
@@ -1094,9 +1094,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 743186000,
-      "throughput_mb_s": 57.77,
-      "ns_per_op": 37159300,
+      "elapsed_ns": 741481000,
+      "throughput_mb_s": 57.9,
+      "ns_per_op": 37074050,
       "runtime": "dart_jit"
     },
     {
@@ -1107,9 +1107,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 775097000,
-      "throughput_mb_s": 55.39,
-      "ns_per_op": 38754850,
+      "elapsed_ns": 761517000,
+      "throughput_mb_s": 56.38,
+      "ns_per_op": 38075850,
       "runtime": "dart_jit"
     },
     {
@@ -1120,9 +1120,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 1246043000,
-      "throughput_mb_s": 34.46,
-      "ns_per_op": 62302150,
+      "elapsed_ns": 1264426000,
+      "throughput_mb_s": 33.96,
+      "ns_per_op": 63221300,
       "runtime": "dart_jit"
     },
     {
@@ -1133,9 +1133,9 @@
       "iterations": 20,
       "file_bytes": 2251051,
       "total_bytes": 45021020,
-      "elapsed_ns": 715490000,
-      "throughput_mb_s": 60.01,
-      "ns_per_op": 35774500,
+      "elapsed_ns": 707327000,
+      "throughput_mb_s": 60.7,
+      "ns_per_op": 35366350,
       "runtime": "dart_jit"
     }
   ]

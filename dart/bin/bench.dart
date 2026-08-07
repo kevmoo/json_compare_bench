@@ -112,11 +112,15 @@ void runBenchmark({
         break;
       case 'json_rw_string':
         final reader = JsonReader.fromString(stringSource);
-        reader.skipValue();
+        final res = _readDynamic(reader);
+        if (res == null && stringSource.trim() != 'null')
+          throw StateError('null');
         break;
       case 'json_rw_utf8':
         final reader = JsonReader.fromUtf8(bytes);
-        reader.skipValue();
+        final res = _readDynamic(reader);
+        if (res == null && stringSource.trim() != 'null')
+          throw StateError('null');
         break;
       default:
         throw UnsupportedError('Unknown impl: $impl');
@@ -211,5 +215,39 @@ void _writeDynamic(JsonWriter writer, dynamic value) {
       _writeDynamic(writer, entry.value);
     }
     writer.endObject();
+  }
+}
+
+dynamic _readDynamic(JsonReader reader) {
+  final token = reader.peek();
+  switch (token) {
+    case JsonToken.beginObject:
+      reader.beginObject();
+      final map = <String, dynamic>{};
+      while (reader.hasNext()) {
+        final key = reader.nextName();
+        map[key] = _readDynamic(reader);
+      }
+      reader.endObject();
+      return map;
+    case JsonToken.beginArray:
+      reader.beginArray();
+      final list = <dynamic>[];
+      while (reader.hasNext()) {
+        list.add(_readDynamic(reader));
+      }
+      reader.endArray();
+      return list;
+    case JsonToken.string:
+      return reader.nextString();
+    case JsonToken.number:
+      return reader.nextNumber();
+    case JsonToken.boolean:
+      return reader.nextBool();
+    case JsonToken.nullToken:
+      reader.nextNull();
+      return null;
+    default:
+      throw StateError('Unexpected token: $token');
   }
 }
