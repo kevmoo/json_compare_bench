@@ -1,0 +1,16 @@
+# Build artifacts & binaries
+target/
+build/
+.dart_tool/
+node_modules/
+*.exe
+*.aot
+*.o
+*.a
+*.so
+go/json_compare_bench_go
+
+# System & IDE
+.DS_Store
+.vscode/
+.idea/

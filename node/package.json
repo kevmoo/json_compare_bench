@@ -1,0 +1,6 @@
+{
+  "name": "json_compare_bench_node",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Node.js (V8) JSON benchmarks for json_compare_bench"
+}
