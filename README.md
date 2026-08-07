@@ -11,17 +11,17 @@ hardware and payload conditions.
 ## Latest Results
 
 See the full, machine-harvested benchmark report with toolchain versions and
-hardware configuration in [RESULTS.md](file:///usr/local/google/home/kevmoo/github/kevmoo/json_compare_bench/RESULTS.md).
+hardware configuration in [RESULTS.md](RESULTS.md).
 
 Canonical benchmark runs are tracked in machine-readable format in
-[results.json](file:///usr/local/google/home/kevmoo/github/kevmoo/json_compare_bench/results.json).
+[results.json](results.json).
 
 ---
 
 ## Standard Datasets
 
-All benchmarks run against the canonical, industry-standard JSON datasets located
-in `data/`:
+All benchmarks run against the canonical, industry-standard JSON datasets
+located in `data/`:
 
 * `data/small.json` (~1 KB): Baseline user profile and metadata object.
 * `data/twitter.json` (~617 KB): Real-world UTF-8 social timeline payload with
@@ -43,9 +43,11 @@ in `data/`:
 * **Rust**:
   * `serde_json`: High-performance release binary compiled with `cargo build --release`.
 * **Go**:
-  * `encoding/json`: Standard library reflection-based parser compiled into a native binary.
+  * `encoding/json`: Standard library reflection-based parser compiled into a
+    native binary.
 * **Node.js**:
-  * `JSON.parse` / `JSON.stringify`: V8 C++ built-in parser executing on Node.js v24.
+  * `JSON.parse` / `JSON.stringify`: V8 C++ built-in parser executing on
+    Node.js v24.
 
 ---
 
@@ -62,7 +64,7 @@ Ensure the following tools are available on your system `PATH`:
 ### Default Run
 
 To build all native binaries, execute all benchmark suites across all datasets,
-and regenerate [results.json](file:///usr/local/google/home/kevmoo/github/kevmoo/json_compare_bench/results.json) and [RESULTS.md](file:///usr/local/google/home/kevmoo/github/kevmoo/json_compare_bench/RESULTS.md):
+and regenerate [results.json](results.json) and [RESULTS.md](RESULTS.md):
 
 ```bash
 dart run tool/run_benchmarks.dart
@@ -82,7 +84,8 @@ dart run tool/run_benchmarks.dart -d small.json -n 1000 -w 100
 
 ### Reporting From JSON
 
-Regenerate [RESULTS.md](file:///usr/local/google/home/kevmoo/github/kevmoo/json_compare_bench/RESULTS.md) from an existing [results.json](file:///usr/local/google/home/kevmoo/github/kevmoo/json_compare_bench/results.json) without re-running benchmarks:
+Regenerate [RESULTS.md](RESULTS.md) from an existing
+[results.json](results.json) without re-running benchmarks:
 
 ```bash
 dart run tool/run_benchmarks.dart --from-json results.json
