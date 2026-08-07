@@ -65,12 +65,7 @@ void main(List<String> arguments) {
 
   final implementations = <String>[];
   if (implChoice == 'all') {
-    implementations.addAll([
-      'convert',
-      'convert_utf8',
-      'json_rw_string',
-      'json_rw_utf8',
-    ]);
+    implementations.addAll(['convert_utf8', 'json_rw_utf8']);
   } else {
     implementations.add(implChoice);
   }
