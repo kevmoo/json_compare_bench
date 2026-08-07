@@ -113,14 +113,16 @@ void runBenchmark({
       case 'json_rw_string':
         final reader = JsonReader.fromString(stringSource);
         final res = _readDynamic(reader);
-        if (res == null && stringSource.trim() != 'null')
+        if (res == null && stringSource.trim() != 'null') {
           throw StateError('null');
+        }
         break;
       case 'json_rw_utf8':
         final reader = JsonReader.fromUtf8(bytes);
         final res = _readDynamic(reader);
-        if (res == null && stringSource.trim() != 'null')
+        if (res == null && stringSource.trim() != 'null') {
           throw StateError('null');
+        }
         break;
       default:
         throw UnsupportedError('Unknown impl: $impl');

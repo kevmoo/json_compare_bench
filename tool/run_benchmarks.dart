@@ -12,7 +12,8 @@ void main(List<String> rawArgs) async {
     ..addOption(
       'from-json',
       help:
-          'Skip benchmarks; generate report directly from existing JSON file.',
+          'Skip benchmarks; generate report directly from existing '
+          'JSON file.',
     )
     ..addOption(
       'dataset',
@@ -32,7 +33,8 @@ void main(List<String> rawArgs) async {
       abbr: 'l',
       defaultsTo: 'all',
       help:
-          'Filter languages/runtimes (comma-separated: dart,rust,go,node or all).',
+          'Filter languages/runtimes (comma-separated: dart,rust,go,node '
+          'or all).',
     )
     ..addOption(
       'mode',
@@ -102,7 +104,7 @@ void main(List<String> rawArgs) async {
 
     if (conflictingOptions.isNotEmpty) {
       stderr.writeln(
-        'Error: The \'--from-json\' pseudo-command cannot be combined with '
+        "Error: The '--from-json' pseudo-command cannot be combined with "
         'benchmark execution flags: ${conflictingOptions.join(', ')}.\n',
       );
       stderr.writeln(parser.usage);
@@ -201,13 +203,21 @@ Future<void> _runBenchmarks({
   final systemInfo = _harvestSystemInfo();
   final toolchains = _harvestToolchainInfo();
 
-  print(
-    'System: ${systemInfo['os']} | ${systemInfo['cpu_model']} (${systemInfo['logical_cores']} cores) | RAM: ${systemInfo['total_ram']}',
-  );
-  print('Dart:   ${toolchains['dart']}');
-  print('Rust:   ${toolchains['rust']}');
-  print('Go:     ${toolchains['go']}');
-  print('Node:   ${toolchains['node']}');
+  final osStr = systemInfo['os'];
+  final cpuStr = systemInfo['cpu_model'];
+  final coresStr = systemInfo['logical_cores'];
+  final ramStr = systemInfo['total_ram'];
+
+  print('System: $osStr | $cpuStr ($coresStr cores) | RAM: $ramStr');
+  final dartMap = toolchains['dart'] as Map<String, dynamic>;
+  final rustMap = toolchains['rust'] as Map<String, dynamic>;
+  final goMap = toolchains['go'] as Map<String, dynamic>;
+  final nodeMap = toolchains['node'] as Map<String, dynamic>;
+
+  print('Dart:   ${dartMap['version']}');
+  print('Rust:   ${rustMap['version']}');
+  print('Go:     ${goMap['version']}');
+  print('Node:   ${nodeMap['version']}');
   print('');
 
   await _buildBinaries();
@@ -244,7 +254,8 @@ Future<void> _runBenchmarks({
 
     for (final mode in modes) {
       print(
-        'Running [$dataset] - Mode: $mode (Iterations: $iterations, Warmup: $warmup)...',
+        'Running [$dataset] - Mode: $mode '
+        '(Iterations: $iterations, Warmup: $warmup)...',
       );
 
       if (targetLanguages.contains('rust')) {
@@ -387,7 +398,8 @@ Future<void> _buildBinaries() async {
     workingDirectory: '$rootDir/rust',
     environment: {
       'PATH':
-          '${Platform.environment['HOME']}/.cargo/bin:${Platform.environment['PATH']}',
+          '${Platform.environment['HOME']}/.cargo/bin:'
+          '${Platform.environment['PATH']}',
     },
   );
   if (rustCompile.exitCode != 0) {
@@ -440,12 +452,12 @@ Future<List<Map<String, dynamic>>> _runProcess(
 }
 
 Map<String, dynamic> _harvestSystemInfo() {
-  String osName = Platform.operatingSystem;
-  String osVersion = Platform.operatingSystemVersion;
-  String arch = Platform.localeName.contains('64') ? 'x86_64' : 'unknown';
-  String cpuModel = 'Unknown CPU';
-  int logicalCores = Platform.numberOfProcessors;
-  String totalRam = 'Unknown';
+  var osName = Platform.operatingSystem;
+  var osVersion = Platform.operatingSystemVersion;
+  var arch = Platform.localeName.contains('64') ? 'x86_64' : 'unknown';
+  var cpuModel = 'Unknown CPU';
+  var logicalCores = Platform.numberOfProcessors;
+  var totalRam = 'Unknown';
 
   try {
     if (Platform.isLinux) {
@@ -471,26 +483,35 @@ Map<String, dynamic> _harvestSystemInfo() {
         }
       }
       final unameRes = Process.runSync('uname', ['-m']);
-      if (unameRes.exitCode == 0) arch = unameRes.stdout.toString().trim();
+      if (unameRes.exitCode == 0) {
+        arch = unameRes.stdout.toString().trim();
+      }
     } else if (Platform.isMacOS) {
       final cpuRes = Process.runSync('sysctl', [
         '-n',
         'machdep.cpu.brand_string',
       ]);
-      if (cpuRes.exitCode == 0) cpuModel = cpuRes.stdout.toString().trim();
+      if (cpuRes.exitCode == 0) {
+        cpuModel = cpuRes.stdout.toString().trim();
+      }
       final memRes = Process.runSync('sysctl', ['-n', 'hw.memsize']);
       if (memRes.exitCode == 0) {
         final bytes = int.tryParse(memRes.stdout.toString().trim());
-        if (bytes != null)
+        if (bytes != null) {
           totalRam = '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
+        }
       }
       final unameRes = Process.runSync('uname', ['-m']);
-      if (unameRes.exitCode == 0) arch = unameRes.stdout.toString().trim();
+      if (unameRes.exitCode == 0) {
+        arch = unameRes.stdout.toString().trim();
+      }
     } else if (Platform.isWindows) {
       final cpuRes = Process.runSync('wmic', ['cpu', 'get', 'name']);
       if (cpuRes.exitCode == 0) {
         final lines = cpuRes.stdout.toString().trim().split('\n');
-        if (lines.length > 1) cpuModel = lines[1].trim();
+        if (lines.length > 1) {
+          cpuModel = lines[1].trim();
+        }
       }
       final memRes = Process.runSync('wmic', [
         'computersystem',
@@ -501,9 +522,10 @@ Map<String, dynamic> _harvestSystemInfo() {
         final lines = memRes.stdout.toString().trim().split('\n');
         if (lines.length > 1) {
           final bytes = int.tryParse(lines[1].trim());
-          if (bytes != null)
+          if (bytes != null) {
             totalRam =
                 '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
+          }
         }
       }
     }
@@ -521,13 +543,14 @@ Map<String, dynamic> _harvestSystemInfo() {
 }
 
 Map<String, dynamic> _harvestToolchainInfo() {
-  String dartVersion = Platform.version;
-  String rustVersion = 'Unknown';
-  String goVersion = 'Unknown';
-  String nodeVersion = 'Unknown';
+  var dartVersion = Platform.version;
+  var rustVersion = 'Unknown';
+  var goVersion = 'Unknown';
+  var nodeVersion = 'Unknown';
   final dartPackages = <String, String>{
     'json_rw':
-        'https://github.com/kevmoo/json_serializable.dart/tree/c73ec8e9a1e813a00b903205a39ec2c24a01b94b/json_rw',
+        'https://github.com/kevmoo/json_serializable.dart/tree/'
+        'c73ec8e9a1e813a00b903205a39ec2c24a01b94b/json_rw',
   };
   final rustPackages = <String, String>{};
   final goPackages = <String, String>{'encoding/json': 'Standard Library'};
@@ -539,15 +562,20 @@ Map<String, dynamic> _harvestToolchainInfo() {
       ['--version'],
       environment: {
         'PATH':
-            '${Platform.environment['HOME']}/.cargo/bin:${Platform.environment['PATH']}',
+            '${Platform.environment['HOME']}/.cargo/bin:'
+            '${Platform.environment['PATH']}',
       },
     );
-    if (rustRes.exitCode == 0) rustVersion = rustRes.stdout.toString().trim();
+    if (rustRes.exitCode == 0) {
+      rustVersion = rustRes.stdout.toString().trim();
+    }
   } catch (_) {}
 
   try {
     final goRes = Process.runSync('go', ['version']);
-    if (goRes.exitCode == 0) goVersion = goRes.stdout.toString().trim();
+    if (goRes.exitCode == 0) {
+      goVersion = goRes.stdout.toString().trim();
+    }
   } catch (_) {}
 
   try {
@@ -569,11 +597,15 @@ Map<String, dynamic> _harvestToolchainInfo() {
       final match = RegExp(
         r'name\s*=\s*"serde_json"\s*\nversion\s*=\s*"([^"]+)"',
       ).firstMatch(content);
-      if (match != null) rustPackages['serde_json'] = match.group(1)!;
+      if (match != null) {
+        rustPackages['serde_json'] = match.group(1)!;
+      }
       final serdeMatch = RegExp(
         r'name\s*=\s*"serde"\s*\nversion\s*=\s*"([^"]+)"',
       ).firstMatch(content);
-      if (serdeMatch != null) rustPackages['serde'] = serdeMatch.group(1)!;
+      if (serdeMatch != null) {
+        rustPackages['serde'] = serdeMatch.group(1)!;
+      }
     }
     final dartLock = File('$rootDir/dart/pubspec.lock');
     if (dartLock.existsSync()) {
@@ -581,7 +613,9 @@ Map<String, dynamic> _harvestToolchainInfo() {
       final match = RegExp(
         r'json_annotation:\s*[\s\S]*?version:\s*"([^"]+)"',
       ).firstMatch(content);
-      if (match != null) dartPackages['json_annotation'] = match.group(1)!;
+      if (match != null) {
+        dartPackages['json_annotation'] = match.group(1)!;
+      }
     }
   } catch (_) {}
 
@@ -616,7 +650,9 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
   buffer.writeln('* **Run Date**: `$timestamp`');
   buffer.writeln('* **System**: ${system['os']} | ${system['architecture']}');
   buffer.writeln(
-    '* **Hardware**: ${system['cpu_model']} (${system['logical_cores']} logical cores) | RAM: ${system['total_ram']}',
+    '* **Hardware**: ${system['cpu_model']} '
+    '(${system['logical_cores']} logical cores) | '
+    'RAM: ${system['total_ram']}',
   );
   buffer.writeln('* **Toolchains & Packages**:');
 
@@ -629,10 +665,10 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       for (final entry in pkgs.entries) {
         final val = entry.value.toString();
         if (val.startsWith('http')) {
-          final label = val.contains('c73ec8e')
+          final linkText = val.contains('c73ec8e')
               ? 'kevmoo/json_serializable.dart@c73ec8e'
               : val;
-          buffer.writeln('    * `${entry.key}`: [$label]($val)');
+          buffer.writeln('    * `${entry.key}`: [$linkText]($val)');
         } else {
           buffer.writeln('    * `${entry.key}`: `$val`');
         }
@@ -656,10 +692,12 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
   for (final mode in ['decode', 'encode']) {
     buffer.writeln('## ${mode.toUpperCase()} Throughput Matrix\n');
     buffer.writeln(
-      'Higher throughput (MB/s) is better. Medals (🥇, 🥈, 🥉) indicate top 3 performance per dataset.\n',
+      'Higher throughput (MB/s) is better. '
+      'Medals (🥇, 🥈, 🥉) indicate top 3 performance per dataset.\n',
     );
     buffer.writeln(
-      '| Dataset | Dart (convert) | Dart (json_rw) | Rust (`serde_json`) | Node.js (V8) | Go (`encoding/json`) |',
+      '| Dataset | Dart (convert) | Dart (json_rw) | '
+      'Rust (`serde_json`) | Node.js (V8) | Go (`encoding/json`) |',
     );
     buffer.writeln('| :--- | :---: | :---: | :---: | :---: | :---: |');
 
@@ -715,20 +753,20 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       final goMb = (goBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
 
       // Determine top 3 medals across all 5 contenders
-      final scores = [
-        ('dart_convert', dartConvertMb),
-        ('dart_json_rw', dartRwMb),
-        ('rust', rustMb),
-        ('node', nodeMb),
-        ('go', goMb),
-      ]..sort((a, b) => b.$2.compareTo(a.$2));
+      final scores = <ScoreEntry>[
+        ScoreEntry('dart_convert', dartConvertMb),
+        ScoreEntry('dart_json_rw', dartRwMb),
+        ScoreEntry('rust', rustMb),
+        ScoreEntry('node', nodeMb),
+        ScoreEntry('go', goMb),
+      ]..sort((a, b) => b.score.compareTo(a.score));
 
-      final winnerMb = scores.first.$2 > 0 ? scores.first.$2 : 1.0;
+      final winnerMb = scores.first.score > 0 ? scores.first.score : 1.0;
 
       String medal(String key) {
-        if (scores[0].$1 == key && scores[0].$2 > 0) return '🥇 ';
-        if (scores[1].$1 == key && scores[1].$2 > 0) return '🥈 ';
-        if (scores[2].$1 == key && scores[2].$2 > 0) return '🥉 ';
+        if (scores[0].name == key && scores[0].score > 0) return '🥇 ';
+        if (scores[1].name == key && scores[1].score > 0) return '🥈 ';
+        if (scores[2].name == key && scores[2].score > 0) return '🥉 ';
         return '';
       }
 
@@ -737,8 +775,8 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
         final m = medal(key);
         final isBold = m.isNotEmpty;
         final mbStr = '${mb.toStringAsFixed(1)} MB/s';
-        final impl = item['implementation'] ?? '';
-        final runtime = item['runtime'] ?? '';
+        final impl = (item['implementation'] as String?) ?? '';
+        final runtime = (item['runtime'] as String?) ?? '';
         final suffix = (key.startsWith('dart') && impl.isNotEmpty)
             ? ' (`$impl` $runtime)'
             : '';
@@ -748,26 +786,43 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       String formatPercent(double mb) {
         if (mb == 0) return 'N/A';
         final pct = (mb / winnerMb * 100.0).toStringAsFixed(1);
-        final isWinner = (mb == winnerMb);
+        final isWinner = mb == winnerMb;
         return isWinner ? '**$pct%**' : '$pct%';
       }
 
-      final fileBytes = subset.first['file_bytes'] ?? 0;
+      final fileBytes = (subset.first['file_bytes'] as num?)?.toInt() ?? 0;
       final sizeStr = fileBytes > 1048576
           ? '${(fileBytes / 1048576).toStringAsFixed(1)} MB'
           : '${(fileBytes / 1024).toStringAsFixed(0)} KB';
 
       // Row 1: Throughput
       buffer.writeln(
-        '| **`$dataset`** (~$sizeStr) | ${formatCell(dartConvertBest, 'dart_convert', dartConvertMb)} | ${formatCell(dartRwBest, 'dart_json_rw', dartRwMb)} | ${formatCell(rustBest, 'rust', rustMb)} | ${formatCell(nodeBest, 'node', nodeMb)} | ${formatCell(goBest, 'go', goMb)} |',
+        '| **`$dataset`** (~$sizeStr) | '
+        '${formatCell(dartConvertBest, 'dart_convert', dartConvertMb)} | '
+        '${formatCell(dartRwBest, 'dart_json_rw', dartRwMb)} | '
+        '${formatCell(rustBest, 'rust', rustMb)} | '
+        '${formatCell(nodeBest, 'node', nodeMb)} | '
+        '${formatCell(goBest, 'go', goMb)} |',
       );
       // Row 2: % of Winner
       buffer.writeln(
-        '| ↳ *% of Winner* | ${formatPercent(dartConvertMb)} | ${formatPercent(dartRwMb)} | ${formatPercent(rustMb)} | ${formatPercent(nodeMb)} | ${formatPercent(goMb)} |',
+        '| ↳ *% of Winner* | '
+        '${formatPercent(dartConvertMb)} | '
+        '${formatPercent(dartRwMb)} | '
+        '${formatPercent(rustMb)} | '
+        '${formatPercent(nodeMb)} | '
+        '${formatPercent(goMb)} |',
       );
     }
     buffer.writeln('');
   }
 
   return buffer.toString();
+}
+
+class ScoreEntry {
+  final String name;
+  final double score;
+
+  ScoreEntry(this.name, this.score);
 }
