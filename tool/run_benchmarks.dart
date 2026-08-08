@@ -249,8 +249,10 @@ Future<void> _runBenchmarks({
     final fileBytes = File(datasetPath).lengthSync();
     final iterations =
         customIterations ??
-        (fileBytes < 10000 ? 500 : (fileBytes < 1000000 ? 50 : 20));
-    final warmup = customWarmup ?? (fileBytes < 10000 ? 50 : 5);
+        (fileBytes < 10000 ? 20000 : (fileBytes < 1000000 ? 200 : 50));
+    final warmup =
+        customWarmup ??
+        (fileBytes < 10000 ? 2000 : (fileBytes < 1000000 ? 20 : 5));
 
     for (final mode in modes) {
       print(
@@ -308,7 +310,7 @@ Future<void> _runBenchmarks({
       }
 
       if (targetLanguages.contains('dart')) {
-        // Dart AOT
+        // Exclusively Dart AOT native binary
         benchmarkRecords.addAll(
           await _runProcess('$rootDir/dart/bin/bench_aot.exe', [
             '--dataset',
@@ -322,23 +324,6 @@ Future<void> _runBenchmarks({
             '--warmup',
             '$warmup',
           ], labelPrefix: 'dart_aot'),
-        );
-
-        // Dart JIT
-        benchmarkRecords.addAll(
-          await _runProcess(dartBin, [
-            '$rootDir/dart/bin/bench.dart',
-            '--dataset',
-            datasetPath,
-            '--mode',
-            mode,
-            '--impl',
-            'all',
-            '--iterations',
-            '$iterations',
-            '--warmup',
-            '$warmup',
-          ], labelPrefix: 'dart_jit'),
         );
       }
     }
@@ -606,6 +591,13 @@ Map<String, dynamic> _harvestToolchainInfo() {
       if (serdeMatch != null) {
         rustPackages['serde'] = serdeMatch.group(1)!;
       }
+      final mimallocMatch = RegExp(
+        r'name\s*=\s*"mimalloc"\s*\nversion\s*=\s*"([^"]+)"',
+      ).firstMatch(content);
+      if (mimallocMatch != null) {
+        rustPackages['mimalloc'] =
+            '${mimallocMatch.group(1)!} (global allocator)';
+      }
     }
     final dartLock = File('$rootDir/dart/pubspec.lock');
     if (dartLock.existsSync()) {
@@ -683,6 +675,14 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
   printToolchain('Go', 'go');
   printToolchain('Node.js', 'node');
   buffer.writeln('');
+  buffer.writeln(
+    '> [!NOTE]\n'
+    '> **Native Byte Buffer Contract**: Native binaries (Dart AOT, Rust, Go) '
+    'benchmark direct UTF-8 byte serialization/deserialization '
+    '(`Uint8List` / `&[u8]` / `[]byte`), which represents real-world '
+    'production I/O (sockets, files, cache). Node.js executes via V8 C++ '
+    'built-ins.\n',
+  );
 
   final datasets = rawBenchmarks
       .map((r) => r['dataset'] as String)
@@ -696,7 +696,7 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       'Medals (🥇, 🥈, 🥉) indicate top 3 performance per dataset.\n',
     );
     buffer.writeln(
-      '| Dataset | Dart (convert) | Dart (json_rw) | '
+      '| Dataset | Dart AOT (std) | Dart AOT (json_rw) | '
       'Rust (`serde_json`) | Node.js (V8) | Go (`encoding/json`) |',
     );
     buffer.writeln('| :--- | :---: | :---: | :---: | :---: | :---: |');
@@ -707,45 +707,29 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
           .toList();
       if (subset.isEmpty) continue;
 
-      // Extract best scores per track
-      final dartConvertBest = subset
+      // Extract scores
+      final dartStdBest = subset
           .where(
             (r) =>
                 r['language'] == 'dart' &&
-                (r['implementation'] as String).startsWith('convert'),
+                r['implementation'] == 'convert_utf8',
           )
-          .fold<Map<String, dynamic>?>(
-            null,
-            (prev, curr) =>
-                prev == null ||
-                    (curr['throughput_mb_s'] as num) >
-                        (prev['throughput_mb_s'] as num)
-                ? curr
-                : prev,
-          );
+          .firstOrNull;
 
       final dartRwBest = subset
           .where(
             (r) =>
                 r['language'] == 'dart' &&
-                (r['implementation'] as String).startsWith('json_rw'),
+                r['implementation'] == 'json_rw_utf8',
           )
-          .fold<Map<String, dynamic>?>(
-            null,
-            (prev, curr) =>
-                prev == null ||
-                    (curr['throughput_mb_s'] as num) >
-                        (prev['throughput_mb_s'] as num)
-                ? curr
-                : prev,
-          );
+          .firstOrNull;
 
       final rustBest = subset.where((r) => r['language'] == 'rust').firstOrNull;
       final nodeBest = subset.where((r) => r['language'] == 'node').firstOrNull;
       final goBest = subset.where((r) => r['language'] == 'go').firstOrNull;
 
-      final dartConvertMb =
-          (dartConvertBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final dartStdMb =
+          (dartStdBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
       final dartRwMb =
           (dartRwBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
       final rustMb = (rustBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
@@ -754,8 +738,8 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
 
       // Determine top 3 medals across all 5 contenders
       final scores = <ScoreEntry>[
-        ScoreEntry('dart_convert', dartConvertMb),
-        ScoreEntry('dart_json_rw', dartRwMb),
+        ScoreEntry('dart_std', dartStdMb),
+        ScoreEntry('dart_rw', dartRwMb),
         ScoreEntry('rust', rustMb),
         ScoreEntry('node', nodeMb),
         ScoreEntry('go', goMb),
@@ -775,12 +759,7 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
         final m = medal(key);
         final isBold = m.isNotEmpty;
         final mbStr = '${mb.toStringAsFixed(1)} MB/s';
-        final impl = (item['implementation'] as String?) ?? '';
-        final runtime = (item['runtime'] as String?) ?? '';
-        final suffix = (key.startsWith('dart') && impl.isNotEmpty)
-            ? ' (`$impl` $runtime)'
-            : '';
-        return isBold ? '$m**$mbStr**$suffix' : '$mbStr$suffix';
+        return isBold ? '$m**$mbStr**' : mbStr;
       }
 
       String formatPercent(double mb) {
@@ -798,8 +777,8 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       // Row 1: Throughput
       buffer.writeln(
         '| **`$dataset`** (~$sizeStr) | '
-        '${formatCell(dartConvertBest, 'dart_convert', dartConvertMb)} | '
-        '${formatCell(dartRwBest, 'dart_json_rw', dartRwMb)} | '
+        '${formatCell(dartStdBest, 'dart_std', dartStdMb)} | '
+        '${formatCell(dartRwBest, 'dart_rw', dartRwMb)} | '
         '${formatCell(rustBest, 'rust', rustMb)} | '
         '${formatCell(nodeBest, 'node', nodeMb)} | '
         '${formatCell(goBest, 'go', goMb)} |',
@@ -807,7 +786,7 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       // Row 2: % of Winner
       buffer.writeln(
         '| ↳ *% of Winner* | '
-        '${formatPercent(dartConvertMb)} | '
+        '${formatPercent(dartStdMb)} | '
         '${formatPercent(dartRwMb)} | '
         '${formatPercent(rustMb)} | '
         '${formatPercent(nodeMb)} | '

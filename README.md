@@ -35,16 +35,25 @@ located in `data/`:
 
 ## Evaluated Runtimes & Implementations
 
-* **Dart**:
-  * `dart:convert`: Standard SDK JSON decoder/encoder across Dart AOT and JIT
-    runtimes (`convert` on `String` and fused `convert_utf8` on `Uint8List`).
-  * `json_rw`: Streaming pull reader and byte-buffer push writer prototype
-    from [kevmoo/json_serializable.dart@c73ec8e](https://github.com/kevmoo/json_serializable.dart/tree/c73ec8e9a1e813a00b903205a39ec2c24a01b94b/json_rw).
+All native compiled binaries evaluate direct **UTF-8 Byte Buffer I/O**
+(`Uint8List` / `&[u8]` / `[]byte`), matching real-world production network
+sockets, disk files, and database caches.
+
+* **Dart (AOT)**:
+  * `Dart AOT (std)`: Standard SDK fused JSON decoder and encoder
+    (`utf8.decoder.fuse(json.decoder)` and `json.encoder.fuse(utf8.encoder)`)
+    compiled to native machine code with `dart compile exe`.
+  * `Dart AOT (json_rw)`: Streaming byte pull-reader and byte-builder
+    push-writer prototype from
+    [kevmoo/json_serializable.dart@c73ec8e](https://github.com/kevmoo/json_serializable.dart/tree/c73ec8e9a1e813a00b903205a39ec2c24a01b94b/json_rw).
 * **Rust**:
-  * `serde_json`: High-performance release binary compiled with `cargo build --release`.
+  * `serde_json`: Release binary (`cargo build --release`) configured with
+    `mimalloc` as the `#[global_allocator]` (industry standard for
+    high-performance production Rust services), parsing `&[u8]` slices via
+    `serde_json::from_slice` and emitting `Vec<u8>` via `serde_json::to_vec`.
 * **Go**:
-  * `encoding/json`: Standard library reflection-based parser compiled into a
-    native binary.
+  * `encoding/json`: Native binary parsing `[]byte` via `json.Unmarshal`
+    and emitting `[]byte` via `json.Marshal`.
 * **Node.js**:
   * `JSON.parse` / `JSON.stringify`: V8 C++ built-in parser executing on
     Node.js v24.
@@ -79,7 +88,7 @@ Run a specific dataset or subset of languages:
 dart run tool/run_benchmarks.dart -d twitter.json -l dart,rust -m decode
 
 # Custom iteration and warmup counts
-dart run tool/run_benchmarks.dart -d small.json -n 1000 -w 100
+dart run tool/run_benchmarks.dart -d small.json -n 50000 -w 5000
 ```
 
 ### Reporting From JSON
@@ -95,10 +104,13 @@ dart run tool/run_benchmarks.dart --from-json results.json
 
 ## Methodology & Metrics
 
+* **Native Byte Buffer Contract**: Native binaries (Dart AOT, Rust, Go)
+  benchmark direct UTF-8 byte serialization/deserialization (`Uint8List`,
+  `&[u8]`, `[]byte`), eliminating intermediate UTF-16 string allocations.
 * **Pre-loaded Payload**: Datasets are loaded into memory prior to timing to
   isolate JSON parsing/serialization from disk I/O.
-* **Warmup Cycles**: Every runner executes un-timed warmup passes to trigger JIT
-  compilation and CPU cache warming.
+* **Warmup Cycles**: Every runner executes un-timed warmup passes to ensure
+  CPU cache warming and branch prediction readiness.
 * **Throughput (MB/s)**:
   $$\text{Throughput} = \frac{\text{Dataset Size (MB)} \times \text{Iterations}}{\text{Elapsed Seconds}}$$
 * **Relative Performance (% of Winner)**: Each dataset compares contenders
