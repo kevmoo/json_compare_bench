@@ -17,7 +17,10 @@
     * `v8_builtin`: `V8 C++ Built-in`
 
 > [!NOTE]
-> **Native Byte Buffer Contract**: Native binaries (Dart AOT, Rust, Go) benchmark direct UTF-8 byte serialization/deserialization (`Uint8List` / `&[u8]` / `[]byte`), which represents real-world production I/O (sockets, files, cache). Node.js executes via V8 C++ built-ins.
+> **Native Byte Buffer Contract & Implementation Context**:
+> * **Byte-Level I/O**: Native binaries (Dart AOT, Rust, Go) benchmark direct UTF-8 byte serialization/deserialization (`Uint8List` / `&[u8]` / `[]byte`), representing real-world production I/O (sockets, files, cache). Node.js executes via V8 C++ built-ins.
+> * **`Dart AOT (std)`**: Uses standard library `dart:convert`. Decode is `utf8.decoder.fuse(json.decoder)` using the Dart VM's native C++ parser into dynamic `Map<String, dynamic>`. Encode is `json.encoder.fuse(utf8.encoder)`.
+> * **`Dart AOT (json_rw)`**: Uses the experimental streaming reader/writer prototype (`package:json_rw`). Decode runs a pure-Dart pull reader (`Utf8JsonReader`) building dynamic maps in user space (explaining why decode is ~2.5x–3.5x slower than native C++ `std`). Encode streams dynamic maps to a byte builder (`JsonWriter.bytes`), showing parity with `std` on generic maps. *(Note: The 4x–9x write improvements reported in `json_rw` research apply to **code-generated typed model serialization** emitting directly to byte sinks without intermediate Maps or Strings, not generic dynamic map traversal).*
 
 ## DECODE Throughput Matrix
 
