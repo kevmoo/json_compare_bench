@@ -129,8 +129,7 @@ void runBenchmark({
   }
 
   void runEncodePass() {
-    final builder = BytesBuilder();
-    final writer = JsonTokenWriter.toSink(builder);
+    final writer = JsonTokenWriter.toBuffer(bytes.length);
     if (predecodedModel is SmallDocument) {
       predecodedModel.toWriter(writer);
     } else if (predecodedModel is TwitterResponse) {
@@ -142,7 +141,7 @@ void runBenchmark({
     } else {
       throw UnsupportedError('Unsupported dataset: $datasetName');
     }
-    final out = builder.toBytes();
+    final out = writer.toBytes();
     consumeBlackBox(out);
   }
 

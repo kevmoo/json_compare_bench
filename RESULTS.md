@@ -1,10 +1,10 @@
 # Benchmark Results
 
-* **Run Date**: `2026-08-15T18:33:21.760439Z`
+* **Run Date**: `2026-08-15T19:14:56.014711Z`
 * **System**: linux (Linux 6.18.14-1rodete4-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.18.14-1rodete4 (2026-06-15)) | x86_64
 * **Hardware**: AMD EPYC 7B13 (64 logical cores) | RAM: 117.9 GB
 * **Toolchains & Packages**:
-  * **Dart (Custom SDK)**: `3.14.0-edge.8bbcad750cbe188ab0f26a83c26388c351aba205 (main) (Sat Aug 15 07:56:30 2026 +0000) on "linux_x64"`
+  * **Dart (Custom SDK)**: `3.14.0-edge.74870c4af39697fde442b41e321219f092b4ab27 (main) (Sat Aug 15 18:45:11 2026 +0000) on "linux_x64"`
     * `codable`: `package:codable (SDK integration)`
   * **Dart (Stock SDK)**: `Dart SDK version: 3.14.0-111.0.dev (dev) (Mon Aug 10 13:05:33 2026 -0700) on "linux_x64"`
     * `convert`: `Standard Library (stock out-of-the-box)`
@@ -28,16 +28,16 @@
 Higher throughput (MB/s) is better. Medals (🥇, 🥈, 🥉) indicate top 3 performance per dataset.
 
 <!-- mdformat off -->
-| Dataset | Dart AOT (Stock std) | Dart AOT (std) | Dart AOT (package:codable) |
-| :--- | :---: | :---: | :---: |
-| **`small.json`** (~1 KB) | 🥈 **227.6 MB/s** | 🥇 **231.4 MB/s** | 🥉 **112.4 MB/s** |
-| ↳ *% of Winner* | 98.4% | **100.0%** | 48.6% |
-| **`twitter.json`** (~617 KB) | 🥇 **241.6 MB/s** | 🥈 **228.6 MB/s** | 🥉 **127.4 MB/s** |
-| ↳ *% of Winner* | **100.0%** | 94.6% | 52.7% |
-| **`citm_catalog.json`** (~1.6 MB) | 🥈 **316.5 MB/s** | 🥇 **338.6 MB/s** | 🥉 **225.7 MB/s** |
-| ↳ *% of Winner* | 93.5% | **100.0%** | 66.6% |
-| **`canada.json`** (~2.1 MB) | 🥉 **86.2 MB/s** | 🥈 **140.1 MB/s** | 🥇 **151.3 MB/s** |
-| ↳ *% of Winner* | 56.9% | 92.6% | **100.0%** |
+| Dataset | Dart AOT (Stock std) | Dart AOT (std) | Dart AOT (package:codable) | Rust (`serde_json`) | Node.js (V8) | Go (`encoding/json`) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **`small.json`** (~1 KB) | 🥉 **237.5 MB/s** | 201.3 MB/s | 116.0 MB/s | 🥇 **422.7 MB/s** | 🥈 **259.5 MB/s** | 65.7 MB/s |
+| ↳ *% of Winner* | 56.2% | 47.6% | 27.4% | **100.0%** | 61.4% | 15.5% |
+| **`twitter.json`** (~617 KB) | 🥉 **236.6 MB/s** | 227.5 MB/s | 120.4 MB/s | 🥇 **491.7 MB/s** | 🥈 **430.5 MB/s** | 94.4 MB/s |
+| ↳ *% of Winner* | 48.1% | 46.3% | 24.5% | **100.0%** | 87.6% | 19.2% |
+| **`citm_catalog.json`** (~1.6 MB) | 315.2 MB/s | 🥉 **326.9 MB/s** | 196.6 MB/s | 🥇 **672.9 MB/s** | 🥈 **485.1 MB/s** | 84.8 MB/s |
+| ↳ *% of Winner* | 46.8% | 48.6% | 29.2% | **100.0%** | 72.1% | 12.6% |
+| **`canada.json`** (~2.1 MB) | 86.2 MB/s | 138.7 MB/s | 🥉 **154.1 MB/s** | 🥇 **417.3 MB/s** | 🥈 **248.1 MB/s** | 54.5 MB/s |
+| ↳ *% of Winner* | 20.7% | 33.2% | 36.9% | **100.0%** | 59.5% | 13.1% |
 <!-- mdformat on -->
 
 ## ENCODE Throughput Matrix
@@ -45,15 +45,15 @@ Higher throughput (MB/s) is better. Medals (🥇, 🥈, 🥉) indicate top 3 per
 Higher throughput (MB/s) is better. Medals (🥇, 🥈, 🥉) indicate top 3 performance per dataset.
 
 <!-- mdformat off -->
-| Dataset | Dart AOT (Stock std) | Dart AOT (std) | Dart AOT (package:codable) |
-| :--- | :---: | :---: | :---: |
-| **`small.json`** (~1 KB) | 🥈 **146.9 MB/s** | 🥉 **134.9 MB/s** | 🥇 **161.8 MB/s** |
-| ↳ *% of Winner* | 90.8% | 83.3% | **100.0%** |
-| **`twitter.json`** (~617 KB) | 🥉 **135.7 MB/s** | 🥇 **237.8 MB/s** | 🥈 **175.4 MB/s** |
-| ↳ *% of Winner* | 57.1% | **100.0%** | 73.8% |
-| **`citm_catalog.json`** (~1.6 MB) | 🥉 **262.6 MB/s** | 🥇 **434.1 MB/s** | 🥈 **324.5 MB/s** |
-| ↳ *% of Winner* | 60.5% | **100.0%** | 74.8% |
-| **`canada.json`** (~2.1 MB) | 🥉 **48.3 MB/s** | 🥇 **69.3 MB/s** | 🥈 **59.2 MB/s** |
-| ↳ *% of Winner* | 69.7% | **100.0%** | 85.5% |
+| Dataset | Dart AOT (Stock std) | Dart AOT (std) | Dart AOT (package:codable) | Rust (`serde_json`) | Node.js (V8) | Go (`encoding/json`) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **`small.json`** (~1 KB) | 146.3 MB/s | 130.8 MB/s | 262.0 MB/s | 🥇 **845.1 MB/s** | 🥉 **356.8 MB/s** | 🥈 **377.6 MB/s** |
+| ↳ *% of Winner* | 17.3% | 15.5% | 31.0% | **100.0%** | 42.2% | 44.7% |
+| **`twitter.json`** (~617 KB) | 134.7 MB/s | 239.3 MB/s | 🥉 **334.3 MB/s** | 🥇 **1223.6 MB/s** | 329.5 MB/s | 🥈 **656.1 MB/s** |
+| ↳ *% of Winner* | 11.0% | 19.6% | 27.3% | **100.0%** | 26.9% | 53.6% |
+| **`citm_catalog.json`** (~1.6 MB) | 272.5 MB/s | 425.5 MB/s | 🥉 **545.3 MB/s** | 🥇 **3031.3 MB/s** | 412.4 MB/s | 🥈 **1257.2 MB/s** |
+| ↳ *% of Winner* | 9.0% | 14.0% | 18.0% | **100.0%** | 13.6% | 41.5% |
+| **`canada.json`** (~2.1 MB) | 49.1 MB/s | 69.0 MB/s | 72.8 MB/s | 🥇 **690.0 MB/s** | 🥉 **138.4 MB/s** | 🥈 **162.0 MB/s** |
+| ↳ *% of Winner* | 7.1% | 10.0% | 10.5% | **100.0%** | 20.1% | 23.5% |
 <!-- mdformat on -->
 
