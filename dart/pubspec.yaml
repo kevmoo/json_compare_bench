@@ -8,8 +8,11 @@ environment:
 
 dependencies:
   args: ^2.6.0
+  codable:
+    path: /usr/local/google/home/kevmoo/github/kevmoo/_codable.dart-sdk-integration/pkgs/codable
   json_annotation: ^4.9.0
   meta: ^1.15.0
 
 dev_dependencies:
   dart_flutter_team_lints: ^3.0.0
+  test: ^1.25.8

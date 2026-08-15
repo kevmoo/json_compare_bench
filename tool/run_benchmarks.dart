@@ -7,6 +7,15 @@ final rootDir = File(Platform.script.toFilePath()).parent.parent.path;
 final nodeBin = _findNode();
 final dartBin = Platform.resolvedExecutable;
 
+Map<String, String> get _toolchainEnv => {
+  'PATH':
+      '${Platform.environment['HOME']}/.cargo/bin:'
+      '${Platform.environment['HOME']}/.local/share/mise/shims:'
+      '${Platform.environment['HOME']}/.local/share/mise/installs/node/24/bin:'
+      '${Platform.environment['HOME']}/.local/share/dart-sdk-json-utf8-kernels/dart-sdk/bin:'
+      '${Platform.environment['PATH']}',
+};
+
 void main(List<String> rawArgs) async {
   final parser = ArgParser()
     ..addOption(
@@ -366,13 +375,18 @@ Future<void> _runBenchmarks({
 Future<void> _buildBinaries() async {
   print('>> Compiling benchmark binaries...');
 
-  final dartCompile = Process.runSync(dartBin, [
-    'compile',
-    'exe',
-    '$rootDir/dart/bin/bench.dart',
-    '-o',
-    '$rootDir/dart/bin/bench_aot.exe',
-  ], workingDirectory: '$rootDir/dart');
+  final dartCompile = Process.runSync(
+    dartBin,
+    [
+      'compile',
+      'exe',
+      '$rootDir/dart/bin/bench.dart',
+      '-o',
+      '$rootDir/dart/bin/bench_aot.exe',
+    ],
+    workingDirectory: '$rootDir/dart',
+    environment: _toolchainEnv,
+  );
   if (dartCompile.exitCode != 0) {
     stderr.writeln('Dart AOT compile error: ${dartCompile.stderr}');
   }
@@ -381,22 +395,18 @@ Future<void> _buildBinaries() async {
     'cargo',
     ['build', '--release'],
     workingDirectory: '$rootDir/rust',
-    environment: {
-      'PATH':
-          '${Platform.environment['HOME']}/.cargo/bin:'
-          '${Platform.environment['PATH']}',
-    },
+    environment: _toolchainEnv,
   );
   if (rustCompile.exitCode != 0) {
     stderr.writeln('Rust compile error: ${rustCompile.stderr}');
   }
 
-  final goCompile = Process.runSync('go', [
-    'build',
-    '-o',
-    'json_compare_bench_go',
-    'main.go',
-  ], workingDirectory: '$rootDir/go');
+  final goCompile = Process.runSync(
+    'go',
+    ['build', '-o', 'json_compare_bench_go', '.'],
+    workingDirectory: '$rootDir/go',
+    environment: _toolchainEnv,
+  );
   if (goCompile.exitCode != 0) {
     stderr.writeln('Go compile error: ${goCompile.stderr}');
   }
@@ -411,7 +421,7 @@ Future<List<Map<String, dynamic>>> _runProcess(
 }) async {
   final results = <Map<String, dynamic>>[];
   try {
-    final res = await Process.run(executable, args);
+    final res = await Process.run(executable, args, environment: _toolchainEnv);
     if (res.exitCode != 0) {
       stderr.writeln('Error running $executable: ${res.stderr}');
       return results;
@@ -467,7 +477,9 @@ Map<String, dynamic> _harvestSystemInfo() {
           }
         }
       }
-      final unameRes = Process.runSync('uname', ['-m']);
+      final unameRes = Process.runSync('uname', [
+        '-m',
+      ], environment: _toolchainEnv);
       if (unameRes.exitCode == 0) {
         arch = unameRes.stdout.toString().trim();
       }
@@ -475,43 +487,25 @@ Map<String, dynamic> _harvestSystemInfo() {
       final cpuRes = Process.runSync('sysctl', [
         '-n',
         'machdep.cpu.brand_string',
-      ]);
+      ], environment: _toolchainEnv);
       if (cpuRes.exitCode == 0) {
         cpuModel = cpuRes.stdout.toString().trim();
       }
-      final memRes = Process.runSync('sysctl', ['-n', 'hw.memsize']);
+      final memRes = Process.runSync('sysctl', [
+        '-n',
+        'hw.memsize',
+      ], environment: _toolchainEnv);
       if (memRes.exitCode == 0) {
         final bytes = int.tryParse(memRes.stdout.toString().trim());
         if (bytes != null) {
           totalRam = '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
         }
       }
-      final unameRes = Process.runSync('uname', ['-m']);
+      final unameRes = Process.runSync('uname', [
+        '-m',
+      ], environment: _toolchainEnv);
       if (unameRes.exitCode == 0) {
         arch = unameRes.stdout.toString().trim();
-      }
-    } else if (Platform.isWindows) {
-      final cpuRes = Process.runSync('wmic', ['cpu', 'get', 'name']);
-      if (cpuRes.exitCode == 0) {
-        final lines = cpuRes.stdout.toString().trim().split('\n');
-        if (lines.length > 1) {
-          cpuModel = lines[1].trim();
-        }
-      }
-      final memRes = Process.runSync('wmic', [
-        'computersystem',
-        'get',
-        'TotalPhysicalMemory',
-      ]);
-      if (memRes.exitCode == 0) {
-        final lines = memRes.stdout.toString().trim().split('\n');
-        if (lines.length > 1) {
-          final bytes = int.tryParse(lines[1].trim());
-          if (bytes != null) {
-            totalRam =
-                '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
-          }
-        }
       }
     }
   } catch (_) {
@@ -533,39 +527,38 @@ Map<String, dynamic> _harvestToolchainInfo() {
   var goVersion = 'Unknown';
   var nodeVersion = 'Unknown';
   final dartPackages = <String, String>{
-    'json_rw':
-        'https://github.com/kevmoo/json_serializable.dart/tree/'
-        'c73ec8e9a1e813a00b903205a39ec2c24a01b94b/json_rw',
+    'codable': 'package:codable (SDK integration)',
   };
   final rustPackages = <String, String>{};
   final goPackages = <String, String>{'encoding/json': 'Standard Library'};
   final nodePackages = <String, String>{'v8_builtin': 'V8 C++ Built-in'};
 
   try {
-    final rustRes = Process.runSync(
-      'rustc',
-      ['--version'],
-      environment: {
-        'PATH':
-            '${Platform.environment['HOME']}/.cargo/bin:'
-            '${Platform.environment['PATH']}',
-      },
-    );
+    final rustRes = Process.runSync('rustc', [
+      '--version',
+    ], environment: _toolchainEnv);
     if (rustRes.exitCode == 0) {
       rustVersion = rustRes.stdout.toString().trim();
     }
   } catch (_) {}
 
   try {
-    final goRes = Process.runSync('go', ['version']);
+    final goRes = Process.runSync('go', [
+      'version',
+    ], environment: _toolchainEnv);
     if (goRes.exitCode == 0) {
       goVersion = goRes.stdout.toString().trim();
     }
   } catch (_) {}
 
   try {
-    final nodeRes = Process.runSync(nodeBin, ['--version']);
-    final v8Res = Process.runSync(nodeBin, ['-p', 'process.versions.v8']);
+    final nodeRes = Process.runSync(nodeBin, [
+      '--version',
+    ], environment: _toolchainEnv);
+    final v8Res = Process.runSync(nodeBin, [
+      '-p',
+      'process.versions.v8',
+    ], environment: _toolchainEnv);
     if (nodeRes.exitCode == 0) {
       final nVer = nodeRes.stdout.toString().trim();
       final v8Ver = v8Res.exitCode == 0
@@ -599,16 +592,6 @@ Map<String, dynamic> _harvestToolchainInfo() {
             '${mimallocMatch.group(1)!} (global allocator)';
       }
     }
-    final dartLock = File('$rootDir/dart/pubspec.lock');
-    if (dartLock.existsSync()) {
-      final content = dartLock.readAsStringSync();
-      final match = RegExp(
-        r'json_annotation:\s*[\s\S]*?version:\s*"([^"]+)"',
-      ).firstMatch(content);
-      if (match != null) {
-        dartPackages['json_annotation'] = match.group(1)!;
-      }
-    }
   } catch (_) {}
 
   return {
@@ -623,8 +606,13 @@ String _findNode() {
   final miseNode =
       '${Platform.environment['HOME']}/.local/share/mise/installs/node/24/bin/node';
   if (File(miseNode).existsSync()) return miseNode;
+  final miseNode2 =
+      '${Platform.environment['HOME']}/.local/share/mise/shims/node';
+  if (File(miseNode2).existsSync()) return miseNode2;
   try {
-    final whichRes = Process.runSync('which', ['node']);
+    final whichRes = Process.runSync('which', [
+      'node',
+    ], environment: _toolchainEnv);
     if (whichRes.exitCode == 0) return whichRes.stdout.toString().trim();
   } catch (_) {}
   return 'node';
@@ -657,10 +645,7 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       for (final entry in pkgs.entries) {
         final val = entry.value.toString();
         if (val.startsWith('http')) {
-          final linkText = val.contains('c73ec8e')
-              ? 'kevmoo/json_serializable.dart@c73ec8e'
-              : val;
-          buffer.writeln('    * `${entry.key}`: [$linkText]($val)');
+          buffer.writeln('    * `${entry.key}`: [$val]($val)');
         } else {
           buffer.writeln('    * `${entry.key}`: `$val`');
         }
@@ -677,11 +662,20 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
   buffer.writeln('');
   buffer.writeln(
     '> [!NOTE]\n'
-    '> **Native Byte Buffer Contract**: Native binaries (Dart AOT, Rust, Go) '
+    '> **Native Byte Buffer Contract & Implementation Context**:\n'
+    '> * **Native Byte Buffer Contract**: Native binaries (Dart AOT, Rust, Go) '
     'benchmark direct UTF-8 byte serialization/deserialization '
     '(`Uint8List` / `&[u8]` / `[]byte`), which represents real-world '
     'production I/O (sockets, files, cache). Node.js executes via V8 C++ '
-    'built-ins.\n',
+    'built-ins.\n'
+    '> * **`Dart AOT (std)`**: Uses standard library `dart:convert`. Decode is '
+    '`utf8.decoder.fuse(json.decoder)` into dynamic `Map<String, dynamic>`. '
+    'Encode is `json.encoder.fuse(utf8.encoder)`.\n'
+    '> * **`Dart AOT (package:codable)`**: Uses the next-generation streaming '
+    'zero-allocation deserializer/serializer (`package:codable`) with '
+    'delimiter-fused reads, SWAR 64-bit jump tables, and Eisel-Lemire float '
+    'parsing operating directly over raw UTF-8 byte spans without '
+    'intermediate DOM maps.\n',
   );
 
   final datasets = rawBenchmarks
@@ -696,7 +690,7 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       'Medals (🥇, 🥈, 🥉) indicate top 3 performance per dataset.\n',
     );
     buffer.writeln(
-      '| Dataset | Dart AOT (std) | Dart AOT (json_rw) | '
+      '| Dataset | Dart AOT (std) | Dart AOT (package:codable) | '
       'Rust (`serde_json`) | Node.js (V8) | Go (`encoding/json`) |',
     );
     buffer.writeln('| :--- | :---: | :---: | :---: | :---: | :---: |');
@@ -716,11 +710,13 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
           )
           .firstOrNull;
 
-      final dartRwBest = subset
+      final dartCodableBest = subset
           .where(
             (r) =>
                 r['language'] == 'dart' &&
-                r['implementation'] == 'json_rw_utf8',
+                (r['implementation'] == 'codable_utf8' ||
+                    r['implementation'] == 'codable' ||
+                    r['implementation'] == 'package_codable'),
           )
           .firstOrNull;
 
@@ -730,8 +726,8 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
 
       final dartStdMb =
           (dartStdBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
-      final dartRwMb =
-          (dartRwBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final dartCodableMb =
+          (dartCodableBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
       final rustMb = (rustBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
       final nodeMb = (nodeBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
       final goMb = (goBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
@@ -739,7 +735,7 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       // Determine top 3 medals across all 5 contenders
       final scores = <ScoreEntry>[
         ScoreEntry('dart_std', dartStdMb),
-        ScoreEntry('dart_rw', dartRwMb),
+        ScoreEntry('dart_codable', dartCodableMb),
         ScoreEntry('rust', rustMb),
         ScoreEntry('node', nodeMb),
         ScoreEntry('go', goMb),
@@ -778,7 +774,7 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       buffer.writeln(
         '| **`$dataset`** (~$sizeStr) | '
         '${formatCell(dartStdBest, 'dart_std', dartStdMb)} | '
-        '${formatCell(dartRwBest, 'dart_rw', dartRwMb)} | '
+        '${formatCell(dartCodableBest, 'dart_codable', dartCodableMb)} | '
         '${formatCell(rustBest, 'rust', rustMb)} | '
         '${formatCell(nodeBest, 'node', nodeMb)} | '
         '${formatCell(goBest, 'go', goMb)} |',
@@ -787,7 +783,7 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       buffer.writeln(
         '| ↳ *% of Winner* | '
         '${formatPercent(dartStdMb)} | '
-        '${formatPercent(dartRwMb)} | '
+        '${formatPercent(dartCodableMb)} | '
         '${formatPercent(rustMb)} | '
         '${formatPercent(nodeMb)} | '
         '${formatPercent(goMb)} |',

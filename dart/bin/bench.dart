@@ -1,9 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/args.dart';
+import 'package:codable/codable.dart';
 import 'package:json_compare_bench_dart/json_rw.dart';
+import 'package:json_compare_bench_dart/src/models/canada.dart';
+import 'package:json_compare_bench_dart/src/models/citm_catalog.dart';
+import 'package:json_compare_bench_dart/src/models/small.dart';
+import 'package:json_compare_bench_dart/src/models/twitter.dart';
+
+int blackholeSink = 0;
+
+@pragma('vm:never-inline')
+void consumeBlackBox(Object? value) {
+  blackholeSink ^= value.hashCode;
+}
 
 void main(List<String> arguments) {
   final parser = ArgParser()
@@ -29,6 +40,7 @@ void main(List<String> arguments) {
         'convert_utf8',
         'json_rw_string',
         'json_rw_utf8',
+        'codable_utf8',
         'all',
       ],
       help: 'Implementation to benchmark',
@@ -65,7 +77,7 @@ void main(List<String> arguments) {
 
   final implementations = <String>[];
   if (implChoice == 'all') {
-    implementations.addAll(['convert_utf8', 'json_rw_utf8']);
+    implementations.addAll(['convert_utf8', 'codable_utf8']);
   } else {
     implementations.add(implChoice);
   }
@@ -94,29 +106,64 @@ void runBenchmark({
 }) {
   // Pre-decode object for encode benchmarks
   final dynamic parsedObject = jsonDecode(stringSource);
+  Object? predecodedCodableModel;
+  if (impl == 'codable_utf8') {
+    if (datasetName.contains('small')) {
+      predecodedCodableModel = SmallDocument.fromReader(
+        JsonTokenReader.fromBytes(bytes),
+      );
+    } else if (datasetName.contains('twitter')) {
+      predecodedCodableModel = TwitterResponse.fromReader(
+        JsonTokenReader.fromBytes(bytes),
+      );
+    } else if (datasetName.contains('citm')) {
+      predecodedCodableModel = CitmCatalog.fromReader(
+        JsonTokenReader.fromBytes(bytes),
+      );
+    } else if (datasetName.contains('canada')) {
+      predecodedCodableModel = CanadaFeatureCollection.fromReader(
+        JsonTokenReader.fromBytes(bytes),
+      );
+    }
+  }
 
   void runDecodePass() {
     switch (impl) {
       case 'convert':
         final res = jsonDecode(stringSource);
-        if (res == null) throw StateError('null');
+        consumeBlackBox(res);
         break;
       case 'convert_utf8':
         final res = utf8.decoder.fuse(json.decoder).convert(bytes);
-        if (res == null) throw StateError('null');
+        consumeBlackBox(res);
         break;
       case 'json_rw_string':
         final reader = JsonReader.fromString(stringSource);
         final res = _readDynamic(reader);
-        if (res == null && stringSource.trim() != 'null') {
-          throw StateError('null');
-        }
+        consumeBlackBox(res);
         break;
       case 'json_rw_utf8':
         final reader = JsonReader.fromUtf8(bytes);
         final res = _readDynamic(reader);
-        if (res == null && stringSource.trim() != 'null') {
-          throw StateError('null');
+        consumeBlackBox(res);
+        break;
+      case 'codable_utf8':
+        if (datasetName.contains('small')) {
+          final reader = JsonTokenReader.fromBytes(bytes);
+          final res = SmallDocument.fromReader(reader);
+          consumeBlackBox(res);
+        } else if (datasetName.contains('twitter')) {
+          final reader = JsonTokenReader.fromBytes(bytes);
+          final res = TwitterResponse.fromReader(reader);
+          consumeBlackBox(res);
+        } else if (datasetName.contains('citm')) {
+          final reader = JsonTokenReader.fromBytes(bytes);
+          final res = CitmCatalog.fromReader(reader);
+          consumeBlackBox(res);
+        } else if (datasetName.contains('canada')) {
+          final reader = JsonTokenReader.fromBytes(bytes);
+          final res = CanadaFeatureCollection.fromReader(reader);
+          consumeBlackBox(res);
         }
         break;
       default:
@@ -128,25 +175,40 @@ void runBenchmark({
     switch (impl) {
       case 'convert':
         final res = jsonEncode(parsedObject);
-        if (res.isEmpty) throw StateError('empty');
+        consumeBlackBox(res);
         break;
       case 'convert_utf8':
         final res = json.encoder.fuse(utf8.encoder).convert(parsedObject);
-        if (res.isEmpty) throw StateError('empty');
+        consumeBlackBox(res);
         break;
       case 'json_rw_string':
         final buffer = StringBuffer();
         final writer = JsonWriter(buffer);
         _writeDynamic(writer, parsedObject);
         final res = buffer.toString();
-        if (res.isEmpty) throw StateError('empty');
+        consumeBlackBox(res);
         break;
       case 'json_rw_utf8':
         final builder = BytesBuilder(copy: false);
         final writer = JsonWriter.bytes(builder);
         _writeDynamic(writer, parsedObject);
         final res = builder.toBytes();
-        if (res.isEmpty) throw StateError('empty');
+        consumeBlackBox(res);
+        break;
+      case 'codable_utf8':
+        final builder = BytesBuilder(copy: false);
+        final writer = JsonTokenWriter.toSink(builder);
+        if (predecodedCodableModel is SmallDocument) {
+          predecodedCodableModel.toWriter(writer);
+        } else if (predecodedCodableModel is TwitterResponse) {
+          predecodedCodableModel.toWriter(writer);
+        } else if (predecodedCodableModel is CitmCatalog) {
+          predecodedCodableModel.toWriter(writer);
+        } else if (predecodedCodableModel is CanadaFeatureCollection) {
+          predecodedCodableModel.toWriter(writer);
+        }
+        final res = builder.toBytes();
+        consumeBlackBox(res);
         break;
       default:
         throw UnsupportedError('Unknown impl: $impl');

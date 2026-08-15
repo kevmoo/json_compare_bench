@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -38,21 +39,79 @@ func main() {
 
 	datasetName := filepath.Base(*datasetPath)
 
-	var parsedObject any
-	if err := json.Unmarshal(bytes, &parsedObject); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to parse initial JSON: %v\n", err)
-		os.Exit(1)
+	var predecodedModel any
+	if strings.Contains(datasetName, "small") {
+		var m SmallDocument
+		if err := json.Unmarshal(bytes, &m); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to parse initial small JSON: %v\n", err)
+			os.Exit(1)
+		}
+		predecodedModel = &m
+	} else if strings.Contains(datasetName, "twitter") {
+		var m TwitterResponse
+		if err := json.Unmarshal(bytes, &m); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to parse initial twitter JSON: %v\n", err)
+			os.Exit(1)
+		}
+		predecodedModel = &m
+	} else if strings.Contains(datasetName, "citm") {
+		var m CitmCatalog
+		if err := json.Unmarshal(bytes, &m); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to parse initial citm JSON: %v\n", err)
+			os.Exit(1)
+		}
+		predecodedModel = &m
+	} else if strings.Contains(datasetName, "canada") {
+		var m CanadaFeatureCollection
+		if err := json.Unmarshal(bytes, &m); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to parse initial canada JSON: %v\n", err)
+			os.Exit(1)
+		}
+		predecodedModel = &m
+	} else {
+		var m any
+		if err := json.Unmarshal(bytes, &m); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to parse initial generic JSON: %v\n", err)
+			os.Exit(1)
+		}
+		predecodedModel = &m
 	}
 
 	runPass := func() {
 		if *mode == "decode" {
-			var out any
-			if err := json.Unmarshal(bytes, &out); err != nil {
-				panic(err)
+			if strings.Contains(datasetName, "small") {
+				var out SmallDocument
+				if err := json.Unmarshal(bytes, &out); err != nil {
+					panic(err)
+				}
+				blackhole = &out
+			} else if strings.Contains(datasetName, "twitter") {
+				var out TwitterResponse
+				if err := json.Unmarshal(bytes, &out); err != nil {
+					panic(err)
+				}
+				blackhole = &out
+			} else if strings.Contains(datasetName, "citm") {
+				var out CitmCatalog
+				if err := json.Unmarshal(bytes, &out); err != nil {
+					panic(err)
+				}
+				blackhole = &out
+			} else if strings.Contains(datasetName, "canada") {
+				var out CanadaFeatureCollection
+				if err := json.Unmarshal(bytes, &out); err != nil {
+					panic(err)
+				}
+				blackhole = &out
+			} else {
+				var out any
+				if err := json.Unmarshal(bytes, &out); err != nil {
+					panic(err)
+				}
+				blackhole = out
 			}
-			blackhole = out
 		} else {
-			out, err := json.Marshal(parsedObject)
+			out, err := json.Marshal(predecodedModel)
 			if err != nil {
 				panic(err)
 			}

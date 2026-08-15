@@ -5,8 +5,19 @@ use std::path::Path;
 use std::process;
 use std::time::Instant;
 
+mod models;
+use models::*;
+
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
+
+enum PredecodedModel {
+    Small(SmallDocument),
+    Twitter(TwitterResponse),
+    Citm(CitmCatalog),
+    Canada(CanadaFeatureCollection),
+    Unknown(serde_json::Value),
+}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -63,23 +74,64 @@ fn main() {
         .unwrap_or("unknown")
         .to_string();
 
-    let string_source = match String::from_utf8(bytes.clone()) {
-        Ok(s) => s,
-        Err(e) => {
-            eprintln!("Invalid UTF-8 in dataset: {}", e);
-            process::exit(1);
-        }
+    let predecoded_model = if dataset_name.contains("small") {
+        let m: SmallDocument = serde_json::from_slice(&bytes).expect("Initial parse small failed");
+        PredecodedModel::Small(m)
+    } else if dataset_name.contains("twitter") {
+        let m: TwitterResponse = serde_json::from_slice(&bytes).expect("Initial parse twitter failed");
+        PredecodedModel::Twitter(m)
+    } else if dataset_name.contains("citm") {
+        let m: CitmCatalog = serde_json::from_slice(&bytes).expect("Initial parse citm failed");
+        PredecodedModel::Citm(m)
+    } else if dataset_name.contains("canada") {
+        let m: CanadaFeatureCollection = serde_json::from_slice(&bytes).expect("Initial parse canada failed");
+        PredecodedModel::Canada(m)
+    } else {
+        let m: serde_json::Value = serde_json::from_slice(&bytes).expect("Initial parse unknown failed");
+        PredecodedModel::Unknown(m)
     };
-
-    let parsed_value: serde_json::Value = serde_json::from_str(&string_source).expect("Valid JSON");
 
     let run_pass = || {
         if mode == "decode" {
-            let val: serde_json::Value = serde_json::from_slice(&bytes).expect("decode failed");
-            std::hint::black_box(val);
+            if dataset_name.contains("small") {
+                let val: SmallDocument = serde_json::from_slice(&bytes).expect("decode failed");
+                std::hint::black_box(val);
+            } else if dataset_name.contains("twitter") {
+                let val: TwitterResponse = serde_json::from_slice(&bytes).expect("decode failed");
+                std::hint::black_box(val);
+            } else if dataset_name.contains("citm") {
+                let val: CitmCatalog = serde_json::from_slice(&bytes).expect("decode failed");
+                std::hint::black_box(val);
+            } else if dataset_name.contains("canada") {
+                let val: CanadaFeatureCollection = serde_json::from_slice(&bytes).expect("decode failed");
+                std::hint::black_box(val);
+            } else {
+                let val: serde_json::Value = serde_json::from_slice(&bytes).expect("decode failed");
+                std::hint::black_box(val);
+            }
         } else {
-            let out = serde_json::to_vec(&parsed_value).expect("encode failed");
-            std::hint::black_box(out);
+            match &predecoded_model {
+                PredecodedModel::Small(m) => {
+                    let out = serde_json::to_vec(m).expect("encode failed");
+                    std::hint::black_box(out);
+                }
+                PredecodedModel::Twitter(m) => {
+                    let out = serde_json::to_vec(m).expect("encode failed");
+                    std::hint::black_box(out);
+                }
+                PredecodedModel::Citm(m) => {
+                    let out = serde_json::to_vec(m).expect("encode failed");
+                    std::hint::black_box(out);
+                }
+                PredecodedModel::Canada(m) => {
+                    let out = serde_json::to_vec(m).expect("encode failed");
+                    std::hint::black_box(out);
+                }
+                PredecodedModel::Unknown(m) => {
+                    let out = serde_json::to_vec(m).expect("encode failed");
+                    std::hint::black_box(out);
+                }
+            }
         }
     };
 
