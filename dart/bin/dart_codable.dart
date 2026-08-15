@@ -129,7 +129,7 @@ void runBenchmark({
   }
 
   void runEncodePass() {
-    final builder = BytesBuilder(copy: false);
+    final builder = BytesBuilder();
     final writer = JsonTokenWriter.toSink(builder);
     if (predecodedModel is SmallDocument) {
       predecodedModel.toWriter(writer);

@@ -17,7 +17,7 @@ void main() {
       expect(doc.name, equals('Kevin Moore'));
       expect(doc.metadata.location.city, equals('San Francisco'));
 
-      final builder = BytesBuilder(copy: false);
+      final builder = BytesBuilder();
       final writer = JsonTokenWriter.toSink(builder);
       doc.toWriter(writer);
       final outBytes = builder.toBytes();
@@ -36,7 +36,7 @@ void main() {
       expect(resp.statuses.length, equals(100));
       expect(resp.statuses.first.id, equals(505874924095815700));
 
-      final builder = BytesBuilder(copy: false);
+      final builder = BytesBuilder();
       final writer = JsonTokenWriter.toSink(builder);
       resp.toWriter(writer);
       final outBytes = builder.toBytes();
@@ -55,7 +55,7 @@ void main() {
       expect(fc.type, equals('FeatureCollection'));
       expect(fc.features.length, greaterThan(0));
 
-      final builder = BytesBuilder(copy: false);
+      final builder = BytesBuilder();
       final writer = JsonTokenWriter.toSink(builder);
       fc.toWriter(writer);
       final outBytes = builder.toBytes();
@@ -69,7 +69,7 @@ void main() {
       expect(catalog.events.length, greaterThan(0));
       expect(catalog.performances.length, greaterThan(0));
 
-      final builder = BytesBuilder(copy: false);
+      final builder = BytesBuilder();
       final writer = JsonTokenWriter.toSink(builder);
       catalog.toWriter(writer);
       final outBytes = builder.toBytes();

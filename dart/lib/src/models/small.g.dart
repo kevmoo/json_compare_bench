@@ -10,11 +10,13 @@ part of 'small.dart';
 // 1. Unified Schema Descriptor for SmallLocation
 // =============================================================================
 extension type const _$SmallLocationSchema(int _value) {
+  // String Name Constants
   static const String nameLatitude = 'latitude';
   static const String nameLongitude = 'longitude';
   static const String nameCity = 'city';
   static const String nameCountry = 'country';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameLatitudeBytes = Uint8List.fromList(const [
     108,
     97,
@@ -52,18 +54,21 @@ extension type const _$SmallLocationSchema(int _value) {
     121,
   ]);
 
+  // Key Indices for selectName()
   static const int keyLatitude = 0;
   static const int keyLongitude = 1;
   static const int keyCity = 2;
   static const int keyCountry = 3;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameLatitude,
-    nameLongitude,
-    nameCity,
-    nameCountry,
+    _$SmallLocationSchema.nameLatitude,
+    _$SmallLocationSchema.nameLongitude,
+    _$SmallLocationSchema.nameCity,
+    _$SmallLocationSchema.nameCountry,
   ]);
 
+  // Bitmask Flags strictly for Required Fields
   static const _$SmallLocationSchema none = _$SmallLocationSchema(0);
   static const int _latitudeBit = 1 << 0;
   static const _$SmallLocationSchema latitude = _$SmallLocationSchema(
@@ -80,6 +85,7 @@ extension type const _$SmallLocationSchema(int _value) {
     _countryBit,
   );
 
+  // Composite Golden Mask for Required Fields
   static const _$SmallLocationSchema golden = _$SmallLocationSchema(
     _latitudeBit | _longitudeBit | _cityBit | _countryBit,
   );
@@ -88,6 +94,7 @@ extension type const _$SmallLocationSchema(int _value) {
   _$SmallLocationSchema operator |(_$SmallLocationSchema other) =>
       _$SmallLocationSchema(_value | other._value);
 
+  /// Validates required fields in 1 CPU test instruction on the fast path.
   @pragma('vm:prefer-inline')
   void validate() {
     if ((_value & golden._value) != golden._value) {
@@ -95,18 +102,30 @@ extension type const _$SmallLocationSchema(int _value) {
     }
   }
 
+  /// Out-of-line cold diagnostic reporting
   void _throwMissingFields() {
     final missing = <String>[];
-    if ((_value & _latitudeBit) == 0) missing.add(nameLatitude);
-    if ((_value & _longitudeBit) == 0) missing.add(nameLongitude);
-    if ((_value & _cityBit) == 0) missing.add(nameCity);
-    if ((_value & _countryBit) == 0) missing.add(nameCountry);
+    if ((_value & _latitudeBit) == 0) {
+      missing.add(nameLatitude);
+    }
+    if ((_value & _longitudeBit) == 0) {
+      missing.add(nameLongitude);
+    }
+    if ((_value & _cityBit) == 0) {
+      missing.add(nameCity);
+    }
+    if ((_value & _countryBit) == 0) {
+      missing.add(nameCountry);
+    }
     throw CodableException(
       'Missing required fields for SmallLocation: ${missing.join(", ")}',
     );
   }
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for SmallLocation
+// =============================================================================
 SmallLocation _$SmallLocationFromReader(JsonTokenReader reader) {
   reader.beginObject();
 
@@ -119,20 +138,48 @@ SmallLocation _$SmallLocationFromReader(JsonTokenReader reader) {
   while (reader.hasNext()) {
     switch (reader.selectName(_$SmallLocationSchema.options)) {
       case _$SmallLocationSchema.keyLatitude:
-        latitude = reader.readDouble();
-        seen |= _$SmallLocationSchema.latitude;
+        if ((seen._value & _$SmallLocationSchema.latitude._value) != 0) {
+          throw CodableException('Duplicate field "latitude"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          latitude = reader.readDouble();
+          seen |= _$SmallLocationSchema.latitude;
+        }
         break;
       case _$SmallLocationSchema.keyLongitude:
-        longitude = reader.readDouble();
-        seen |= _$SmallLocationSchema.longitude;
+        if ((seen._value & _$SmallLocationSchema.longitude._value) != 0) {
+          throw CodableException('Duplicate field "longitude"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          longitude = reader.readDouble();
+          seen |= _$SmallLocationSchema.longitude;
+        }
         break;
       case _$SmallLocationSchema.keyCity:
-        city = reader.readString();
-        seen |= _$SmallLocationSchema.city;
+        if ((seen._value & _$SmallLocationSchema.city._value) != 0) {
+          throw CodableException('Duplicate field "city"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          city = reader.readString();
+          seen |= _$SmallLocationSchema.city;
+        }
         break;
       case _$SmallLocationSchema.keyCountry:
-        country = reader.readString();
-        seen |= _$SmallLocationSchema.country;
+        if ((seen._value & _$SmallLocationSchema.country._value) != 0) {
+          throw CodableException('Duplicate field "country"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          country = reader.readString();
+          seen |= _$SmallLocationSchema.country;
+        }
         break;
       default:
         reader.skipValue();
@@ -140,6 +187,8 @@ SmallLocation _$SmallLocationFromReader(JsonTokenReader reader) {
     }
   }
   reader.endObject();
+
+  // Inlined fast-path check
   seen.validate();
 
   return SmallLocation(
@@ -150,6 +199,9 @@ SmallLocation _$SmallLocationFromReader(JsonTokenReader reader) {
   );
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for SmallLocation
+// =============================================================================
 void _$SmallLocationToWriter(SmallLocation instance, JsonTokenWriter writer) {
   writer.beginObject();
   writer.writeNameBytes(_$SmallLocationSchema.nameLatitudeBytes);
@@ -164,13 +216,15 @@ void _$SmallLocationToWriter(SmallLocation instance, JsonTokenWriter writer) {
 }
 
 // =============================================================================
-// 2. Unified Schema Descriptor for SmallMetadata
+// 1. Unified Schema Descriptor for SmallMetadata
 // =============================================================================
 extension type const _$SmallMetadataSchema(int _value) {
+  // String Name Constants
   static const String nameLoginCount = 'loginCount';
   static const String nameLastLogin = 'lastLogin';
   static const String nameLocation = 'location';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameLoginCountBytes = Uint8List.fromList(const [
     108,
     111,
@@ -205,16 +259,19 @@ extension type const _$SmallMetadataSchema(int _value) {
     110,
   ]);
 
+  // Key Indices for selectName()
   static const int keyLoginCount = 0;
   static const int keyLastLogin = 1;
   static const int keyLocation = 2;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameLoginCount,
-    nameLastLogin,
-    nameLocation,
+    _$SmallMetadataSchema.nameLoginCount,
+    _$SmallMetadataSchema.nameLastLogin,
+    _$SmallMetadataSchema.nameLocation,
   ]);
 
+  // Bitmask Flags strictly for Required Fields
   static const _$SmallMetadataSchema none = _$SmallMetadataSchema(0);
   static const int _loginCountBit = 1 << 0;
   static const _$SmallMetadataSchema loginCount = _$SmallMetadataSchema(
@@ -229,6 +286,7 @@ extension type const _$SmallMetadataSchema(int _value) {
     _locationBit,
   );
 
+  // Composite Golden Mask for Required Fields
   static const _$SmallMetadataSchema golden = _$SmallMetadataSchema(
     _loginCountBit | _lastLoginBit | _locationBit,
   );
@@ -237,6 +295,7 @@ extension type const _$SmallMetadataSchema(int _value) {
   _$SmallMetadataSchema operator |(_$SmallMetadataSchema other) =>
       _$SmallMetadataSchema(_value | other._value);
 
+  /// Validates required fields in 1 CPU test instruction on the fast path.
   @pragma('vm:prefer-inline')
   void validate() {
     if ((_value & golden._value) != golden._value) {
@@ -244,17 +303,27 @@ extension type const _$SmallMetadataSchema(int _value) {
     }
   }
 
+  /// Out-of-line cold diagnostic reporting
   void _throwMissingFields() {
     final missing = <String>[];
-    if ((_value & _loginCountBit) == 0) missing.add(nameLoginCount);
-    if ((_value & _lastLoginBit) == 0) missing.add(nameLastLogin);
-    if ((_value & _locationBit) == 0) missing.add(nameLocation);
+    if ((_value & _loginCountBit) == 0) {
+      missing.add(nameLoginCount);
+    }
+    if ((_value & _lastLoginBit) == 0) {
+      missing.add(nameLastLogin);
+    }
+    if ((_value & _locationBit) == 0) {
+      missing.add(nameLocation);
+    }
     throw CodableException(
       'Missing required fields for SmallMetadata: ${missing.join(", ")}',
     );
   }
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for SmallMetadata
+// =============================================================================
 SmallMetadata _$SmallMetadataFromReader(JsonTokenReader reader) {
   reader.beginObject();
 
@@ -266,16 +335,37 @@ SmallMetadata _$SmallMetadataFromReader(JsonTokenReader reader) {
   while (reader.hasNext()) {
     switch (reader.selectName(_$SmallMetadataSchema.options)) {
       case _$SmallMetadataSchema.keyLoginCount:
-        loginCount = reader.readInt();
-        seen |= _$SmallMetadataSchema.loginCount;
+        if ((seen._value & _$SmallMetadataSchema.loginCount._value) != 0) {
+          throw CodableException('Duplicate field "loginCount"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          loginCount = reader.readInt();
+          seen |= _$SmallMetadataSchema.loginCount;
+        }
         break;
       case _$SmallMetadataSchema.keyLastLogin:
-        lastLogin = reader.readString();
-        seen |= _$SmallMetadataSchema.lastLogin;
+        if ((seen._value & _$SmallMetadataSchema.lastLogin._value) != 0) {
+          throw CodableException('Duplicate field "lastLogin"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          lastLogin = reader.readString();
+          seen |= _$SmallMetadataSchema.lastLogin;
+        }
         break;
       case _$SmallMetadataSchema.keyLocation:
-        location = SmallLocation.fromReader(reader);
-        seen |= _$SmallMetadataSchema.location;
+        if ((seen._value & _$SmallMetadataSchema.location._value) != 0) {
+          throw CodableException('Duplicate field "location"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          location = _$SmallLocationFromReader(reader);
+          seen |= _$SmallMetadataSchema.location;
+        }
         break;
       default:
         reader.skipValue();
@@ -283,6 +373,8 @@ SmallMetadata _$SmallMetadataFromReader(JsonTokenReader reader) {
     }
   }
   reader.endObject();
+
+  // Inlined fast-path check
   seen.validate();
 
   return SmallMetadata(
@@ -292,6 +384,9 @@ SmallMetadata _$SmallMetadataFromReader(JsonTokenReader reader) {
   );
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for SmallMetadata
+// =============================================================================
 void _$SmallMetadataToWriter(SmallMetadata instance, JsonTokenWriter writer) {
   writer.beginObject();
   writer.writeNameBytes(_$SmallMetadataSchema.nameLoginCountBytes);
@@ -299,14 +394,15 @@ void _$SmallMetadataToWriter(SmallMetadata instance, JsonTokenWriter writer) {
   writer.writeNameBytes(_$SmallMetadataSchema.nameLastLoginBytes);
   writer.writeString(instance.lastLogin);
   writer.writeNameBytes(_$SmallMetadataSchema.nameLocationBytes);
-  instance.location.toWriter(writer);
+  _$SmallLocationToWriter(instance.location, writer);
   writer.endObject();
 }
 
 // =============================================================================
-// 3. Unified Schema Descriptor for SmallDocument
+// 1. Unified Schema Descriptor for SmallDocument
 // =============================================================================
 extension type const _$SmallDocumentSchema(int _value) {
+  // String Name Constants
   static const String nameId = 'id';
   static const String nameUuid = 'uuid';
   static const String nameName = 'name';
@@ -318,6 +414,7 @@ extension type const _$SmallDocumentSchema(int _value) {
   static const String nameMetadata = 'metadata';
   static const String nameTags = 'tags';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameIdBytes = Uint8List.fromList(const [105, 100]);
   static final Uint8List nameUuidBytes = Uint8List.fromList(const [
     117,
@@ -386,6 +483,7 @@ extension type const _$SmallDocumentSchema(int _value) {
     115,
   ]);
 
+  // Key Indices for selectName()
   static const int keyId = 0;
   static const int keyUuid = 1;
   static const int keyName = 2;
@@ -397,19 +495,21 @@ extension type const _$SmallDocumentSchema(int _value) {
   static const int keyMetadata = 8;
   static const int keyTags = 9;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameId,
-    nameUuid,
-    nameName,
-    nameEmail,
-    nameIsActive,
-    nameBalance,
-    nameAge,
-    nameRoles,
-    nameMetadata,
-    nameTags,
+    _$SmallDocumentSchema.nameId,
+    _$SmallDocumentSchema.nameUuid,
+    _$SmallDocumentSchema.nameName,
+    _$SmallDocumentSchema.nameEmail,
+    _$SmallDocumentSchema.nameIsActive,
+    _$SmallDocumentSchema.nameBalance,
+    _$SmallDocumentSchema.nameAge,
+    _$SmallDocumentSchema.nameRoles,
+    _$SmallDocumentSchema.nameMetadata,
+    _$SmallDocumentSchema.nameTags,
   ]);
 
+  // Bitmask Flags strictly for Required Fields
   static const _$SmallDocumentSchema none = _$SmallDocumentSchema(0);
   static const int _idBit = 1 << 0;
   static const _$SmallDocumentSchema id = _$SmallDocumentSchema(_idBit);
@@ -438,6 +538,7 @@ extension type const _$SmallDocumentSchema(int _value) {
   static const int _tagsBit = 1 << 9;
   static const _$SmallDocumentSchema tags = _$SmallDocumentSchema(_tagsBit);
 
+  // Composite Golden Mask for Required Fields
   static const _$SmallDocumentSchema golden = _$SmallDocumentSchema(
     _idBit |
         _uuidBit |
@@ -455,6 +556,7 @@ extension type const _$SmallDocumentSchema(int _value) {
   _$SmallDocumentSchema operator |(_$SmallDocumentSchema other) =>
       _$SmallDocumentSchema(_value | other._value);
 
+  /// Validates required fields in 1 CPU test instruction on the fast path.
   @pragma('vm:prefer-inline')
   void validate() {
     if ((_value & golden._value) != golden._value) {
@@ -462,24 +564,48 @@ extension type const _$SmallDocumentSchema(int _value) {
     }
   }
 
+  /// Out-of-line cold diagnostic reporting
   void _throwMissingFields() {
     final missing = <String>[];
-    if ((_value & _idBit) == 0) missing.add(nameId);
-    if ((_value & _uuidBit) == 0) missing.add(nameUuid);
-    if ((_value & _nameBit) == 0) missing.add(nameName);
-    if ((_value & _emailBit) == 0) missing.add(nameEmail);
-    if ((_value & _isActiveBit) == 0) missing.add(nameIsActive);
-    if ((_value & _balanceBit) == 0) missing.add(nameBalance);
-    if ((_value & _ageBit) == 0) missing.add(nameAge);
-    if ((_value & _rolesBit) == 0) missing.add(nameRoles);
-    if ((_value & _metadataBit) == 0) missing.add(nameMetadata);
-    if ((_value & _tagsBit) == 0) missing.add(nameTags);
+    if ((_value & _idBit) == 0) {
+      missing.add(nameId);
+    }
+    if ((_value & _uuidBit) == 0) {
+      missing.add(nameUuid);
+    }
+    if ((_value & _nameBit) == 0) {
+      missing.add(nameName);
+    }
+    if ((_value & _emailBit) == 0) {
+      missing.add(nameEmail);
+    }
+    if ((_value & _isActiveBit) == 0) {
+      missing.add(nameIsActive);
+    }
+    if ((_value & _balanceBit) == 0) {
+      missing.add(nameBalance);
+    }
+    if ((_value & _ageBit) == 0) {
+      missing.add(nameAge);
+    }
+    if ((_value & _rolesBit) == 0) {
+      missing.add(nameRoles);
+    }
+    if ((_value & _metadataBit) == 0) {
+      missing.add(nameMetadata);
+    }
+    if ((_value & _tagsBit) == 0) {
+      missing.add(nameTags);
+    }
     throw CodableException(
       'Missing required fields for SmallDocument: ${missing.join(", ")}',
     );
   }
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for SmallDocument
+// =============================================================================
 SmallDocument _$SmallDocumentFromReader(JsonTokenReader reader) {
   reader.beginObject();
 
@@ -498,56 +624,126 @@ SmallDocument _$SmallDocumentFromReader(JsonTokenReader reader) {
   while (reader.hasNext()) {
     switch (reader.selectName(_$SmallDocumentSchema.options)) {
       case _$SmallDocumentSchema.keyId:
-        id = reader.readInt();
-        seen |= _$SmallDocumentSchema.id;
+        if ((seen._value & _$SmallDocumentSchema.id._value) != 0) {
+          throw CodableException('Duplicate field "id"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          id = reader.readInt();
+          seen |= _$SmallDocumentSchema.id;
+        }
         break;
       case _$SmallDocumentSchema.keyUuid:
-        uuid = reader.readString();
-        seen |= _$SmallDocumentSchema.uuid;
+        if ((seen._value & _$SmallDocumentSchema.uuid._value) != 0) {
+          throw CodableException('Duplicate field "uuid"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          uuid = reader.readString();
+          seen |= _$SmallDocumentSchema.uuid;
+        }
         break;
       case _$SmallDocumentSchema.keyName:
-        name = reader.readString();
-        seen |= _$SmallDocumentSchema.name;
+        if ((seen._value & _$SmallDocumentSchema.name._value) != 0) {
+          throw CodableException('Duplicate field "name"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          name = reader.readString();
+          seen |= _$SmallDocumentSchema.name;
+        }
         break;
       case _$SmallDocumentSchema.keyEmail:
-        email = reader.readString();
-        seen |= _$SmallDocumentSchema.email;
+        if ((seen._value & _$SmallDocumentSchema.email._value) != 0) {
+          throw CodableException('Duplicate field "email"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          email = reader.readString();
+          seen |= _$SmallDocumentSchema.email;
+        }
         break;
       case _$SmallDocumentSchema.keyIsActive:
-        isActive = reader.readBool();
-        seen |= _$SmallDocumentSchema.isActive;
+        if ((seen._value & _$SmallDocumentSchema.isActive._value) != 0) {
+          throw CodableException('Duplicate field "isActive"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          isActive = reader.readBool();
+          seen |= _$SmallDocumentSchema.isActive;
+        }
         break;
       case _$SmallDocumentSchema.keyBalance:
-        balance = reader.readDouble();
-        seen |= _$SmallDocumentSchema.balance;
+        if ((seen._value & _$SmallDocumentSchema.balance._value) != 0) {
+          throw CodableException('Duplicate field "balance"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          balance = reader.readDouble();
+          seen |= _$SmallDocumentSchema.balance;
+        }
         break;
       case _$SmallDocumentSchema.keyAge:
-        age = reader.readInt();
-        seen |= _$SmallDocumentSchema.age;
+        if ((seen._value & _$SmallDocumentSchema.age._value) != 0) {
+          throw CodableException('Duplicate field "age"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          age = reader.readInt();
+          seen |= _$SmallDocumentSchema.age;
+        }
         break;
       case _$SmallDocumentSchema.keyRoles:
-        reader.beginArray();
-        final list = <String>[];
-        while (reader.hasNext()) {
-          list.add(reader.readString());
+        if ((seen._value & _$SmallDocumentSchema.roles._value) != 0) {
+          throw CodableException('Duplicate field "roles"');
         }
-        reader.endArray();
-        roles = list;
-        seen |= _$SmallDocumentSchema.roles;
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          reader.beginArray();
+          final list = <String>[];
+          while (reader.hasNext()) {
+            list.add(reader.readString());
+          }
+          reader.endArray();
+          roles = list;
+          seen |= _$SmallDocumentSchema.roles;
+        }
         break;
       case _$SmallDocumentSchema.keyMetadata:
-        metadata = SmallMetadata.fromReader(reader);
-        seen |= _$SmallDocumentSchema.metadata;
+        if ((seen._value & _$SmallDocumentSchema.metadata._value) != 0) {
+          throw CodableException('Duplicate field "metadata"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          metadata = _$SmallMetadataFromReader(reader);
+          seen |= _$SmallDocumentSchema.metadata;
+        }
         break;
       case _$SmallDocumentSchema.keyTags:
-        reader.beginArray();
-        final list = <String>[];
-        while (reader.hasNext()) {
-          list.add(reader.readString());
+        if ((seen._value & _$SmallDocumentSchema.tags._value) != 0) {
+          throw CodableException('Duplicate field "tags"');
         }
-        reader.endArray();
-        tags = list;
-        seen |= _$SmallDocumentSchema.tags;
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          reader.beginArray();
+          final list = <String>[];
+          while (reader.hasNext()) {
+            list.add(reader.readString());
+          }
+          reader.endArray();
+          tags = list;
+          seen |= _$SmallDocumentSchema.tags;
+        }
         break;
       default:
         reader.skipValue();
@@ -555,6 +751,8 @@ SmallDocument _$SmallDocumentFromReader(JsonTokenReader reader) {
     }
   }
   reader.endObject();
+
+  // Inlined fast-path check
   seen.validate();
 
   return SmallDocument(
@@ -571,6 +769,9 @@ SmallDocument _$SmallDocumentFromReader(JsonTokenReader reader) {
   );
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for SmallDocument
+// =============================================================================
 void _$SmallDocumentToWriter(SmallDocument instance, JsonTokenWriter writer) {
   writer.beginObject();
   writer.writeNameBytes(_$SmallDocumentSchema.nameIdBytes);
@@ -589,16 +790,16 @@ void _$SmallDocumentToWriter(SmallDocument instance, JsonTokenWriter writer) {
   writer.writeInt(instance.age);
   writer.writeNameBytes(_$SmallDocumentSchema.nameRolesBytes);
   writer.beginArray();
-  for (final r in instance.roles) {
-    writer.writeString(r);
+  for (final item in instance.roles) {
+    writer.writeString(item);
   }
   writer.endArray();
   writer.writeNameBytes(_$SmallDocumentSchema.nameMetadataBytes);
-  instance.metadata.toWriter(writer);
+  _$SmallMetadataToWriter(instance.metadata, writer);
   writer.writeNameBytes(_$SmallDocumentSchema.nameTagsBytes);
   writer.beginArray();
-  for (final t in instance.tags) {
-    writer.writeString(t);
+  for (final item in instance.tags) {
+    writer.writeString(item);
   }
   writer.endArray();
   writer.endObject();

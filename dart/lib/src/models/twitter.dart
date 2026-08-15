@@ -7,15 +7,12 @@ import 'package:codable/src/driver/json_codable_driver.dart';
 
 part 'twitter.g.dart';
 
-@Codable()
+@Codable(fieldRename: FieldRename.snake)
 class TwitterMetadata {
   final String resultType;
   final String isoLanguageCode;
 
-  const TwitterMetadata({
-    required this.resultType,
-    required this.isoLanguageCode,
-  });
+  const TwitterMetadata({this.resultType = '', this.isoLanguageCode = ''});
 
   static TwitterMetadata fromReader(JsonTokenReader reader) =>
       _$TwitterMetadataFromReader(reader);
@@ -23,7 +20,7 @@ class TwitterMetadata {
       _$TwitterMetadataToWriter(this, writer);
 }
 
-@Codable()
+@Codable(fieldRename: FieldRename.snake)
 class TwitterUserMention {
   final String screenName;
   final String name;
@@ -45,7 +42,7 @@ class TwitterUserMention {
       _$TwitterUserMentionToWriter(this, writer);
 }
 
-@Codable()
+@Codable(fieldRename: FieldRename.snake)
 class TwitterUrl {
   final String url;
   final String expandedUrl;
@@ -64,7 +61,7 @@ class TwitterUrl {
   void toWriter(JsonTokenWriter writer) => _$TwitterUrlToWriter(this, writer);
 }
 
-@Codable()
+@Codable(fieldRename: FieldRename.snake)
 class TwitterEntitiesUrls {
   final List<TwitterUrl> urls;
 
@@ -76,7 +73,7 @@ class TwitterEntitiesUrls {
       _$TwitterEntitiesUrlsToWriter(this, writer);
 }
 
-@Codable()
+@Codable(fieldRename: FieldRename.snake)
 class TwitterUserEntities {
   final TwitterEntitiesUrls? url;
   final TwitterEntitiesUrls? description;
@@ -89,7 +86,7 @@ class TwitterUserEntities {
       _$TwitterUserEntitiesToWriter(this, writer);
 }
 
-@Codable()
+@Codable(fieldRename: FieldRename.snake)
 class TwitterEntities {
   final List<TwitterUrl> urls;
   final List<TwitterUserMention> userMentions;
@@ -102,7 +99,7 @@ class TwitterEntities {
       _$TwitterEntitiesToWriter(this, writer);
 }
 
-@Codable()
+@Codable(fieldRename: FieldRename.snake)
 class TwitterUser {
   final int id;
   final String idStr;
@@ -193,7 +190,7 @@ class TwitterUser {
   void toWriter(JsonTokenWriter writer) => _$TwitterUserToWriter(this, writer);
 }
 
-@Codable()
+@Codable(fieldRename: FieldRename.snake)
 class TwitterStatus {
   final TwitterMetadata? metadata;
   final String createdAt;
@@ -247,7 +244,7 @@ class TwitterStatus {
       _$TwitterStatusToWriter(this, writer);
 }
 
-@Codable()
+@Codable(fieldRename: FieldRename.snake)
 class TwitterSearchMetadata {
   final double completedIn;
   final int maxId;
@@ -277,7 +274,7 @@ class TwitterSearchMetadata {
       _$TwitterSearchMetadataToWriter(this, writer);
 }
 
-@Codable()
+@Codable(fieldRename: FieldRename.snake)
 class TwitterResponse {
   final List<TwitterStatus> statuses;
   final TwitterSearchMetadata searchMetadata;

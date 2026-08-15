@@ -7,12 +7,14 @@ part of 'twitter.dart';
 // **************************************************************************
 
 // =============================================================================
-// 1. TwitterMetadata
+// 1. Unified Schema Descriptor for TwitterMetadata
 // =============================================================================
 extension type const _$TwitterMetadataSchema(int _value) {
+  // String Name Constants
   static const String nameResultType = 'result_type';
   static const String nameIsoLanguageCode = 'iso_language_code';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameResultTypeBytes = Uint8List.fromList(const [
     114,
     101,
@@ -46,29 +48,53 @@ extension type const _$TwitterMetadataSchema(int _value) {
     101,
   ]);
 
+  // Key Indices for selectName()
   static const int keyResultType = 0;
   static const int keyIsoLanguageCode = 1;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameResultType,
-    nameIsoLanguageCode,
+    _$TwitterMetadataSchema.nameResultType,
+    _$TwitterMetadataSchema.nameIsoLanguageCode,
   ]);
 
+  // Bitmask Flags strictly for Required Fields
   static const _$TwitterMetadataSchema none = _$TwitterMetadataSchema(0);
+
+  @pragma('vm:prefer-inline')
+  _$TwitterMetadataSchema operator |(_$TwitterMetadataSchema other) =>
+      _$TwitterMetadataSchema(_value | other._value);
+
+  /// Validates required fields in 1 CPU test instruction on the fast path.
+  @pragma('vm:prefer-inline')
+  void validate() {}
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for TwitterMetadata
+// =============================================================================
 TwitterMetadata _$TwitterMetadataFromReader(JsonTokenReader reader) {
   reader.beginObject();
-  String? resultType;
-  String? isoLanguageCode;
+
+  String resultType = '';
+  String isoLanguageCode = '';
+  var seen = _$TwitterMetadataSchema.none;
 
   while (reader.hasNext()) {
     switch (reader.selectName(_$TwitterMetadataSchema.options)) {
       case _$TwitterMetadataSchema.keyResultType:
-        resultType = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          resultType = reader.readString();
+        }
         break;
       case _$TwitterMetadataSchema.keyIsoLanguageCode:
-        isoLanguageCode = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          isoLanguageCode = reader.readString();
+        }
         break;
       default:
         reader.skipValue();
@@ -76,12 +102,19 @@ TwitterMetadata _$TwitterMetadataFromReader(JsonTokenReader reader) {
     }
   }
   reader.endObject();
+
+  // Inlined fast-path check
+  seen.validate();
+
   return TwitterMetadata(
-    resultType: resultType ?? '',
-    isoLanguageCode: isoLanguageCode ?? '',
+    resultType: resultType,
+    isoLanguageCode: isoLanguageCode,
   );
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for TwitterMetadata
+// =============================================================================
 void _$TwitterMetadataToWriter(
   TwitterMetadata instance,
   JsonTokenWriter writer,
@@ -95,15 +128,17 @@ void _$TwitterMetadataToWriter(
 }
 
 // =============================================================================
-// 2. TwitterUserMention
+// 1. Unified Schema Descriptor for TwitterUserMention
 // =============================================================================
 extension type const _$TwitterUserMentionSchema(int _value) {
+  // String Name Constants
   static const String nameScreenName = 'screen_name';
   static const String nameName = 'name';
   static const String nameId = 'id';
   static const String nameIdStr = 'id_str';
   static const String nameIndices = 'indices';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameScreenNameBytes = Uint8List.fromList(const [
     115,
     99,
@@ -142,53 +177,149 @@ extension type const _$TwitterUserMentionSchema(int _value) {
     115,
   ]);
 
+  // Key Indices for selectName()
   static const int keyScreenName = 0;
   static const int keyName = 1;
   static const int keyId = 2;
   static const int keyIdStr = 3;
   static const int keyIndices = 4;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameScreenName,
-    nameName,
-    nameId,
-    nameIdStr,
-    nameIndices,
+    _$TwitterUserMentionSchema.nameScreenName,
+    _$TwitterUserMentionSchema.nameName,
+    _$TwitterUserMentionSchema.nameId,
+    _$TwitterUserMentionSchema.nameIdStr,
+    _$TwitterUserMentionSchema.nameIndices,
   ]);
 
+  // Bitmask Flags strictly for Required Fields
   static const _$TwitterUserMentionSchema none = _$TwitterUserMentionSchema(0);
+  static const int _screenNameBit = 1 << 0;
+  static const _$TwitterUserMentionSchema screenName =
+      _$TwitterUserMentionSchema(_screenNameBit);
+  static const int _nameBit = 1 << 1;
+  static const _$TwitterUserMentionSchema name = _$TwitterUserMentionSchema(
+    _nameBit,
+  );
+  static const int _idBit = 1 << 2;
+  static const _$TwitterUserMentionSchema id = _$TwitterUserMentionSchema(
+    _idBit,
+  );
+  static const int _idStrBit = 1 << 3;
+  static const _$TwitterUserMentionSchema idStr = _$TwitterUserMentionSchema(
+    _idStrBit,
+  );
+
+  // Composite Golden Mask for Required Fields
+  static const _$TwitterUserMentionSchema golden = _$TwitterUserMentionSchema(
+    _screenNameBit | _nameBit | _idBit | _idStrBit,
+  );
+
+  @pragma('vm:prefer-inline')
+  _$TwitterUserMentionSchema operator |(_$TwitterUserMentionSchema other) =>
+      _$TwitterUserMentionSchema(_value | other._value);
+
+  /// Validates required fields in 1 CPU test instruction on the fast path.
+  @pragma('vm:prefer-inline')
+  void validate() {
+    if ((_value & golden._value) != golden._value) {
+      _throwMissingFields();
+    }
+  }
+
+  /// Out-of-line cold diagnostic reporting
+  void _throwMissingFields() {
+    final missing = <String>[];
+    if ((_value & _screenNameBit) == 0) {
+      missing.add(nameScreenName);
+    }
+    if ((_value & _nameBit) == 0) {
+      missing.add(nameName);
+    }
+    if ((_value & _idBit) == 0) {
+      missing.add(nameId);
+    }
+    if ((_value & _idStrBit) == 0) {
+      missing.add(nameIdStr);
+    }
+    throw CodableException(
+      'Missing required fields for TwitterUserMention: ${missing.join(", ")}',
+    );
+  }
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for TwitterUserMention
+// =============================================================================
 TwitterUserMention _$TwitterUserMentionFromReader(JsonTokenReader reader) {
   reader.beginObject();
+
   String? screenName;
   String? name;
   int? id;
   String? idStr;
   List<int> indices = const [];
+  var seen = _$TwitterUserMentionSchema.none;
 
   while (reader.hasNext()) {
     switch (reader.selectName(_$TwitterUserMentionSchema.options)) {
       case _$TwitterUserMentionSchema.keyScreenName:
-        screenName = reader.readString();
+        if ((seen._value & _$TwitterUserMentionSchema.screenName._value) != 0) {
+          throw CodableException('Duplicate field "screen_name"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          screenName = reader.readString();
+          seen |= _$TwitterUserMentionSchema.screenName;
+        }
         break;
       case _$TwitterUserMentionSchema.keyName:
-        name = reader.readString();
+        if ((seen._value & _$TwitterUserMentionSchema.name._value) != 0) {
+          throw CodableException('Duplicate field "name"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          name = reader.readString();
+          seen |= _$TwitterUserMentionSchema.name;
+        }
         break;
       case _$TwitterUserMentionSchema.keyId:
-        id = reader.readInt();
+        if ((seen._value & _$TwitterUserMentionSchema.id._value) != 0) {
+          throw CodableException('Duplicate field "id"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          id = reader.readInt();
+          seen |= _$TwitterUserMentionSchema.id;
+        }
         break;
       case _$TwitterUserMentionSchema.keyIdStr:
-        idStr = reader.readString();
+        if ((seen._value & _$TwitterUserMentionSchema.idStr._value) != 0) {
+          throw CodableException('Duplicate field "id_str"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          idStr = reader.readString();
+          seen |= _$TwitterUserMentionSchema.idStr;
+        }
         break;
       case _$TwitterUserMentionSchema.keyIndices:
-        reader.beginArray();
-        final list = <int>[];
-        while (reader.hasNext()) {
-          list.add(reader.readInt());
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          reader.beginArray();
+          final list = <int>[];
+          while (reader.hasNext()) {
+            list.add(reader.readInt());
+          }
+          reader.endArray();
+          indices = list;
         }
-        reader.endArray();
-        indices = list;
         break;
       default:
         reader.skipValue();
@@ -196,15 +327,22 @@ TwitterUserMention _$TwitterUserMentionFromReader(JsonTokenReader reader) {
     }
   }
   reader.endObject();
+
+  // Inlined fast-path check
+  seen.validate();
+
   return TwitterUserMention(
-    screenName: screenName ?? '',
-    name: name ?? '',
-    id: id ?? 0,
-    idStr: idStr ?? '',
+    screenName: screenName!,
+    name: name!,
+    id: id!,
+    idStr: idStr!,
     indices: indices,
   );
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for TwitterUserMention
+// =============================================================================
 void _$TwitterUserMentionToWriter(
   TwitterUserMention instance,
   JsonTokenWriter writer,
@@ -220,22 +358,24 @@ void _$TwitterUserMentionToWriter(
   writer.writeString(instance.idStr);
   writer.writeNameBytes(_$TwitterUserMentionSchema.nameIndicesBytes);
   writer.beginArray();
-  for (final idx in instance.indices) {
-    writer.writeInt(idx);
+  for (final item in instance.indices) {
+    writer.writeInt(item);
   }
   writer.endArray();
   writer.endObject();
 }
 
 // =============================================================================
-// 3. TwitterUrl
+// 1. Unified Schema Descriptor for TwitterUrl
 // =============================================================================
 extension type const _$TwitterUrlSchema(int _value) {
+  // String Name Constants
   static const String nameUrl = 'url';
   static const String nameExpandedUrl = 'expanded_url';
   static const String nameDisplayUrl = 'display_url';
   static const String nameIndices = 'indices';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameUrlBytes = Uint8List.fromList(const [
     117,
     114,
@@ -278,47 +418,127 @@ extension type const _$TwitterUrlSchema(int _value) {
     115,
   ]);
 
+  // Key Indices for selectName()
   static const int keyUrl = 0;
   static const int keyExpandedUrl = 1;
   static const int keyDisplayUrl = 2;
   static const int keyIndices = 3;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameUrl,
-    nameExpandedUrl,
-    nameDisplayUrl,
-    nameIndices,
+    _$TwitterUrlSchema.nameUrl,
+    _$TwitterUrlSchema.nameExpandedUrl,
+    _$TwitterUrlSchema.nameDisplayUrl,
+    _$TwitterUrlSchema.nameIndices,
   ]);
 
+  // Bitmask Flags strictly for Required Fields
   static const _$TwitterUrlSchema none = _$TwitterUrlSchema(0);
+  static const int _urlBit = 1 << 0;
+  static const _$TwitterUrlSchema url = _$TwitterUrlSchema(_urlBit);
+  static const int _expandedUrlBit = 1 << 1;
+  static const _$TwitterUrlSchema expandedUrl = _$TwitterUrlSchema(
+    _expandedUrlBit,
+  );
+  static const int _displayUrlBit = 1 << 2;
+  static const _$TwitterUrlSchema displayUrl = _$TwitterUrlSchema(
+    _displayUrlBit,
+  );
+
+  // Composite Golden Mask for Required Fields
+  static const _$TwitterUrlSchema golden = _$TwitterUrlSchema(
+    _urlBit | _expandedUrlBit | _displayUrlBit,
+  );
+
+  @pragma('vm:prefer-inline')
+  _$TwitterUrlSchema operator |(_$TwitterUrlSchema other) =>
+      _$TwitterUrlSchema(_value | other._value);
+
+  /// Validates required fields in 1 CPU test instruction on the fast path.
+  @pragma('vm:prefer-inline')
+  void validate() {
+    if ((_value & golden._value) != golden._value) {
+      _throwMissingFields();
+    }
+  }
+
+  /// Out-of-line cold diagnostic reporting
+  void _throwMissingFields() {
+    final missing = <String>[];
+    if ((_value & _urlBit) == 0) {
+      missing.add(nameUrl);
+    }
+    if ((_value & _expandedUrlBit) == 0) {
+      missing.add(nameExpandedUrl);
+    }
+    if ((_value & _displayUrlBit) == 0) {
+      missing.add(nameDisplayUrl);
+    }
+    throw CodableException(
+      'Missing required fields for TwitterUrl: ${missing.join(", ")}',
+    );
+  }
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for TwitterUrl
+// =============================================================================
 TwitterUrl _$TwitterUrlFromReader(JsonTokenReader reader) {
   reader.beginObject();
+
   String? url;
   String? expandedUrl;
   String? displayUrl;
   List<int> indices = const [];
+  var seen = _$TwitterUrlSchema.none;
 
   while (reader.hasNext()) {
     switch (reader.selectName(_$TwitterUrlSchema.options)) {
       case _$TwitterUrlSchema.keyUrl:
-        url = reader.readString();
+        if ((seen._value & _$TwitterUrlSchema.url._value) != 0) {
+          throw CodableException('Duplicate field "url"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          url = reader.readString();
+          seen |= _$TwitterUrlSchema.url;
+        }
         break;
       case _$TwitterUrlSchema.keyExpandedUrl:
-        expandedUrl = reader.readString();
+        if ((seen._value & _$TwitterUrlSchema.expandedUrl._value) != 0) {
+          throw CodableException('Duplicate field "expanded_url"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          expandedUrl = reader.readString();
+          seen |= _$TwitterUrlSchema.expandedUrl;
+        }
         break;
       case _$TwitterUrlSchema.keyDisplayUrl:
-        displayUrl = reader.readString();
+        if ((seen._value & _$TwitterUrlSchema.displayUrl._value) != 0) {
+          throw CodableException('Duplicate field "display_url"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          displayUrl = reader.readString();
+          seen |= _$TwitterUrlSchema.displayUrl;
+        }
         break;
       case _$TwitterUrlSchema.keyIndices:
-        reader.beginArray();
-        final list = <int>[];
-        while (reader.hasNext()) {
-          list.add(reader.readInt());
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          reader.beginArray();
+          final list = <int>[];
+          while (reader.hasNext()) {
+            list.add(reader.readInt());
+          }
+          reader.endArray();
+          indices = list;
         }
-        reader.endArray();
-        indices = list;
         break;
       default:
         reader.skipValue();
@@ -326,14 +546,21 @@ TwitterUrl _$TwitterUrlFromReader(JsonTokenReader reader) {
     }
   }
   reader.endObject();
+
+  // Inlined fast-path check
+  seen.validate();
+
   return TwitterUrl(
-    url: url ?? '',
-    expandedUrl: expandedUrl ?? '',
-    displayUrl: displayUrl ?? '',
+    url: url!,
+    expandedUrl: expandedUrl!,
+    displayUrl: displayUrl!,
     indices: indices,
   );
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for TwitterUrl
+// =============================================================================
 void _$TwitterUrlToWriter(TwitterUrl instance, JsonTokenWriter writer) {
   writer.beginObject();
   writer.writeNameBytes(_$TwitterUrlSchema.nameUrlBytes);
@@ -344,45 +571,73 @@ void _$TwitterUrlToWriter(TwitterUrl instance, JsonTokenWriter writer) {
   writer.writeString(instance.displayUrl);
   writer.writeNameBytes(_$TwitterUrlSchema.nameIndicesBytes);
   writer.beginArray();
-  for (final idx in instance.indices) {
-    writer.writeInt(idx);
+  for (final item in instance.indices) {
+    writer.writeInt(item);
   }
   writer.endArray();
   writer.endObject();
 }
 
 // =============================================================================
-// 4. TwitterEntitiesUrls
+// 1. Unified Schema Descriptor for TwitterEntitiesUrls
 // =============================================================================
 extension type const _$TwitterEntitiesUrlsSchema(int _value) {
+  // String Name Constants
   static const String nameUrls = 'urls';
+
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameUrlsBytes = Uint8List.fromList(const [
     117,
     114,
     108,
     115,
   ]);
+
+  // Key Indices for selectName()
   static const int keyUrls = 0;
-  static final JsonKeyOptions options = JsonKeyOptions.of(const [nameUrls]);
+
+  // Pre-Compiled JsonKeyOptions
+  static final JsonKeyOptions options = JsonKeyOptions.of(const [
+    _$TwitterEntitiesUrlsSchema.nameUrls,
+  ]);
+
+  // Bitmask Flags strictly for Required Fields
   static const _$TwitterEntitiesUrlsSchema none = _$TwitterEntitiesUrlsSchema(
     0,
   );
+
+  @pragma('vm:prefer-inline')
+  _$TwitterEntitiesUrlsSchema operator |(_$TwitterEntitiesUrlsSchema other) =>
+      _$TwitterEntitiesUrlsSchema(_value | other._value);
+
+  /// Validates required fields in 1 CPU test instruction on the fast path.
+  @pragma('vm:prefer-inline')
+  void validate() {}
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for TwitterEntitiesUrls
+// =============================================================================
 TwitterEntitiesUrls _$TwitterEntitiesUrlsFromReader(JsonTokenReader reader) {
   reader.beginObject();
+
   List<TwitterUrl> urls = const [];
+  var seen = _$TwitterEntitiesUrlsSchema.none;
 
   while (reader.hasNext()) {
     switch (reader.selectName(_$TwitterEntitiesUrlsSchema.options)) {
       case _$TwitterEntitiesUrlsSchema.keyUrls:
-        reader.beginArray();
-        final list = <TwitterUrl>[];
-        while (reader.hasNext()) {
-          list.add(_$TwitterUrlFromReader(reader));
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          reader.beginArray();
+          final list = <TwitterUrl>[];
+          while (reader.hasNext()) {
+            list.add(_$TwitterUrlFromReader(reader));
+          }
+          reader.endArray();
+          urls = list;
         }
-        reader.endArray();
-        urls = list;
         break;
       default:
         reader.skipValue();
@@ -390,9 +645,16 @@ TwitterEntitiesUrls _$TwitterEntitiesUrlsFromReader(JsonTokenReader reader) {
     }
   }
   reader.endObject();
+
+  // Inlined fast-path check
+  seen.validate();
+
   return TwitterEntitiesUrls(urls: urls);
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for TwitterEntitiesUrls
+// =============================================================================
 void _$TwitterEntitiesUrlsToWriter(
   TwitterEntitiesUrls instance,
   JsonTokenWriter writer,
@@ -400,20 +662,22 @@ void _$TwitterEntitiesUrlsToWriter(
   writer.beginObject();
   writer.writeNameBytes(_$TwitterEntitiesUrlsSchema.nameUrlsBytes);
   writer.beginArray();
-  for (final u in instance.urls) {
-    _$TwitterUrlToWriter(u, writer);
+  for (final item in instance.urls) {
+    _$TwitterUrlToWriter(item, writer);
   }
   writer.endArray();
   writer.endObject();
 }
 
 // =============================================================================
-// 5. TwitterUserEntities
+// 1. Unified Schema Descriptor for TwitterUserEntities
 // =============================================================================
 extension type const _$TwitterUserEntitiesSchema(int _value) {
+  // String Name Constants
   static const String nameUrl = 'url';
   static const String nameDescription = 'description';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameUrlBytes = Uint8List.fromList(const [
     117,
     114,
@@ -433,28 +697,46 @@ extension type const _$TwitterUserEntitiesSchema(int _value) {
     110,
   ]);
 
+  // Key Indices for selectName()
   static const int keyUrl = 0;
   static const int keyDescription = 1;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameUrl,
-    nameDescription,
+    _$TwitterUserEntitiesSchema.nameUrl,
+    _$TwitterUserEntitiesSchema.nameDescription,
   ]);
+
+  // Bitmask Flags strictly for Required Fields
   static const _$TwitterUserEntitiesSchema none = _$TwitterUserEntitiesSchema(
     0,
   );
+
+  @pragma('vm:prefer-inline')
+  _$TwitterUserEntitiesSchema operator |(_$TwitterUserEntitiesSchema other) =>
+      _$TwitterUserEntitiesSchema(_value | other._value);
+
+  /// Validates required fields in 1 CPU test instruction on the fast path.
+  @pragma('vm:prefer-inline')
+  void validate() {}
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for TwitterUserEntities
+// =============================================================================
 TwitterUserEntities _$TwitterUserEntitiesFromReader(JsonTokenReader reader) {
   reader.beginObject();
+
   TwitterEntitiesUrls? url;
   TwitterEntitiesUrls? description;
+  var seen = _$TwitterUserEntitiesSchema.none;
 
   while (reader.hasNext()) {
     switch (reader.selectName(_$TwitterUserEntitiesSchema.options)) {
       case _$TwitterUserEntitiesSchema.keyUrl:
         if (reader.isNextNull()) {
           reader.readNull();
+          url = null;
         } else {
           url = _$TwitterEntitiesUrlsFromReader(reader);
         }
@@ -462,6 +744,7 @@ TwitterUserEntities _$TwitterUserEntitiesFromReader(JsonTokenReader reader) {
       case _$TwitterUserEntitiesSchema.keyDescription:
         if (reader.isNextNull()) {
           reader.readNull();
+          description = null;
         } else {
           description = _$TwitterEntitiesUrlsFromReader(reader);
         }
@@ -472,9 +755,16 @@ TwitterUserEntities _$TwitterUserEntitiesFromReader(JsonTokenReader reader) {
     }
   }
   reader.endObject();
+
+  // Inlined fast-path check
+  seen.validate();
+
   return TwitterUserEntities(url: url, description: description);
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for TwitterUserEntities
+// =============================================================================
 void _$TwitterUserEntitiesToWriter(
   TwitterUserEntities instance,
   JsonTokenWriter writer,
@@ -492,12 +782,14 @@ void _$TwitterUserEntitiesToWriter(
 }
 
 // =============================================================================
-// 6. TwitterEntities
+// 1. Unified Schema Descriptor for TwitterEntities
 // =============================================================================
 extension type const _$TwitterEntitiesSchema(int _value) {
+  // String Name Constants
   static const String nameUrls = 'urls';
   static const String nameUserMentions = 'user_mentions';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameUrlsBytes = Uint8List.fromList(const [
     117,
     114,
@@ -520,40 +812,65 @@ extension type const _$TwitterEntitiesSchema(int _value) {
     115,
   ]);
 
+  // Key Indices for selectName()
   static const int keyUrls = 0;
   static const int keyUserMentions = 1;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameUrls,
-    nameUserMentions,
+    _$TwitterEntitiesSchema.nameUrls,
+    _$TwitterEntitiesSchema.nameUserMentions,
   ]);
+
+  // Bitmask Flags strictly for Required Fields
   static const _$TwitterEntitiesSchema none = _$TwitterEntitiesSchema(0);
+
+  @pragma('vm:prefer-inline')
+  _$TwitterEntitiesSchema operator |(_$TwitterEntitiesSchema other) =>
+      _$TwitterEntitiesSchema(_value | other._value);
+
+  /// Validates required fields in 1 CPU test instruction on the fast path.
+  @pragma('vm:prefer-inline')
+  void validate() {}
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for TwitterEntities
+// =============================================================================
 TwitterEntities _$TwitterEntitiesFromReader(JsonTokenReader reader) {
   reader.beginObject();
+
   List<TwitterUrl> urls = const [];
   List<TwitterUserMention> userMentions = const [];
+  var seen = _$TwitterEntitiesSchema.none;
 
   while (reader.hasNext()) {
     switch (reader.selectName(_$TwitterEntitiesSchema.options)) {
       case _$TwitterEntitiesSchema.keyUrls:
-        reader.beginArray();
-        final list = <TwitterUrl>[];
-        while (reader.hasNext()) {
-          list.add(_$TwitterUrlFromReader(reader));
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          reader.beginArray();
+          final list = <TwitterUrl>[];
+          while (reader.hasNext()) {
+            list.add(_$TwitterUrlFromReader(reader));
+          }
+          reader.endArray();
+          urls = list;
         }
-        reader.endArray();
-        urls = list;
         break;
       case _$TwitterEntitiesSchema.keyUserMentions:
-        reader.beginArray();
-        final list = <TwitterUserMention>[];
-        while (reader.hasNext()) {
-          list.add(_$TwitterUserMentionFromReader(reader));
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          reader.beginArray();
+          final list = <TwitterUserMention>[];
+          while (reader.hasNext()) {
+            list.add(_$TwitterUserMentionFromReader(reader));
+          }
+          reader.endArray();
+          userMentions = list;
         }
-        reader.endArray();
-        userMentions = list;
         break;
       default:
         reader.skipValue();
@@ -561,9 +878,16 @@ TwitterEntities _$TwitterEntitiesFromReader(JsonTokenReader reader) {
     }
   }
   reader.endObject();
+
+  // Inlined fast-path check
+  seen.validate();
+
   return TwitterEntities(urls: urls, userMentions: userMentions);
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for TwitterEntities
+// =============================================================================
 void _$TwitterEntitiesToWriter(
   TwitterEntities instance,
   JsonTokenWriter writer,
@@ -571,23 +895,24 @@ void _$TwitterEntitiesToWriter(
   writer.beginObject();
   writer.writeNameBytes(_$TwitterEntitiesSchema.nameUrlsBytes);
   writer.beginArray();
-  for (final u in instance.urls) {
-    _$TwitterUrlToWriter(u, writer);
+  for (final item in instance.urls) {
+    _$TwitterUrlToWriter(item, writer);
   }
   writer.endArray();
   writer.writeNameBytes(_$TwitterEntitiesSchema.nameUserMentionsBytes);
   writer.beginArray();
-  for (final m in instance.userMentions) {
-    _$TwitterUserMentionToWriter(m, writer);
+  for (final item in instance.userMentions) {
+    _$TwitterUserMentionToWriter(item, writer);
   }
   writer.endArray();
   writer.endObject();
 }
 
 // =============================================================================
-// 7. TwitterUser
+// 1. Unified Schema Descriptor for TwitterUser
 // =============================================================================
 extension type const _$TwitterUserSchema(int _value) {
+  // String Name Constants
   static const String nameId = 'id';
   static const String nameIdStr = 'id_str';
   static const String nameName = 'name';
@@ -634,6 +959,7 @@ extension type const _$TwitterUserSchema(int _value) {
   static const String nameFollowRequestSent = 'follow_request_sent';
   static const String nameNotifications = 'notifications';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameIdBytes = Uint8List.fromList(const [105, 100]);
   static final Uint8List nameIdStrBytes = Uint8List.fromList(const [
     105,
@@ -1324,6 +1650,7 @@ extension type const _$TwitterUserSchema(int _value) {
     115,
   ]);
 
+  // Key Indices for selectName()
   static const int keyId = 0;
   static const int keyIdStr = 1;
   static const int keyName = 2;
@@ -1365,52 +1692,111 @@ extension type const _$TwitterUserSchema(int _value) {
   static const int keyFollowRequestSent = 38;
   static const int keyNotifications = 39;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameId,
-    nameIdStr,
-    nameName,
-    nameScreenName,
-    nameLocation,
-    nameDescription,
-    nameUrl,
-    nameEntities,
-    nameProtected,
-    nameFollowersCount,
-    nameFriendsCount,
-    nameListedCount,
-    nameCreatedAt,
-    nameFavouritesCount,
-    nameUtcOffset,
-    nameTimeZone,
-    nameGeoEnabled,
-    nameVerified,
-    nameStatusesCount,
-    nameLang,
-    nameContributorsEnabled,
-    nameIsTranslator,
-    nameIsTranslationEnabled,
-    nameProfileBackgroundColor,
-    nameProfileBackgroundImageUrl,
-    nameProfileBackgroundImageUrlHttps,
-    nameProfileBackgroundTile,
-    nameProfileImageUrl,
-    nameProfileImageUrlHttps,
-    nameProfileBannerUrl,
-    nameProfileLinkColor,
-    nameProfileSidebarBorderColor,
-    nameProfileSidebarFillColor,
-    nameProfileTextColor,
-    nameProfileUseBackgroundImage,
-    nameDefaultProfile,
-    nameDefaultProfileImage,
-    nameFollowing,
-    nameFollowRequestSent,
-    nameNotifications,
+    _$TwitterUserSchema.nameId,
+    _$TwitterUserSchema.nameIdStr,
+    _$TwitterUserSchema.nameName,
+    _$TwitterUserSchema.nameScreenName,
+    _$TwitterUserSchema.nameLocation,
+    _$TwitterUserSchema.nameDescription,
+    _$TwitterUserSchema.nameUrl,
+    _$TwitterUserSchema.nameEntities,
+    _$TwitterUserSchema.nameProtected,
+    _$TwitterUserSchema.nameFollowersCount,
+    _$TwitterUserSchema.nameFriendsCount,
+    _$TwitterUserSchema.nameListedCount,
+    _$TwitterUserSchema.nameCreatedAt,
+    _$TwitterUserSchema.nameFavouritesCount,
+    _$TwitterUserSchema.nameUtcOffset,
+    _$TwitterUserSchema.nameTimeZone,
+    _$TwitterUserSchema.nameGeoEnabled,
+    _$TwitterUserSchema.nameVerified,
+    _$TwitterUserSchema.nameStatusesCount,
+    _$TwitterUserSchema.nameLang,
+    _$TwitterUserSchema.nameContributorsEnabled,
+    _$TwitterUserSchema.nameIsTranslator,
+    _$TwitterUserSchema.nameIsTranslationEnabled,
+    _$TwitterUserSchema.nameProfileBackgroundColor,
+    _$TwitterUserSchema.nameProfileBackgroundImageUrl,
+    _$TwitterUserSchema.nameProfileBackgroundImageUrlHttps,
+    _$TwitterUserSchema.nameProfileBackgroundTile,
+    _$TwitterUserSchema.nameProfileImageUrl,
+    _$TwitterUserSchema.nameProfileImageUrlHttps,
+    _$TwitterUserSchema.nameProfileBannerUrl,
+    _$TwitterUserSchema.nameProfileLinkColor,
+    _$TwitterUserSchema.nameProfileSidebarBorderColor,
+    _$TwitterUserSchema.nameProfileSidebarFillColor,
+    _$TwitterUserSchema.nameProfileTextColor,
+    _$TwitterUserSchema.nameProfileUseBackgroundImage,
+    _$TwitterUserSchema.nameDefaultProfile,
+    _$TwitterUserSchema.nameDefaultProfileImage,
+    _$TwitterUserSchema.nameFollowing,
+    _$TwitterUserSchema.nameFollowRequestSent,
+    _$TwitterUserSchema.nameNotifications,
   ]);
 
+  // Bitmask Flags strictly for Required Fields
   static const _$TwitterUserSchema none = _$TwitterUserSchema(0);
+  static const int _idBit = 1 << 0;
+  static const _$TwitterUserSchema id = _$TwitterUserSchema(_idBit);
+  static const int _idStrBit = 1 << 1;
+  static const _$TwitterUserSchema idStr = _$TwitterUserSchema(_idStrBit);
+  static const int _nameBit = 1 << 2;
+  static const _$TwitterUserSchema name = _$TwitterUserSchema(_nameBit);
+  static const int _screenNameBit = 1 << 3;
+  static const _$TwitterUserSchema screenName = _$TwitterUserSchema(
+    _screenNameBit,
+  );
+  static const int _createdAtBit = 1 << 4;
+  static const _$TwitterUserSchema createdAt = _$TwitterUserSchema(
+    _createdAtBit,
+  );
+
+  // Composite Golden Mask for Required Fields
+  static const _$TwitterUserSchema golden = _$TwitterUserSchema(
+    _idBit | _idStrBit | _nameBit | _screenNameBit | _createdAtBit,
+  );
+
+  @pragma('vm:prefer-inline')
+  _$TwitterUserSchema operator |(_$TwitterUserSchema other) =>
+      _$TwitterUserSchema(_value | other._value);
+
+  /// Validates required fields in 1 CPU test instruction on the fast path.
+  @pragma('vm:prefer-inline')
+  void validate() {
+    if ((_value & golden._value) != golden._value) {
+      _throwMissingFields();
+    }
+  }
+
+  /// Out-of-line cold diagnostic reporting
+  void _throwMissingFields() {
+    final missing = <String>[];
+    if ((_value & _idBit) == 0) {
+      missing.add(nameId);
+    }
+    if ((_value & _idStrBit) == 0) {
+      missing.add(nameIdStr);
+    }
+    if ((_value & _nameBit) == 0) {
+      missing.add(nameName);
+    }
+    if ((_value & _screenNameBit) == 0) {
+      missing.add(nameScreenName);
+    }
+    if ((_value & _createdAtBit) == 0) {
+      missing.add(nameCreatedAt);
+    }
+    throw CodableException(
+      'Missing required fields for TwitterUser: ${missing.join(", ")}',
+    );
+  }
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for TwitterUser
+// =============================================================================
 TwitterUser _$TwitterUserFromReader(JsonTokenReader reader) {
   reader.beginObject();
 
@@ -1454,26 +1840,67 @@ TwitterUser _$TwitterUserFromReader(JsonTokenReader reader) {
   bool following = false;
   bool followRequestSent = false;
   bool notifications = false;
+  var seen = _$TwitterUserSchema.none;
 
   while (reader.hasNext()) {
     switch (reader.selectName(_$TwitterUserSchema.options)) {
       case _$TwitterUserSchema.keyId:
-        id = reader.readInt();
+        if ((seen._value & _$TwitterUserSchema.id._value) != 0) {
+          throw CodableException('Duplicate field "id"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          id = reader.readInt();
+          seen |= _$TwitterUserSchema.id;
+        }
         break;
       case _$TwitterUserSchema.keyIdStr:
-        idStr = reader.readString();
+        if ((seen._value & _$TwitterUserSchema.idStr._value) != 0) {
+          throw CodableException('Duplicate field "id_str"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          idStr = reader.readString();
+          seen |= _$TwitterUserSchema.idStr;
+        }
         break;
       case _$TwitterUserSchema.keyName:
-        name = reader.readString();
+        if ((seen._value & _$TwitterUserSchema.name._value) != 0) {
+          throw CodableException('Duplicate field "name"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          name = reader.readString();
+          seen |= _$TwitterUserSchema.name;
+        }
         break;
       case _$TwitterUserSchema.keyScreenName:
-        screenName = reader.readString();
+        if ((seen._value & _$TwitterUserSchema.screenName._value) != 0) {
+          throw CodableException('Duplicate field "screen_name"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          screenName = reader.readString();
+          seen |= _$TwitterUserSchema.screenName;
+        }
         break;
       case _$TwitterUserSchema.keyLocation:
-        location = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          location = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyDescription:
-        description = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          description = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyUrl:
         if (reader.isNextNull()) {
@@ -1486,27 +1913,56 @@ TwitterUser _$TwitterUserFromReader(JsonTokenReader reader) {
       case _$TwitterUserSchema.keyEntities:
         if (reader.isNextNull()) {
           reader.readNull();
+          entities = null;
         } else {
           entities = _$TwitterUserEntitiesFromReader(reader);
         }
         break;
       case _$TwitterUserSchema.keyProtected:
-        protected = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          protected = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyFollowersCount:
-        followersCount = reader.readInt();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          followersCount = reader.readInt();
+        }
         break;
       case _$TwitterUserSchema.keyFriendsCount:
-        friendsCount = reader.readInt();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          friendsCount = reader.readInt();
+        }
         break;
       case _$TwitterUserSchema.keyListedCount:
-        listedCount = reader.readInt();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          listedCount = reader.readInt();
+        }
         break;
       case _$TwitterUserSchema.keyCreatedAt:
-        createdAt = reader.readString();
+        if ((seen._value & _$TwitterUserSchema.createdAt._value) != 0) {
+          throw CodableException('Duplicate field "created_at"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          createdAt = reader.readString();
+          seen |= _$TwitterUserSchema.createdAt;
+        }
         break;
       case _$TwitterUserSchema.keyFavouritesCount:
-        favouritesCount = reader.readInt();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          favouritesCount = reader.readInt();
+        }
         break;
       case _$TwitterUserSchema.keyUtcOffset:
         if (reader.isNextNull()) {
@@ -1525,43 +1981,95 @@ TwitterUser _$TwitterUserFromReader(JsonTokenReader reader) {
         }
         break;
       case _$TwitterUserSchema.keyGeoEnabled:
-        geoEnabled = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          geoEnabled = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyVerified:
-        verified = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          verified = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyStatusesCount:
-        statusesCount = reader.readInt();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          statusesCount = reader.readInt();
+        }
         break;
       case _$TwitterUserSchema.keyLang:
-        lang = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          lang = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyContributorsEnabled:
-        contributorsEnabled = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          contributorsEnabled = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyIsTranslator:
-        isTranslator = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          isTranslator = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyIsTranslationEnabled:
-        isTranslationEnabled = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          isTranslationEnabled = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyProfileBackgroundColor:
-        profileBackgroundColor = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileBackgroundColor = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyProfileBackgroundImageUrl:
-        profileBackgroundImageUrl = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileBackgroundImageUrl = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyProfileBackgroundImageUrlHttps:
-        profileBackgroundImageUrlHttps = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileBackgroundImageUrlHttps = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyProfileBackgroundTile:
-        profileBackgroundTile = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileBackgroundTile = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyProfileImageUrl:
-        profileImageUrl = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileImageUrl = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyProfileImageUrlHttps:
-        profileImageUrlHttps = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileImageUrlHttps = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyProfileBannerUrl:
         if (reader.isNextNull()) {
@@ -1572,34 +2080,74 @@ TwitterUser _$TwitterUserFromReader(JsonTokenReader reader) {
         }
         break;
       case _$TwitterUserSchema.keyProfileLinkColor:
-        profileLinkColor = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileLinkColor = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyProfileSidebarBorderColor:
-        profileSidebarBorderColor = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileSidebarBorderColor = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyProfileSidebarFillColor:
-        profileSidebarFillColor = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileSidebarFillColor = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyProfileTextColor:
-        profileTextColor = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileTextColor = reader.readString();
+        }
         break;
       case _$TwitterUserSchema.keyProfileUseBackgroundImage:
-        profileUseBackgroundImage = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          profileUseBackgroundImage = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyDefaultProfile:
-        defaultProfile = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          defaultProfile = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyDefaultProfileImage:
-        defaultProfileImage = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          defaultProfileImage = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyFollowing:
-        following = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          following = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyFollowRequestSent:
-        followRequestSent = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          followRequestSent = reader.readBool();
+        }
         break;
       case _$TwitterUserSchema.keyNotifications:
-        notifications = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          notifications = reader.readBool();
+        }
         break;
       default:
         reader.skipValue();
@@ -1608,11 +2156,14 @@ TwitterUser _$TwitterUserFromReader(JsonTokenReader reader) {
   }
   reader.endObject();
 
+  // Inlined fast-path check
+  seen.validate();
+
   return TwitterUser(
-    id: id ?? 0,
-    idStr: idStr ?? '',
-    name: name ?? '',
-    screenName: screenName ?? '',
+    id: id!,
+    idStr: idStr!,
+    name: name!,
+    screenName: screenName!,
     location: location,
     description: description,
     url: url,
@@ -1621,7 +2172,7 @@ TwitterUser _$TwitterUserFromReader(JsonTokenReader reader) {
     followersCount: followersCount,
     friendsCount: friendsCount,
     listedCount: listedCount,
-    createdAt: createdAt ?? '',
+    createdAt: createdAt!,
     favouritesCount: favouritesCount,
     utcOffset: utcOffset,
     timeZone: timeZone,
@@ -1652,6 +2203,9 @@ TwitterUser _$TwitterUserFromReader(JsonTokenReader reader) {
   );
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for TwitterUser
+// =============================================================================
 void _$TwitterUserToWriter(TwitterUser instance, JsonTokenWriter writer) {
   writer.beginObject();
   writer.writeNameBytes(_$TwitterUserSchema.nameIdBytes);
@@ -1750,9 +2304,10 @@ void _$TwitterUserToWriter(TwitterUser instance, JsonTokenWriter writer) {
 }
 
 // =============================================================================
-// 8. TwitterStatus
+// 1. Unified Schema Descriptor for TwitterStatus
 // =============================================================================
 extension type const _$TwitterStatusSchema(int _value) {
+  // String Name Constants
   static const String nameMetadata = 'metadata';
   static const String nameCreatedAt = 'created_at';
   static const String nameId = 'id';
@@ -1775,6 +2330,7 @@ extension type const _$TwitterStatusSchema(int _value) {
   static const String nameLang = 'lang';
   static const String nameRetweetedStatus = 'retweeted_status';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameMetadataBytes = Uint8List.fromList(const [
     109,
     101,
@@ -2069,6 +2625,7 @@ extension type const _$TwitterStatusSchema(int _value) {
     115,
   ]);
 
+  // Key Indices for selectName()
   static const int keyMetadata = 0;
   static const int keyCreatedAt = 1;
   static const int keyId = 2;
@@ -2091,33 +2648,90 @@ extension type const _$TwitterStatusSchema(int _value) {
   static const int keyLang = 19;
   static const int keyRetweetedStatus = 20;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameMetadata,
-    nameCreatedAt,
-    nameId,
-    nameIdStr,
-    nameText,
-    nameSource,
-    nameTruncated,
-    nameInReplyToStatusId,
-    nameInReplyToStatusIdStr,
-    nameInReplyToUserId,
-    nameInReplyToUserIdStr,
-    nameInReplyToScreenName,
-    nameUser,
-    nameRetweetCount,
-    nameFavoriteCount,
-    nameEntities,
-    nameFavorited,
-    nameRetweeted,
-    namePossiblySensitive,
-    nameLang,
-    nameRetweetedStatus,
+    _$TwitterStatusSchema.nameMetadata,
+    _$TwitterStatusSchema.nameCreatedAt,
+    _$TwitterStatusSchema.nameId,
+    _$TwitterStatusSchema.nameIdStr,
+    _$TwitterStatusSchema.nameText,
+    _$TwitterStatusSchema.nameSource,
+    _$TwitterStatusSchema.nameTruncated,
+    _$TwitterStatusSchema.nameInReplyToStatusId,
+    _$TwitterStatusSchema.nameInReplyToStatusIdStr,
+    _$TwitterStatusSchema.nameInReplyToUserId,
+    _$TwitterStatusSchema.nameInReplyToUserIdStr,
+    _$TwitterStatusSchema.nameInReplyToScreenName,
+    _$TwitterStatusSchema.nameUser,
+    _$TwitterStatusSchema.nameRetweetCount,
+    _$TwitterStatusSchema.nameFavoriteCount,
+    _$TwitterStatusSchema.nameEntities,
+    _$TwitterStatusSchema.nameFavorited,
+    _$TwitterStatusSchema.nameRetweeted,
+    _$TwitterStatusSchema.namePossiblySensitive,
+    _$TwitterStatusSchema.nameLang,
+    _$TwitterStatusSchema.nameRetweetedStatus,
   ]);
 
+  // Bitmask Flags strictly for Required Fields
   static const _$TwitterStatusSchema none = _$TwitterStatusSchema(0);
+  static const int _createdAtBit = 1 << 0;
+  static const _$TwitterStatusSchema createdAt = _$TwitterStatusSchema(
+    _createdAtBit,
+  );
+  static const int _idBit = 1 << 1;
+  static const _$TwitterStatusSchema id = _$TwitterStatusSchema(_idBit);
+  static const int _idStrBit = 1 << 2;
+  static const _$TwitterStatusSchema idStr = _$TwitterStatusSchema(_idStrBit);
+  static const int _textBit = 1 << 3;
+  static const _$TwitterStatusSchema text = _$TwitterStatusSchema(_textBit);
+  static const int _sourceBit = 1 << 4;
+  static const _$TwitterStatusSchema source = _$TwitterStatusSchema(_sourceBit);
+
+  // Composite Golden Mask for Required Fields
+  static const _$TwitterStatusSchema golden = _$TwitterStatusSchema(
+    _createdAtBit | _idBit | _idStrBit | _textBit | _sourceBit,
+  );
+
+  @pragma('vm:prefer-inline')
+  _$TwitterStatusSchema operator |(_$TwitterStatusSchema other) =>
+      _$TwitterStatusSchema(_value | other._value);
+
+  /// Validates required fields in 1 CPU test instruction on the fast path.
+  @pragma('vm:prefer-inline')
+  void validate() {
+    if ((_value & golden._value) != golden._value) {
+      _throwMissingFields();
+    }
+  }
+
+  /// Out-of-line cold diagnostic reporting
+  void _throwMissingFields() {
+    final missing = <String>[];
+    if ((_value & _createdAtBit) == 0) {
+      missing.add(nameCreatedAt);
+    }
+    if ((_value & _idBit) == 0) {
+      missing.add(nameId);
+    }
+    if ((_value & _idStrBit) == 0) {
+      missing.add(nameIdStr);
+    }
+    if ((_value & _textBit) == 0) {
+      missing.add(nameText);
+    }
+    if ((_value & _sourceBit) == 0) {
+      missing.add(nameSource);
+    }
+    throw CodableException(
+      'Missing required fields for TwitterStatus: ${missing.join(", ")}',
+    );
+  }
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for TwitterStatus
+// =============================================================================
 TwitterStatus _$TwitterStatusFromReader(JsonTokenReader reader) {
   reader.beginObject();
 
@@ -2142,33 +2756,79 @@ TwitterStatus _$TwitterStatusFromReader(JsonTokenReader reader) {
   bool? possiblySensitive;
   String lang = 'en';
   TwitterStatus? retweetedStatus;
+  var seen = _$TwitterStatusSchema.none;
 
   while (reader.hasNext()) {
     switch (reader.selectName(_$TwitterStatusSchema.options)) {
       case _$TwitterStatusSchema.keyMetadata:
         if (reader.isNextNull()) {
           reader.readNull();
+          metadata = null;
         } else {
           metadata = _$TwitterMetadataFromReader(reader);
         }
         break;
       case _$TwitterStatusSchema.keyCreatedAt:
-        createdAt = reader.readString();
+        if ((seen._value & _$TwitterStatusSchema.createdAt._value) != 0) {
+          throw CodableException('Duplicate field "created_at"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          createdAt = reader.readString();
+          seen |= _$TwitterStatusSchema.createdAt;
+        }
         break;
       case _$TwitterStatusSchema.keyId:
-        id = reader.readInt();
+        if ((seen._value & _$TwitterStatusSchema.id._value) != 0) {
+          throw CodableException('Duplicate field "id"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          id = reader.readInt();
+          seen |= _$TwitterStatusSchema.id;
+        }
         break;
       case _$TwitterStatusSchema.keyIdStr:
-        idStr = reader.readString();
+        if ((seen._value & _$TwitterStatusSchema.idStr._value) != 0) {
+          throw CodableException('Duplicate field "id_str"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          idStr = reader.readString();
+          seen |= _$TwitterStatusSchema.idStr;
+        }
         break;
       case _$TwitterStatusSchema.keyText:
-        text = reader.readString();
+        if ((seen._value & _$TwitterStatusSchema.text._value) != 0) {
+          throw CodableException('Duplicate field "text"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          text = reader.readString();
+          seen |= _$TwitterStatusSchema.text;
+        }
         break;
       case _$TwitterStatusSchema.keySource:
-        source = reader.readString();
+        if ((seen._value & _$TwitterStatusSchema.source._value) != 0) {
+          throw CodableException('Duplicate field "source"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          source = reader.readString();
+          seen |= _$TwitterStatusSchema.source;
+        }
         break;
       case _$TwitterStatusSchema.keyTruncated:
-        truncated = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          truncated = reader.readBool();
+        }
         break;
       case _$TwitterStatusSchema.keyInReplyToStatusId:
         if (reader.isNextNull()) {
@@ -2213,28 +2873,46 @@ TwitterStatus _$TwitterStatusFromReader(JsonTokenReader reader) {
       case _$TwitterStatusSchema.keyUser:
         if (reader.isNextNull()) {
           reader.readNull();
+          user = null;
         } else {
           user = _$TwitterUserFromReader(reader);
         }
         break;
       case _$TwitterStatusSchema.keyRetweetCount:
-        retweetCount = reader.readInt();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          retweetCount = reader.readInt();
+        }
         break;
       case _$TwitterStatusSchema.keyFavoriteCount:
-        favoriteCount = reader.readInt();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          favoriteCount = reader.readInt();
+        }
         break;
       case _$TwitterStatusSchema.keyEntities:
         if (reader.isNextNull()) {
           reader.readNull();
+          entities = null;
         } else {
           entities = _$TwitterEntitiesFromReader(reader);
         }
         break;
       case _$TwitterStatusSchema.keyFavorited:
-        favorited = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          favorited = reader.readBool();
+        }
         break;
       case _$TwitterStatusSchema.keyRetweeted:
-        retweeted = reader.readBool();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          retweeted = reader.readBool();
+        }
         break;
       case _$TwitterStatusSchema.keyPossiblySensitive:
         if (reader.isNextNull()) {
@@ -2245,11 +2923,16 @@ TwitterStatus _$TwitterStatusFromReader(JsonTokenReader reader) {
         }
         break;
       case _$TwitterStatusSchema.keyLang:
-        lang = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          lang = reader.readString();
+        }
         break;
       case _$TwitterStatusSchema.keyRetweetedStatus:
         if (reader.isNextNull()) {
           reader.readNull();
+          retweetedStatus = null;
         } else {
           retweetedStatus = _$TwitterStatusFromReader(reader);
         }
@@ -2261,13 +2944,16 @@ TwitterStatus _$TwitterStatusFromReader(JsonTokenReader reader) {
   }
   reader.endObject();
 
+  // Inlined fast-path check
+  seen.validate();
+
   return TwitterStatus(
     metadata: metadata,
-    createdAt: createdAt ?? '',
-    id: id ?? 0,
-    idStr: idStr ?? '',
-    text: text ?? '',
-    source: source ?? '',
+    createdAt: createdAt!,
+    id: id!,
+    idStr: idStr!,
+    text: text!,
+    source: source!,
     truncated: truncated,
     inReplyToStatusId: inReplyToStatusId,
     inReplyToStatusIdStr: inReplyToStatusIdStr,
@@ -2286,6 +2972,9 @@ TwitterStatus _$TwitterStatusFromReader(JsonTokenReader reader) {
   );
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for TwitterStatus
+// =============================================================================
 void _$TwitterStatusToWriter(TwitterStatus instance, JsonTokenWriter writer) {
   writer.beginObject();
   if (instance.metadata != null) {
@@ -2354,9 +3043,10 @@ void _$TwitterStatusToWriter(TwitterStatus instance, JsonTokenWriter writer) {
 }
 
 // =============================================================================
-// 9. TwitterSearchMetadata
+// 1. Unified Schema Descriptor for TwitterSearchMetadata
 // =============================================================================
 extension type const _$TwitterSearchMetadataSchema(int _value) {
+  // String Name Constants
   static const String nameCompletedIn = 'completed_in';
   static const String nameMaxId = 'max_id';
   static const String nameMaxIdStr = 'max_id_str';
@@ -2367,6 +3057,7 @@ extension type const _$TwitterSearchMetadataSchema(int _value) {
   static const String nameSinceId = 'since_id';
   static const String nameSinceIdStr = 'since_id_str';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameCompletedInBytes = Uint8List.fromList(const [
     99,
     111,
@@ -2467,6 +3158,7 @@ extension type const _$TwitterSearchMetadataSchema(int _value) {
     114,
   ]);
 
+  // Key Indices for selectName()
   static const int keyCompletedIn = 0;
   static const int keyMaxId = 1;
   static const int keyMaxIdStr = 2;
@@ -2477,22 +3169,84 @@ extension type const _$TwitterSearchMetadataSchema(int _value) {
   static const int keySinceId = 7;
   static const int keySinceIdStr = 8;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameCompletedIn,
-    nameMaxId,
-    nameMaxIdStr,
-    nameNextResults,
-    nameQuery,
-    nameRefreshUrl,
-    nameCount,
-    nameSinceId,
-    nameSinceIdStr,
+    _$TwitterSearchMetadataSchema.nameCompletedIn,
+    _$TwitterSearchMetadataSchema.nameMaxId,
+    _$TwitterSearchMetadataSchema.nameMaxIdStr,
+    _$TwitterSearchMetadataSchema.nameNextResults,
+    _$TwitterSearchMetadataSchema.nameQuery,
+    _$TwitterSearchMetadataSchema.nameRefreshUrl,
+    _$TwitterSearchMetadataSchema.nameCount,
+    _$TwitterSearchMetadataSchema.nameSinceId,
+    _$TwitterSearchMetadataSchema.nameSinceIdStr,
   ]);
 
+  // Bitmask Flags strictly for Required Fields
   static const _$TwitterSearchMetadataSchema none =
       _$TwitterSearchMetadataSchema(0);
+  static const int _completedInBit = 1 << 0;
+  static const _$TwitterSearchMetadataSchema completedIn =
+      _$TwitterSearchMetadataSchema(_completedInBit);
+  static const int _maxIdBit = 1 << 1;
+  static const _$TwitterSearchMetadataSchema maxId =
+      _$TwitterSearchMetadataSchema(_maxIdBit);
+  static const int _maxIdStrBit = 1 << 2;
+  static const _$TwitterSearchMetadataSchema maxIdStr =
+      _$TwitterSearchMetadataSchema(_maxIdStrBit);
+  static const int _queryBit = 1 << 3;
+  static const _$TwitterSearchMetadataSchema query =
+      _$TwitterSearchMetadataSchema(_queryBit);
+  static const int _countBit = 1 << 4;
+  static const _$TwitterSearchMetadataSchema count =
+      _$TwitterSearchMetadataSchema(_countBit);
+
+  // Composite Golden Mask for Required Fields
+  static const _$TwitterSearchMetadataSchema golden =
+      _$TwitterSearchMetadataSchema(
+        _completedInBit | _maxIdBit | _maxIdStrBit | _queryBit | _countBit,
+      );
+
+  @pragma('vm:prefer-inline')
+  _$TwitterSearchMetadataSchema operator |(
+    _$TwitterSearchMetadataSchema other,
+  ) => _$TwitterSearchMetadataSchema(_value | other._value);
+
+  /// Validates required fields in 1 CPU test instruction on the fast path.
+  @pragma('vm:prefer-inline')
+  void validate() {
+    if ((_value & golden._value) != golden._value) {
+      _throwMissingFields();
+    }
+  }
+
+  /// Out-of-line cold diagnostic reporting
+  void _throwMissingFields() {
+    final missing = <String>[];
+    if ((_value & _completedInBit) == 0) {
+      missing.add(nameCompletedIn);
+    }
+    if ((_value & _maxIdBit) == 0) {
+      missing.add(nameMaxId);
+    }
+    if ((_value & _maxIdStrBit) == 0) {
+      missing.add(nameMaxIdStr);
+    }
+    if ((_value & _queryBit) == 0) {
+      missing.add(nameQuery);
+    }
+    if ((_value & _countBit) == 0) {
+      missing.add(nameCount);
+    }
+    throw CodableException(
+      'Missing required fields for TwitterSearchMetadata: ${missing.join(", ")}',
+    );
+  }
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for TwitterSearchMetadata
+// =============================================================================
 TwitterSearchMetadata _$TwitterSearchMetadataFromReader(
   JsonTokenReader reader,
 ) {
@@ -2504,38 +3258,97 @@ TwitterSearchMetadata _$TwitterSearchMetadataFromReader(
   String nextResults = '';
   String? query;
   String refreshUrl = '';
-  int count = 0;
+  int? count;
   int sinceId = 0;
   String sinceIdStr = '0';
+  var seen = _$TwitterSearchMetadataSchema.none;
 
   while (reader.hasNext()) {
     switch (reader.selectName(_$TwitterSearchMetadataSchema.options)) {
       case _$TwitterSearchMetadataSchema.keyCompletedIn:
-        completedIn = reader.readDouble();
+        if ((seen._value & _$TwitterSearchMetadataSchema.completedIn._value) !=
+            0) {
+          throw CodableException('Duplicate field "completed_in"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          completedIn = reader.readDouble();
+          seen |= _$TwitterSearchMetadataSchema.completedIn;
+        }
         break;
       case _$TwitterSearchMetadataSchema.keyMaxId:
-        maxId = reader.readInt();
+        if ((seen._value & _$TwitterSearchMetadataSchema.maxId._value) != 0) {
+          throw CodableException('Duplicate field "max_id"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          maxId = reader.readInt();
+          seen |= _$TwitterSearchMetadataSchema.maxId;
+        }
         break;
       case _$TwitterSearchMetadataSchema.keyMaxIdStr:
-        maxIdStr = reader.readString();
+        if ((seen._value & _$TwitterSearchMetadataSchema.maxIdStr._value) !=
+            0) {
+          throw CodableException('Duplicate field "max_id_str"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          maxIdStr = reader.readString();
+          seen |= _$TwitterSearchMetadataSchema.maxIdStr;
+        }
         break;
       case _$TwitterSearchMetadataSchema.keyNextResults:
-        nextResults = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          nextResults = reader.readString();
+        }
         break;
       case _$TwitterSearchMetadataSchema.keyQuery:
-        query = reader.readString();
+        if ((seen._value & _$TwitterSearchMetadataSchema.query._value) != 0) {
+          throw CodableException('Duplicate field "query"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          query = reader.readString();
+          seen |= _$TwitterSearchMetadataSchema.query;
+        }
         break;
       case _$TwitterSearchMetadataSchema.keyRefreshUrl:
-        refreshUrl = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          refreshUrl = reader.readString();
+        }
         break;
       case _$TwitterSearchMetadataSchema.keyCount:
-        count = reader.readInt();
+        if ((seen._value & _$TwitterSearchMetadataSchema.count._value) != 0) {
+          throw CodableException('Duplicate field "count"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          count = reader.readInt();
+          seen |= _$TwitterSearchMetadataSchema.count;
+        }
         break;
       case _$TwitterSearchMetadataSchema.keySinceId:
-        sinceId = reader.readInt();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          sinceId = reader.readInt();
+        }
         break;
       case _$TwitterSearchMetadataSchema.keySinceIdStr:
-        sinceIdStr = reader.readString();
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          sinceIdStr = reader.readString();
+        }
         break;
       default:
         reader.skipValue();
@@ -2544,19 +3357,25 @@ TwitterSearchMetadata _$TwitterSearchMetadataFromReader(
   }
   reader.endObject();
 
+  // Inlined fast-path check
+  seen.validate();
+
   return TwitterSearchMetadata(
-    completedIn: completedIn ?? 0.0,
-    maxId: maxId ?? 0,
-    maxIdStr: maxIdStr ?? '',
+    completedIn: completedIn!,
+    maxId: maxId!,
+    maxIdStr: maxIdStr!,
     nextResults: nextResults,
-    query: query ?? '',
+    query: query!,
     refreshUrl: refreshUrl,
-    count: count,
+    count: count!,
     sinceId: sinceId,
     sinceIdStr: sinceIdStr,
   );
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for TwitterSearchMetadata
+// =============================================================================
 void _$TwitterSearchMetadataToWriter(
   TwitterSearchMetadata instance,
   JsonTokenWriter writer,
@@ -2584,12 +3403,14 @@ void _$TwitterSearchMetadataToWriter(
 }
 
 // =============================================================================
-// 10. TwitterResponse
+// 1. Unified Schema Descriptor for TwitterResponse
 // =============================================================================
 extension type const _$TwitterResponseSchema(int _value) {
+  // String Name Constants
   static const String nameStatuses = 'statuses';
   static const String nameSearchMetadata = 'search_metadata';
 
+  // Pre-Encoded UTF-8 Wire Bytes
   static final Uint8List nameStatusesBytes = Uint8List.fromList(const [
     115,
     116,
@@ -2618,35 +3439,88 @@ extension type const _$TwitterResponseSchema(int _value) {
     97,
   ]);
 
+  // Key Indices for selectName()
   static const int keyStatuses = 0;
   static const int keySearchMetadata = 1;
 
+  // Pre-Compiled JsonKeyOptions
   static final JsonKeyOptions options = JsonKeyOptions.of(const [
-    nameStatuses,
-    nameSearchMetadata,
+    _$TwitterResponseSchema.nameStatuses,
+    _$TwitterResponseSchema.nameSearchMetadata,
   ]);
+
+  // Bitmask Flags strictly for Required Fields
   static const _$TwitterResponseSchema none = _$TwitterResponseSchema(0);
+  static const int _searchMetadataBit = 1 << 0;
+  static const _$TwitterResponseSchema searchMetadata = _$TwitterResponseSchema(
+    _searchMetadataBit,
+  );
+
+  // Composite Golden Mask for Required Fields
+  static const _$TwitterResponseSchema golden = _$TwitterResponseSchema(
+    _searchMetadataBit,
+  );
+
+  @pragma('vm:prefer-inline')
+  _$TwitterResponseSchema operator |(_$TwitterResponseSchema other) =>
+      _$TwitterResponseSchema(_value | other._value);
+
+  /// Validates required fields in 1 CPU test instruction on the fast path.
+  @pragma('vm:prefer-inline')
+  void validate() {
+    if ((_value & golden._value) != golden._value) {
+      _throwMissingFields();
+    }
+  }
+
+  /// Out-of-line cold diagnostic reporting
+  void _throwMissingFields() {
+    final missing = <String>[];
+    if ((_value & _searchMetadataBit) == 0) {
+      missing.add(nameSearchMetadata);
+    }
+    throw CodableException(
+      'Missing required fields for TwitterResponse: ${missing.join(", ")}',
+    );
+  }
 }
 
+// =============================================================================
+// 2. Single-Pass Streaming Deserializer for TwitterResponse
+// =============================================================================
 TwitterResponse _$TwitterResponseFromReader(JsonTokenReader reader) {
   reader.beginObject();
 
   List<TwitterStatus> statuses = const [];
   TwitterSearchMetadata? searchMetadata;
+  var seen = _$TwitterResponseSchema.none;
 
   while (reader.hasNext()) {
     switch (reader.selectName(_$TwitterResponseSchema.options)) {
       case _$TwitterResponseSchema.keyStatuses:
-        reader.beginArray();
-        final list = <TwitterStatus>[];
-        while (reader.hasNext()) {
-          list.add(_$TwitterStatusFromReader(reader));
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          reader.beginArray();
+          final list = <TwitterStatus>[];
+          while (reader.hasNext()) {
+            list.add(_$TwitterStatusFromReader(reader));
+          }
+          reader.endArray();
+          statuses = list;
         }
-        reader.endArray();
-        statuses = list;
         break;
       case _$TwitterResponseSchema.keySearchMetadata:
-        searchMetadata = _$TwitterSearchMetadataFromReader(reader);
+        if ((seen._value & _$TwitterResponseSchema.searchMetadata._value) !=
+            0) {
+          throw CodableException('Duplicate field "search_metadata"');
+        }
+        if (reader.isNextNull()) {
+          reader.readNull();
+        } else {
+          searchMetadata = _$TwitterSearchMetadataFromReader(reader);
+          seen |= _$TwitterResponseSchema.searchMetadata;
+        }
         break;
       default:
         reader.skipValue();
@@ -2655,20 +3529,15 @@ TwitterResponse _$TwitterResponseFromReader(JsonTokenReader reader) {
   }
   reader.endObject();
 
-  return TwitterResponse(
-    statuses: statuses,
-    searchMetadata:
-        searchMetadata ??
-        const TwitterSearchMetadata(
-          completedIn: 0.0,
-          maxId: 0,
-          maxIdStr: '',
-          query: '',
-          count: 0,
-        ),
-  );
+  // Inlined fast-path check
+  seen.validate();
+
+  return TwitterResponse(statuses: statuses, searchMetadata: searchMetadata!);
 }
 
+// =============================================================================
+// 3. Single-Pass Streaming Serializer for TwitterResponse
+// =============================================================================
 void _$TwitterResponseToWriter(
   TwitterResponse instance,
   JsonTokenWriter writer,
@@ -2676,8 +3545,8 @@ void _$TwitterResponseToWriter(
   writer.beginObject();
   writer.writeNameBytes(_$TwitterResponseSchema.nameStatusesBytes);
   writer.beginArray();
-  for (final s in instance.statuses) {
-    _$TwitterStatusToWriter(s, writer);
+  for (final item in instance.statuses) {
+    _$TwitterStatusToWriter(item, writer);
   }
   writer.endArray();
   writer.writeNameBytes(_$TwitterResponseSchema.nameSearchMetadataBytes);

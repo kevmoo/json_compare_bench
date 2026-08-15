@@ -1,13 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:args/args.dart';
-import 'package:codable/codable.dart';
 import 'package:json_compare_bench_dart/json_rw.dart';
-import 'package:json_compare_bench_dart/src/models/canada.dart';
-import 'package:json_compare_bench_dart/src/models/citm_catalog.dart';
-import 'package:json_compare_bench_dart/src/models/small.dart';
-import 'package:json_compare_bench_dart/src/models/twitter.dart';
 
 int blackholeSink = 0;
 
@@ -34,13 +30,12 @@ void main(List<String> arguments) {
     ..addOption(
       'impl',
       abbr: 'i',
-      defaultsTo: 'all',
+      defaultsTo: 'convert_utf8',
       allowed: [
         'convert',
         'convert_utf8',
         'json_rw_string',
         'json_rw_utf8',
-        'codable_utf8',
         'all',
       ],
       help: 'Implementation to benchmark',
@@ -77,7 +72,7 @@ void main(List<String> arguments) {
 
   final implementations = <String>[];
   if (implChoice == 'all') {
-    implementations.addAll(['convert_utf8', 'codable_utf8']);
+    implementations.add('convert_utf8');
   } else {
     implementations.add(implChoice);
   }
@@ -106,26 +101,6 @@ void runBenchmark({
 }) {
   // Pre-decode object for encode benchmarks
   final dynamic parsedObject = jsonDecode(stringSource);
-  Object? predecodedCodableModel;
-  if (impl == 'codable_utf8') {
-    if (datasetName.contains('small')) {
-      predecodedCodableModel = SmallDocument.fromReader(
-        JsonTokenReader.fromBytes(bytes),
-      );
-    } else if (datasetName.contains('twitter')) {
-      predecodedCodableModel = TwitterResponse.fromReader(
-        JsonTokenReader.fromBytes(bytes),
-      );
-    } else if (datasetName.contains('citm')) {
-      predecodedCodableModel = CitmCatalog.fromReader(
-        JsonTokenReader.fromBytes(bytes),
-      );
-    } else if (datasetName.contains('canada')) {
-      predecodedCodableModel = CanadaFeatureCollection.fromReader(
-        JsonTokenReader.fromBytes(bytes),
-      );
-    }
-  }
 
   void runDecodePass() {
     switch (impl) {
@@ -146,25 +121,6 @@ void runBenchmark({
         final reader = JsonReader.fromUtf8(bytes);
         final res = _readDynamic(reader);
         consumeBlackBox(res);
-        break;
-      case 'codable_utf8':
-        if (datasetName.contains('small')) {
-          final reader = JsonTokenReader.fromBytes(bytes);
-          final res = SmallDocument.fromReader(reader);
-          consumeBlackBox(res);
-        } else if (datasetName.contains('twitter')) {
-          final reader = JsonTokenReader.fromBytes(bytes);
-          final res = TwitterResponse.fromReader(reader);
-          consumeBlackBox(res);
-        } else if (datasetName.contains('citm')) {
-          final reader = JsonTokenReader.fromBytes(bytes);
-          final res = CitmCatalog.fromReader(reader);
-          consumeBlackBox(res);
-        } else if (datasetName.contains('canada')) {
-          final reader = JsonTokenReader.fromBytes(bytes);
-          final res = CanadaFeatureCollection.fromReader(reader);
-          consumeBlackBox(res);
-        }
         break;
       default:
         throw UnsupportedError('Unknown impl: $impl');
@@ -192,21 +148,6 @@ void runBenchmark({
         final builder = BytesBuilder(copy: false);
         final writer = JsonWriter.bytes(builder);
         _writeDynamic(writer, parsedObject);
-        final res = builder.toBytes();
-        consumeBlackBox(res);
-        break;
-      case 'codable_utf8':
-        final builder = BytesBuilder(copy: false);
-        final writer = JsonTokenWriter.toSink(builder);
-        if (predecodedCodableModel is SmallDocument) {
-          predecodedCodableModel.toWriter(writer);
-        } else if (predecodedCodableModel is TwitterResponse) {
-          predecodedCodableModel.toWriter(writer);
-        } else if (predecodedCodableModel is CitmCatalog) {
-          predecodedCodableModel.toWriter(writer);
-        } else if (predecodedCodableModel is CanadaFeatureCollection) {
-          predecodedCodableModel.toWriter(writer);
-        }
         final res = builder.toBytes();
         consumeBlackBox(res);
         break;
