@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-15T19:14:56.014711Z",
+  "timestamp": "2026-08-16T14:38:40.887858Z",
   "system": {
     "os": "linux (Linux 6.18.14-1rodete4-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.18.14-1rodete4 (2026-06-15))",
     "architecture": "x86_64",
@@ -9,18 +9,11 @@
   },
   "toolchains": {
     "dart": {
-      "version": "3.14.0-edge.74870c4af39697fde442b41e321219f092b4ab27 (main) (Sat Aug 15 18:45:11 2026 +0000) on \"linux_x64\"",
+      "version": "Dart SDK version: 3.14.0-edge.a607b20defb73507130146a45984a1a7985c738e (main) (Sat Aug 15 20:01:47 2026 +0000) on \"linux_x64\"",
       "packages": {
         "codable": "package:codable (SDK integration)"
       },
       "path": "/usr/local/google/home/kevmoo/.local/share/dart-sdk-json-utf8-kernels/dart-sdk/bin/dart"
-    },
-    "dart_stock": {
-      "version": "Dart SDK version: 3.14.0-111.0.dev (dev) (Mon Aug 10 13:05:33 2026 -0700) on \"linux_x64\"",
-      "packages": {
-        "convert": "Standard Library (stock out-of-the-box)"
-      },
-      "path": "/usr/local/google/home/kevmoo/github/flutter/bin/cache/dart-sdk/bin/dart"
     },
     "rust": {
       "version": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
@@ -45,42 +38,6 @@
   },
   "benchmarks": [
     {
-      "language": "rust",
-      "implementation": "serde_json",
-      "dataset": "small.json",
-      "mode": "decode",
-      "iterations": 20000,
-      "file_bytes": 546,
-      "total_bytes": 10920000,
-      "elapsed_ns": 24637788,
-      "throughput_mb_s": 422.7,
-      "ns_per_op": 1231
-    },
-    {
-      "language": "go",
-      "implementation": "encoding_json",
-      "dataset": "small.json",
-      "mode": "decode",
-      "iterations": 20000,
-      "file_bytes": 546,
-      "total_bytes": 10920000,
-      "elapsed_ns": 158620170,
-      "throughput_mb_s": 65.65,
-      "ns_per_op": 7931
-    },
-    {
-      "language": "node",
-      "implementation": "v8_builtin",
-      "dataset": "small.json",
-      "mode": "decode",
-      "iterations": 20000,
-      "file_bytes": 546,
-      "total_bytes": 10920000,
-      "elapsed_ns": 40129957,
-      "throughput_mb_s": 259.51,
-      "ns_per_op": 2006
-    },
-    {
       "language": "dart",
       "implementation": "convert_utf8",
       "dataset": "small.json",
@@ -88,9 +45,9 @@
       "iterations": 20000,
       "file_bytes": 546,
       "total_bytes": 10920000,
-      "elapsed_ns": 51743000,
-      "throughput_mb_s": 201.27,
-      "ns_per_op": 2587,
+      "elapsed_ns": 44381000,
+      "throughput_mb_s": 234.65,
+      "ns_per_op": 2219,
       "runtime": "dart_aot"
     },
     {
@@ -101,59 +58,10 @@
       "iterations": 20000,
       "file_bytes": 546,
       "total_bytes": 10920000,
-      "elapsed_ns": 89783000,
-      "throughput_mb_s": 115.99,
-      "ns_per_op": 4489,
+      "elapsed_ns": 88924000,
+      "throughput_mb_s": 117.11,
+      "ns_per_op": 4446,
       "runtime": "dart_aot"
-    },
-    {
-      "language": "dart_stock",
-      "implementation": "stock_convert_utf8",
-      "dataset": "small.json",
-      "mode": "decode",
-      "iterations": 20000,
-      "file_bytes": 546,
-      "total_bytes": 10920000,
-      "elapsed_ns": 43847000,
-      "throughput_mb_s": 237.51,
-      "ns_per_op": 2192,
-      "runtime": "dart_stock_aot"
-    },
-    {
-      "language": "rust",
-      "implementation": "serde_json",
-      "dataset": "small.json",
-      "mode": "encode",
-      "iterations": 20000,
-      "file_bytes": 546,
-      "total_bytes": 10920000,
-      "elapsed_ns": 12323489,
-      "throughput_mb_s": 845.1,
-      "ns_per_op": 616
-    },
-    {
-      "language": "go",
-      "implementation": "encoding_json",
-      "dataset": "small.json",
-      "mode": "encode",
-      "iterations": 20000,
-      "file_bytes": 546,
-      "total_bytes": 10920000,
-      "elapsed_ns": 27580938,
-      "throughput_mb_s": 377.6,
-      "ns_per_op": 1379
-    },
-    {
-      "language": "node",
-      "implementation": "v8_builtin",
-      "dataset": "small.json",
-      "mode": "encode",
-      "iterations": 20000,
-      "file_bytes": 546,
-      "total_bytes": 10920000,
-      "elapsed_ns": 29186848,
-      "throughput_mb_s": 356.81,
-      "ns_per_op": 1459
     },
     {
       "language": "dart",
@@ -163,9 +71,9 @@
       "iterations": 20000,
       "file_bytes": 546,
       "total_bytes": 10920000,
-      "elapsed_ns": 79650000,
-      "throughput_mb_s": 130.75,
-      "ns_per_op": 3982,
+      "elapsed_ns": 74777000,
+      "throughput_mb_s": 139.27,
+      "ns_per_op": 3738,
       "runtime": "dart_aot"
     },
     {
@@ -176,59 +84,10 @@
       "iterations": 20000,
       "file_bytes": 546,
       "total_bytes": 10920000,
-      "elapsed_ns": 39745000,
-      "throughput_mb_s": 262.02,
-      "ns_per_op": 1987,
+      "elapsed_ns": 37766000,
+      "throughput_mb_s": 275.75,
+      "ns_per_op": 1888,
       "runtime": "dart_aot"
-    },
-    {
-      "language": "dart_stock",
-      "implementation": "stock_convert_utf8",
-      "dataset": "small.json",
-      "mode": "encode",
-      "iterations": 20000,
-      "file_bytes": 546,
-      "total_bytes": 10920000,
-      "elapsed_ns": 71192000,
-      "throughput_mb_s": 146.28,
-      "ns_per_op": 3559,
-      "runtime": "dart_stock_aot"
-    },
-    {
-      "language": "rust",
-      "implementation": "serde_json",
-      "dataset": "twitter.json",
-      "mode": "decode",
-      "iterations": 200,
-      "file_bytes": 631514,
-      "total_bytes": 126302800,
-      "elapsed_ns": 244954333,
-      "throughput_mb_s": 491.73,
-      "ns_per_op": 1224771
-    },
-    {
-      "language": "go",
-      "implementation": "encoding_json",
-      "dataset": "twitter.json",
-      "mode": "decode",
-      "iterations": 200,
-      "file_bytes": 631514,
-      "total_bytes": 126302800,
-      "elapsed_ns": 1275576464,
-      "throughput_mb_s": 94.43,
-      "ns_per_op": 6377882
-    },
-    {
-      "language": "node",
-      "implementation": "v8_builtin",
-      "dataset": "twitter.json",
-      "mode": "decode",
-      "iterations": 200,
-      "file_bytes": 631514,
-      "total_bytes": 126302800,
-      "elapsed_ns": 279778711,
-      "throughput_mb_s": 430.53,
-      "ns_per_op": 1398893
     },
     {
       "language": "dart",
@@ -238,9 +97,9 @@
       "iterations": 200,
       "file_bytes": 631514,
       "total_bytes": 126302800,
-      "elapsed_ns": 529382000,
-      "throughput_mb_s": 227.53,
-      "ns_per_op": 2646910,
+      "elapsed_ns": 517190000,
+      "throughput_mb_s": 232.9,
+      "ns_per_op": 2585950,
       "runtime": "dart_aot"
     },
     {
@@ -251,59 +110,10 @@
       "iterations": 200,
       "file_bytes": 631514,
       "total_bytes": 126302800,
-      "elapsed_ns": 1000187000,
-      "throughput_mb_s": 120.43,
-      "ns_per_op": 5000935,
+      "elapsed_ns": 1020112000,
+      "throughput_mb_s": 118.08,
+      "ns_per_op": 5100560,
       "runtime": "dart_aot"
-    },
-    {
-      "language": "dart_stock",
-      "implementation": "stock_convert_utf8",
-      "dataset": "twitter.json",
-      "mode": "decode",
-      "iterations": 200,
-      "file_bytes": 631514,
-      "total_bytes": 126302800,
-      "elapsed_ns": 509179000,
-      "throughput_mb_s": 236.56,
-      "ns_per_op": 2545895,
-      "runtime": "dart_stock_aot"
-    },
-    {
-      "language": "rust",
-      "implementation": "serde_json",
-      "dataset": "twitter.json",
-      "mode": "encode",
-      "iterations": 200,
-      "file_bytes": 631514,
-      "total_bytes": 126302800,
-      "elapsed_ns": 98440384,
-      "throughput_mb_s": 1223.61,
-      "ns_per_op": 492201
-    },
-    {
-      "language": "go",
-      "implementation": "encoding_json",
-      "dataset": "twitter.json",
-      "mode": "encode",
-      "iterations": 200,
-      "file_bytes": 631514,
-      "total_bytes": 126302800,
-      "elapsed_ns": 183574578,
-      "throughput_mb_s": 656.15,
-      "ns_per_op": 917872
-    },
-    {
-      "language": "node",
-      "implementation": "v8_builtin",
-      "dataset": "twitter.json",
-      "mode": "encode",
-      "iterations": 200,
-      "file_bytes": 631514,
-      "total_bytes": 126302800,
-      "elapsed_ns": 365589986,
-      "throughput_mb_s": 329.47,
-      "ns_per_op": 1827949
     },
     {
       "language": "dart",
@@ -313,9 +123,9 @@
       "iterations": 200,
       "file_bytes": 631514,
       "total_bytes": 126302800,
-      "elapsed_ns": 503431000,
-      "throughput_mb_s": 239.26,
-      "ns_per_op": 2517155,
+      "elapsed_ns": 486093000,
+      "throughput_mb_s": 247.8,
+      "ns_per_op": 2430465,
       "runtime": "dart_aot"
     },
     {
@@ -326,59 +136,10 @@
       "iterations": 200,
       "file_bytes": 631514,
       "total_bytes": 126302800,
-      "elapsed_ns": 360360000,
-      "throughput_mb_s": 334.25,
-      "ns_per_op": 1801800,
+      "elapsed_ns": 345659000,
+      "throughput_mb_s": 348.47,
+      "ns_per_op": 1728295,
       "runtime": "dart_aot"
-    },
-    {
-      "language": "dart_stock",
-      "implementation": "stock_convert_utf8",
-      "dataset": "twitter.json",
-      "mode": "encode",
-      "iterations": 200,
-      "file_bytes": 631514,
-      "total_bytes": 126302800,
-      "elapsed_ns": 894404000,
-      "throughput_mb_s": 134.67,
-      "ns_per_op": 4472020,
-      "runtime": "dart_stock_aot"
-    },
-    {
-      "language": "rust",
-      "implementation": "serde_json",
-      "dataset": "citm_catalog.json",
-      "mode": "decode",
-      "iterations": 50,
-      "file_bytes": 1727204,
-      "total_bytes": 86360200,
-      "elapsed_ns": 122388952,
-      "throughput_mb_s": 672.94,
-      "ns_per_op": 2447779
-    },
-    {
-      "language": "go",
-      "implementation": "encoding_json",
-      "dataset": "citm_catalog.json",
-      "mode": "decode",
-      "iterations": 50,
-      "file_bytes": 1727204,
-      "total_bytes": 86360200,
-      "elapsed_ns": 971622554,
-      "throughput_mb_s": 84.76,
-      "ns_per_op": 19432451
-    },
-    {
-      "language": "node",
-      "implementation": "v8_builtin",
-      "dataset": "citm_catalog.json",
-      "mode": "decode",
-      "iterations": 50,
-      "file_bytes": 1727204,
-      "total_bytes": 86360200,
-      "elapsed_ns": 169784949,
-      "throughput_mb_s": 485.08,
-      "ns_per_op": 3395698
     },
     {
       "language": "dart",
@@ -388,9 +149,9 @@
       "iterations": 50,
       "file_bytes": 1727204,
       "total_bytes": 86360200,
-      "elapsed_ns": 251913000,
-      "throughput_mb_s": 326.94,
-      "ns_per_op": 5038260,
+      "elapsed_ns": 241085000,
+      "throughput_mb_s": 341.62,
+      "ns_per_op": 4821700,
       "runtime": "dart_aot"
     },
     {
@@ -401,59 +162,10 @@
       "iterations": 50,
       "file_bytes": 1727204,
       "total_bytes": 86360200,
-      "elapsed_ns": 419027000,
-      "throughput_mb_s": 196.55,
-      "ns_per_op": 8380540,
+      "elapsed_ns": 380516000,
+      "throughput_mb_s": 216.44,
+      "ns_per_op": 7610320,
       "runtime": "dart_aot"
-    },
-    {
-      "language": "dart_stock",
-      "implementation": "stock_convert_utf8",
-      "dataset": "citm_catalog.json",
-      "mode": "decode",
-      "iterations": 50,
-      "file_bytes": 1727204,
-      "total_bytes": 86360200,
-      "elapsed_ns": 261286000,
-      "throughput_mb_s": 315.21,
-      "ns_per_op": 5225720,
-      "runtime": "dart_stock_aot"
-    },
-    {
-      "language": "rust",
-      "implementation": "serde_json",
-      "dataset": "citm_catalog.json",
-      "mode": "encode",
-      "iterations": 50,
-      "file_bytes": 1727204,
-      "total_bytes": 86360200,
-      "elapsed_ns": 27170648,
-      "throughput_mb_s": 3031.27,
-      "ns_per_op": 543412
-    },
-    {
-      "language": "go",
-      "implementation": "encoding_json",
-      "dataset": "citm_catalog.json",
-      "mode": "encode",
-      "iterations": 50,
-      "file_bytes": 1727204,
-      "total_bytes": 86360200,
-      "elapsed_ns": 65508336,
-      "throughput_mb_s": 1257.24,
-      "ns_per_op": 1310166
-    },
-    {
-      "language": "node",
-      "implementation": "v8_builtin",
-      "dataset": "citm_catalog.json",
-      "mode": "encode",
-      "iterations": 50,
-      "file_bytes": 1727204,
-      "total_bytes": 86360200,
-      "elapsed_ns": 199696297,
-      "throughput_mb_s": 412.42,
-      "ns_per_op": 3993925
     },
     {
       "language": "dart",
@@ -463,9 +175,9 @@
       "iterations": 50,
       "file_bytes": 1727204,
       "total_bytes": 86360200,
-      "elapsed_ns": 193576000,
-      "throughput_mb_s": 425.46,
-      "ns_per_op": 3871520,
+      "elapsed_ns": 201447000,
+      "throughput_mb_s": 408.84,
+      "ns_per_op": 4028940,
       "runtime": "dart_aot"
     },
     {
@@ -476,59 +188,10 @@
       "iterations": 50,
       "file_bytes": 1727204,
       "total_bytes": 86360200,
-      "elapsed_ns": 151050000,
-      "throughput_mb_s": 545.25,
-      "ns_per_op": 3021000,
+      "elapsed_ns": 151766000,
+      "throughput_mb_s": 542.67,
+      "ns_per_op": 3035320,
       "runtime": "dart_aot"
-    },
-    {
-      "language": "dart_stock",
-      "implementation": "stock_convert_utf8",
-      "dataset": "citm_catalog.json",
-      "mode": "encode",
-      "iterations": 50,
-      "file_bytes": 1727204,
-      "total_bytes": 86360200,
-      "elapsed_ns": 302197000,
-      "throughput_mb_s": 272.54,
-      "ns_per_op": 6043940,
-      "runtime": "dart_stock_aot"
-    },
-    {
-      "language": "rust",
-      "implementation": "serde_json",
-      "dataset": "canada.json",
-      "mode": "decode",
-      "iterations": 50,
-      "file_bytes": 2251051,
-      "total_bytes": 112552550,
-      "elapsed_ns": 257226163,
-      "throughput_mb_s": 417.29,
-      "ns_per_op": 5144523
-    },
-    {
-      "language": "go",
-      "implementation": "encoding_json",
-      "dataset": "canada.json",
-      "mode": "decode",
-      "iterations": 50,
-      "file_bytes": 2251051,
-      "total_bytes": 112552550,
-      "elapsed_ns": 1970116588,
-      "throughput_mb_s": 54.48,
-      "ns_per_op": 39402331
-    },
-    {
-      "language": "node",
-      "implementation": "v8_builtin",
-      "dataset": "canada.json",
-      "mode": "decode",
-      "iterations": 50,
-      "file_bytes": 2251051,
-      "total_bytes": 112552550,
-      "elapsed_ns": 432675962,
-      "throughput_mb_s": 248.08,
-      "ns_per_op": 8653519
     },
     {
       "language": "dart",
@@ -538,9 +201,9 @@
       "iterations": 50,
       "file_bytes": 2251051,
       "total_bytes": 112552550,
-      "elapsed_ns": 773658000,
-      "throughput_mb_s": 138.74,
-      "ns_per_op": 15473160,
+      "elapsed_ns": 763065000,
+      "throughput_mb_s": 140.67,
+      "ns_per_op": 15261300,
       "runtime": "dart_aot"
     },
     {
@@ -551,59 +214,10 @@
       "iterations": 50,
       "file_bytes": 2251051,
       "total_bytes": 112552550,
-      "elapsed_ns": 696617000,
-      "throughput_mb_s": 154.09,
-      "ns_per_op": 13932340,
+      "elapsed_ns": 705046000,
+      "throughput_mb_s": 152.24,
+      "ns_per_op": 14100920,
       "runtime": "dart_aot"
-    },
-    {
-      "language": "dart_stock",
-      "implementation": "stock_convert_utf8",
-      "dataset": "canada.json",
-      "mode": "decode",
-      "iterations": 50,
-      "file_bytes": 2251051,
-      "total_bytes": 112552550,
-      "elapsed_ns": 1245119000,
-      "throughput_mb_s": 86.21,
-      "ns_per_op": 24902380,
-      "runtime": "dart_stock_aot"
-    },
-    {
-      "language": "rust",
-      "implementation": "serde_json",
-      "dataset": "canada.json",
-      "mode": "encode",
-      "iterations": 50,
-      "file_bytes": 2251051,
-      "total_bytes": 112552550,
-      "elapsed_ns": 155574769,
-      "throughput_mb_s": 689.95,
-      "ns_per_op": 3111495
-    },
-    {
-      "language": "go",
-      "implementation": "encoding_json",
-      "dataset": "canada.json",
-      "mode": "encode",
-      "iterations": 50,
-      "file_bytes": 2251051,
-      "total_bytes": 112552550,
-      "elapsed_ns": 662519905,
-      "throughput_mb_s": 162.02,
-      "ns_per_op": 13250398
-    },
-    {
-      "language": "node",
-      "implementation": "v8_builtin",
-      "dataset": "canada.json",
-      "mode": "encode",
-      "iterations": 50,
-      "file_bytes": 2251051,
-      "total_bytes": 112552550,
-      "elapsed_ns": 775286878,
-      "throughput_mb_s": 138.45,
-      "ns_per_op": 15505737
     },
     {
       "language": "dart",
@@ -613,9 +227,9 @@
       "iterations": 50,
       "file_bytes": 2251051,
       "total_bytes": 112552550,
-      "elapsed_ns": 1555719000,
-      "throughput_mb_s": 69.0,
-      "ns_per_op": 31114380,
+      "elapsed_ns": 1569167000,
+      "throughput_mb_s": 68.4,
+      "ns_per_op": 31383340,
       "runtime": "dart_aot"
     },
     {
@@ -626,23 +240,10 @@
       "iterations": 50,
       "file_bytes": 2251051,
       "total_bytes": 112552550,
-      "elapsed_ns": 1475358000,
-      "throughput_mb_s": 72.75,
-      "ns_per_op": 29507160,
+      "elapsed_ns": 1467879000,
+      "throughput_mb_s": 73.12,
+      "ns_per_op": 29357580,
       "runtime": "dart_aot"
-    },
-    {
-      "language": "dart_stock",
-      "implementation": "stock_convert_utf8",
-      "dataset": "canada.json",
-      "mode": "encode",
-      "iterations": 50,
-      "file_bytes": 2251051,
-      "total_bytes": 112552550,
-      "elapsed_ns": 2184545000,
-      "throughput_mb_s": 49.14,
-      "ns_per_op": 43690900,
-      "runtime": "dart_stock_aot"
     }
   ]
 }
