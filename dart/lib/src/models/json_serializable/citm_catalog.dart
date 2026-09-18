@@ -2,11 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:codable/codable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'citm_catalog.g.dart';
 
-@Codable()
+@JsonSerializable()
 class CitmCatalog {
   final Map<String, String> areaNames;
   final Map<String, String> audienceSubCategoryNames;
@@ -34,12 +34,13 @@ class CitmCatalog {
     this.venueNames = const {},
   });
 
-  static CitmCatalog decode(Decoder decoder) =>
-      _$CitmCatalogFromDecoder(decoder);
-  void encode(Encoder encoder) => _$CitmCatalogToEncoder(this, encoder);
+  factory CitmCatalog.fromJson(Map<String, dynamic> json) =>
+      _$CitmCatalogFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CitmCatalogToJson(this);
 }
 
-@Codable()
+@JsonSerializable()
 class CitmEvent {
   final String? description;
   final int id;
@@ -61,11 +62,13 @@ class CitmEvent {
     this.topicIds = const [],
   });
 
-  static CitmEvent decode(Decoder decoder) => _$CitmEventFromDecoder(decoder);
-  void encode(Encoder encoder) => _$CitmEventToEncoder(this, encoder);
+  factory CitmEvent.fromJson(Map<String, dynamic> json) =>
+      _$CitmEventFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CitmEventToJson(this);
 }
 
-@Codable()
+@JsonSerializable()
 class CitmPerformance {
   final int eventId;
   final int id;
@@ -87,12 +90,13 @@ class CitmPerformance {
     required this.venueCode,
   });
 
-  static CitmPerformance decode(Decoder decoder) =>
-      _$CitmPerformanceFromDecoder(decoder);
-  void encode(Encoder encoder) => _$CitmPerformanceToEncoder(this, encoder);
+  factory CitmPerformance.fromJson(Map<String, dynamic> json) =>
+      _$CitmPerformanceFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CitmPerformanceToJson(this);
 }
 
-@Codable()
+@JsonSerializable()
 class CitmPrice {
   final int amount;
   final int audienceSubCategoryId;
@@ -104,29 +108,34 @@ class CitmPrice {
     required this.seatCategoryId,
   });
 
-  static CitmPrice decode(Decoder decoder) => _$CitmPriceFromDecoder(decoder);
-  void encode(Encoder encoder) => _$CitmPriceToEncoder(this, encoder);
+  factory CitmPrice.fromJson(Map<String, dynamic> json) =>
+      _$CitmPriceFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CitmPriceToJson(this);
 }
 
-@Codable()
+@JsonSerializable()
 class CitmSeatCategory {
   final List<CitmArea> areas;
   final int seatCategoryId;
 
   const CitmSeatCategory({this.areas = const [], required this.seatCategoryId});
 
-  static CitmSeatCategory decode(Decoder decoder) =>
-      _$CitmSeatCategoryFromDecoder(decoder);
-  void encode(Encoder encoder) => _$CitmSeatCategoryToEncoder(this, encoder);
+  factory CitmSeatCategory.fromJson(Map<String, dynamic> json) =>
+      _$CitmSeatCategoryFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CitmSeatCategoryToJson(this);
 }
 
-@Codable()
+@JsonSerializable()
 class CitmArea {
   final int areaId;
   final List<int> blockIds;
 
   const CitmArea({required this.areaId, this.blockIds = const []});
 
-  static CitmArea decode(Decoder decoder) => _$CitmAreaFromDecoder(decoder);
-  void encode(Encoder encoder) => _$CitmAreaToEncoder(this, encoder);
+  factory CitmArea.fromJson(Map<String, dynamic> json) =>
+      _$CitmAreaFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CitmAreaToJson(this);
 }

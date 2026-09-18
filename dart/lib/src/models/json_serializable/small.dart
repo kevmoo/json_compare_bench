@@ -2,11 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:codable/codable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'small.g.dart';
 
-@Codable()
+@JsonSerializable()
 class SmallLocation {
   final double latitude;
   final double longitude;
@@ -20,12 +20,13 @@ class SmallLocation {
     required this.country,
   });
 
-  static SmallLocation decode(Decoder decoder) =>
-      _$SmallLocationFromDecoder(decoder);
-  void encode(Encoder encoder) => _$SmallLocationToEncoder(this, encoder);
+  factory SmallLocation.fromJson(Map<String, dynamic> json) =>
+      _$SmallLocationFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SmallLocationToJson(this);
 }
 
-@Codable()
+@JsonSerializable()
 class SmallMetadata {
   final int loginCount;
   final String lastLogin;
@@ -37,12 +38,13 @@ class SmallMetadata {
     required this.location,
   });
 
-  static SmallMetadata decode(Decoder decoder) =>
-      _$SmallMetadataFromDecoder(decoder);
-  void encode(Encoder encoder) => _$SmallMetadataToEncoder(this, encoder);
+  factory SmallMetadata.fromJson(Map<String, dynamic> json) =>
+      _$SmallMetadataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SmallMetadataToJson(this);
 }
 
-@Codable()
+@JsonSerializable()
 class SmallDocument {
   final int id;
   final String uuid;
@@ -68,7 +70,8 @@ class SmallDocument {
     required this.tags,
   });
 
-  static SmallDocument decode(Decoder decoder) =>
-      _$SmallDocumentFromDecoder(decoder);
-  void encode(Encoder encoder) => _$SmallDocumentToEncoder(this, encoder);
+  factory SmallDocument.fromJson(Map<String, dynamic> json) =>
+      _$SmallDocumentFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SmallDocumentToJson(this);
 }

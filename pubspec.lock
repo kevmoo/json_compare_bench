@@ -12,7 +12,7 @@ packages:
   codable:
     dependency: "direct main"
     description:
-      path: "/usr/local/google/home/kevmoo/github/kevmoo/_codable.dart-sdk-integration/pkgs/codable"
+      path: "/usr/local/google/home/kevmoo/github/kevmoo/codable.dart/pkgs/codable"
       relative: false
     source: path
     version: "0.1.0-dev"
@@ -41,4 +41,4 @@ packages:
     source: hosted
     version: "1.19.0"
 sdks:
-  dart: ">=3.9.0 <4.0.0"
+  dart: ">=3.13.0 <4.0.0"
