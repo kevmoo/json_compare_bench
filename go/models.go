@@ -199,7 +199,7 @@ type CitmCatalog struct {
 	AudienceSubCategoryNames map[string]string    `json:"audienceSubCategoryNames"`
 	BlockNames               map[string]string    `json:"blockNames"`
 	Events                   map[string]CitmEvent `json:"events"`
-	Performances             []CitmPerformance   `json:"performances"`
+	Performances             []CitmPerformance    `json:"performances"`
 	SeatCategoryNames        map[string]string    `json:"seatCategoryNames"`
 	SubTopicNames            map[string]string    `json:"subTopicNames"`
 	SubjectNames             map[string]string    `json:"subjectNames"`
@@ -217,8 +217,8 @@ type CanadaProperties struct {
 }
 
 type CanadaGeometry struct {
-	Type        string          `json:"type"`
-	Coordinates [][][]float64   `json:"coordinates"`
+	Type        string        `json:"type"`
+	Coordinates [][][]float64 `json:"coordinates"`
 }
 
 type CanadaFeature struct {

@@ -4,14 +4,17 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:args/args.dart';
-import 'package:codable/codable_json.dart';
 
-import 'package:json_compare_bench_dart/src/models/canada.dart';
-import 'package:json_compare_bench_dart/src/models/citm_catalog.dart';
-import 'package:json_compare_bench_dart/src/models/small.dart';
-import 'package:json_compare_bench_dart/src/models/twitter.dart';
+import 'package:json_compare_bench_dart/src/models/json_serializable/canada.dart';
+import 'package:json_compare_bench_dart/src/models/json_serializable/citm_catalog.dart';
+import 'package:json_compare_bench_dart/src/models/json_serializable/small.dart';
+import 'package:json_compare_bench_dart/src/models/json_serializable/twitter.dart';
+
+final utf8JsonDecoder = utf8.decoder.fuse(json.decoder);
+final utf8JsonEncoder = json.encoder.fuse(utf8.encoder);
 
 int blackholeSink = 0;
 
@@ -38,7 +41,7 @@ void main(List<String> arguments) {
     ..addOption(
       'impl',
       abbr: 'i',
-      defaultsTo: 'codable',
+      defaultsTo: 'json_serializable',
       help: 'Implementation name in output',
     )
     ..addOption(
@@ -93,53 +96,52 @@ void runBenchmark({
   if (mode == 'decode') {
     if (datasetName.contains('small')) {
       runPass = () {
-        consumeBlackBox(
-          SmallDocument.decode(JsonCodableDecoder.fromBytes(bytes)),
-        );
+        final ast = utf8JsonDecoder.convert(bytes) as Map<String, dynamic>;
+        consumeBlackBox(SmallDocument.fromJson(ast));
       };
     } else if (datasetName.contains('twitter')) {
       runPass = () {
-        consumeBlackBox(
-          TwitterResponse.decode(JsonCodableDecoder.fromBytes(bytes)),
-        );
+        final ast = utf8JsonDecoder.convert(bytes) as Map<String, dynamic>;
+        consumeBlackBox(TwitterResponse.fromJson(ast));
       };
     } else if (datasetName.contains('citm')) {
       runPass = () {
-        consumeBlackBox(
-          CitmCatalog.decode(JsonCodableDecoder.fromBytes(bytes)),
-        );
+        final ast = utf8JsonDecoder.convert(bytes) as Map<String, dynamic>;
+        consumeBlackBox(CitmCatalog.fromJson(ast));
       };
     } else if (datasetName.contains('canada')) {
       runPass = () {
-        consumeBlackBox(
-          CanadaFeatureCollection.decode(JsonCodableDecoder.fromBytes(bytes)),
-        );
+        final ast = utf8JsonDecoder.convert(bytes) as Map<String, dynamic>;
+        consumeBlackBox(CanadaFeatureCollection.fromJson(ast));
       };
     } else {
       throw UnsupportedError('Unsupported dataset: $datasetName');
     }
   } else {
-    late final void Function(Encoder) encodeFn;
+    final jsonAst = utf8JsonDecoder.convert(bytes) as Map<String, dynamic>;
     if (datasetName.contains('small')) {
-      final m = SmallDocument.decode(JsonCodableDecoder.fromBytes(bytes));
-      encodeFn = m.encode;
+      final m = SmallDocument.fromJson(jsonAst);
+      runPass = () {
+        consumeBlackBox(utf8JsonEncoder.convert(m.toJson()));
+      };
     } else if (datasetName.contains('twitter')) {
-      final m = TwitterResponse.decode(JsonCodableDecoder.fromBytes(bytes));
-      encodeFn = m.encode;
+      final m = TwitterResponse.fromJson(jsonAst);
+      runPass = () {
+        consumeBlackBox(utf8JsonEncoder.convert(m.toJson()));
+      };
     } else if (datasetName.contains('citm')) {
-      final m = CitmCatalog.decode(JsonCodableDecoder.fromBytes(bytes));
-      encodeFn = m.encode;
+      final m = CitmCatalog.fromJson(jsonAst);
+      runPass = () {
+        consumeBlackBox(utf8JsonEncoder.convert(m.toJson()));
+      };
     } else if (datasetName.contains('canada')) {
-      final m = CanadaFeatureCollection.decode(
-        JsonCodableDecoder.fromBytes(bytes),
-      );
-      encodeFn = m.encode;
+      final m = CanadaFeatureCollection.fromJson(jsonAst);
+      runPass = () {
+        consumeBlackBox(utf8JsonEncoder.convert(m.toJson()));
+      };
     } else {
       throw UnsupportedError('Unsupported dataset: $datasetName');
     }
-    runPass = () {
-      consumeBlackBox(JsonCodableEncoder.toBytes(encodeFn));
-    };
   }
 
   // Warmup

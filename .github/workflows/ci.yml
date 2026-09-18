@@ -15,10 +15,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Clone sibling codable.dart repository
+        run: git clone --depth 1 https://github.com/kevmoo/codable.dart.git ../codable.dart
+
       - name: Setup Dart SDK
         uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
+
+      - name: Switch codable.dart to mock substrate for stock Dart CI
+        run: |
+          cd ../codable.dart
+          dart run tool/switch_substrate.dart mock
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -91,4 +99,4 @@ jobs:
       # 5. End-to-End Smoke Test
       # -------------------------------------------------------------
       - name: Run E2E Benchmark Smoke Test
-        run: dart run tool/run_benchmarks.dart -d small.json --no-write-json --no-write-markdown
+        run: dart run tool/run_benchmarks.dart --dataset small.json --no-write-json --no-write-markdown

@@ -2,23 +2,24 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:codable/codable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'twitter.g.dart';
 
-@Codable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TwitterMetadata {
   final String resultType;
   final String isoLanguageCode;
 
   const TwitterMetadata({this.resultType = '', this.isoLanguageCode = ''});
 
-  static TwitterMetadata decode(Decoder decoder) =>
-      _$TwitterMetadataFromDecoder(decoder);
-  void encode(Encoder encoder) => _$TwitterMetadataToEncoder(this, encoder);
+  factory TwitterMetadata.fromJson(Map<String, dynamic> json) =>
+      _$TwitterMetadataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TwitterMetadataToJson(this);
 }
 
-@Codable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TwitterUserMention {
   final String screenName;
   final String name;
@@ -34,12 +35,13 @@ class TwitterUserMention {
     this.indices = const [],
   });
 
-  static TwitterUserMention decode(Decoder decoder) =>
-      _$TwitterUserMentionFromDecoder(decoder);
-  void encode(Encoder encoder) => _$TwitterUserMentionToEncoder(this, encoder);
+  factory TwitterUserMention.fromJson(Map<String, dynamic> json) =>
+      _$TwitterUserMentionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TwitterUserMentionToJson(this);
 }
 
-@Codable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TwitterUrl {
   final String url;
   final String expandedUrl;
@@ -53,46 +55,51 @@ class TwitterUrl {
     this.indices = const [],
   });
 
-  static TwitterUrl decode(Decoder decoder) => _$TwitterUrlFromDecoder(decoder);
-  void encode(Encoder encoder) => _$TwitterUrlToEncoder(this, encoder);
+  factory TwitterUrl.fromJson(Map<String, dynamic> json) =>
+      _$TwitterUrlFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TwitterUrlToJson(this);
 }
 
-@Codable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TwitterEntitiesUrls {
   final List<TwitterUrl> urls;
 
   const TwitterEntitiesUrls({this.urls = const []});
 
-  static TwitterEntitiesUrls decode(Decoder decoder) =>
-      _$TwitterEntitiesUrlsFromDecoder(decoder);
-  void encode(Encoder encoder) => _$TwitterEntitiesUrlsToEncoder(this, encoder);
+  factory TwitterEntitiesUrls.fromJson(Map<String, dynamic> json) =>
+      _$TwitterEntitiesUrlsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TwitterEntitiesUrlsToJson(this);
 }
 
-@Codable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TwitterUserEntities {
   final TwitterEntitiesUrls? url;
   final TwitterEntitiesUrls? description;
 
   const TwitterUserEntities({this.url, this.description});
 
-  static TwitterUserEntities decode(Decoder decoder) =>
-      _$TwitterUserEntitiesFromDecoder(decoder);
-  void encode(Encoder encoder) => _$TwitterUserEntitiesToEncoder(this, encoder);
+  factory TwitterUserEntities.fromJson(Map<String, dynamic> json) =>
+      _$TwitterUserEntitiesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TwitterUserEntitiesToJson(this);
 }
 
-@Codable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TwitterEntities {
   final List<TwitterUrl> urls;
   final List<TwitterUserMention> userMentions;
 
   const TwitterEntities({this.urls = const [], this.userMentions = const []});
 
-  static TwitterEntities decode(Decoder decoder) =>
-      _$TwitterEntitiesFromDecoder(decoder);
-  void encode(Encoder encoder) => _$TwitterEntitiesToEncoder(this, encoder);
+  factory TwitterEntities.fromJson(Map<String, dynamic> json) =>
+      _$TwitterEntitiesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TwitterEntitiesToJson(this);
 }
 
-@Codable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TwitterUser {
   final int id;
   final String idStr;
@@ -178,12 +185,13 @@ class TwitterUser {
     this.notifications = false,
   });
 
-  static TwitterUser decode(Decoder decoder) =>
-      _$TwitterUserFromDecoder(decoder);
-  void encode(Encoder encoder) => _$TwitterUserToEncoder(this, encoder);
+  factory TwitterUser.fromJson(Map<String, dynamic> json) =>
+      _$TwitterUserFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TwitterUserToJson(this);
 }
 
-@Codable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TwitterStatus {
   final TwitterMetadata? metadata;
   final String createdAt;
@@ -231,12 +239,13 @@ class TwitterStatus {
     this.retweetedStatus,
   });
 
-  static TwitterStatus decode(Decoder decoder) =>
-      _$TwitterStatusFromDecoder(decoder);
-  void encode(Encoder encoder) => _$TwitterStatusToEncoder(this, encoder);
+  factory TwitterStatus.fromJson(Map<String, dynamic> json) =>
+      _$TwitterStatusFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TwitterStatusToJson(this);
 }
 
-@Codable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TwitterSearchMetadata {
   final double completedIn;
   final int maxId;
@@ -260,13 +269,13 @@ class TwitterSearchMetadata {
     this.sinceIdStr = '0',
   });
 
-  static TwitterSearchMetadata decode(Decoder decoder) =>
-      _$TwitterSearchMetadataFromDecoder(decoder);
-  void encode(Encoder encoder) =>
-      _$TwitterSearchMetadataToEncoder(this, encoder);
+  factory TwitterSearchMetadata.fromJson(Map<String, dynamic> json) =>
+      _$TwitterSearchMetadataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TwitterSearchMetadataToJson(this);
 }
 
-@Codable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TwitterResponse {
   final List<TwitterStatus> statuses;
   final TwitterSearchMetadata searchMetadata;
@@ -276,7 +285,8 @@ class TwitterResponse {
     required this.searchMetadata,
   });
 
-  static TwitterResponse decode(Decoder decoder) =>
-      _$TwitterResponseFromDecoder(decoder);
-  void encode(Encoder encoder) => _$TwitterResponseToEncoder(this, encoder);
+  factory TwitterResponse.fromJson(Map<String, dynamic> json) =>
+      _$TwitterResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TwitterResponseToJson(this);
 }

@@ -9,7 +9,7 @@ const sdkRepoDir =
 final customSdkDeployDir =
     '${Platform.environment['HOME'] ?? ''}/.local/share/dart-sdk-json-utf8-kernels/dart-sdk';
 const codableMonorepoDir =
-    '/usr/local/google/home/kevmoo/github/kevmoo/_codable.dart-sdk-integration';
+    '/usr/local/google/home/kevmoo/github/kevmoo/codable.dart';
 
 String get nodeBin => _findNode();
 String get customDartBin => _findCustomDart();
@@ -40,16 +40,16 @@ void main(List<String> rawArgs) async {
       defaultsTo: false,
       negatable: false,
       help:
-          'Only compiles and executes Dart benchmarks (Dart Codable AOT vs '
-          'Dart Std AOT vs Stock Dart if provided), '
-          'skipping Rust, Go, and Node.js.',
+          'Only compiles and executes Dart benchmarks (Dart Codable AOT, '
+          'Dart json_serializable AOT, Dart Std AOT, and Stock Dart if '
+          'provided), skipping Rust, Go, and Node.js.',
     )
     ..addOption(
       'stock-sdk',
       help:
           'Path to a stock/unmodified Dart SDK binary or directory to '
-          'benchmark baseline out-of-the-box Dart AOT as an explicit '
-          'comparative tier.',
+          'benchmark baseline out-of-the-box Dart AOT (both json_serializable '
+          'and std_convert) as an explicit comparative tier.',
     )
     ..addFlag(
       'gen',
@@ -58,7 +58,7 @@ void main(List<String> rawArgs) async {
       negatable: false,
       help:
           'Runs build_runner build --delete-conflicting-outputs across '
-          'dart/ and _codable.dart-sdk-integration before running.',
+          'dart/ and codable.dart before running.',
     )
     ..addOption(
       'dataset',
@@ -125,10 +125,10 @@ void main(List<String> rawArgs) async {
     )
     ..addFlag(
       'sync-codable',
-      defaultsTo: true,
+      defaultsTo: false,
       help:
           'Synchronize cross_language_benchmark_matrix.json and '
-          'BENCHMARK_REPORT.md in _codable.dart-sdk-integration if present.',
+          'BENCHMARK_REPORT.md in codable.dart if present.',
     )
     ..addFlag(
       'help',
@@ -360,42 +360,24 @@ Future<void> _runCodeGeneration() async {
     }
   }
 
-  // 2. In _codable monorepo
-  final codableDir = Directory(codableMonorepoDir);
-  if (codableDir.existsSync()) {
-    print('>> Running build_runner in $codableMonorepoDir...');
-    final res = Process.runSync(
+  // 2. In codable.dart/pkgs/codable_benchmarks
+  final codableBenchmarksDir = Directory(
+    '$codableMonorepoDir/pkgs/codable_benchmarks',
+  );
+  if (codableBenchmarksDir.existsSync()) {
+    print('>> Running build_runner in ${codableBenchmarksDir.path}...');
+    final res2 = Process.runSync(
       customDartBin,
       ['run', 'build_runner', 'build', '--delete-conflicting-outputs'],
-      workingDirectory: codableMonorepoDir,
+      workingDirectory: codableBenchmarksDir.path,
       environment: _toolchainEnv,
     );
-    if (res.exitCode != 0) {
+    if (res2.exitCode != 0) {
       stderr.writeln(
-        'build_runner in $codableMonorepoDir stderr:\n${res.stderr}',
+        'build_runner in codable_benchmarks stderr:\n${res2.stderr}',
       );
     } else {
-      print('>> build_runner in $codableMonorepoDir succeeded.');
-    }
-
-    final codableBenchmarksDir = Directory(
-      '$codableMonorepoDir/pkgs/codable_benchmarks',
-    );
-    if (codableBenchmarksDir.existsSync()) {
-      print('>> Running build_runner in ${codableBenchmarksDir.path}...');
-      final res2 = Process.runSync(
-        customDartBin,
-        ['run', 'build_runner', 'build', '--delete-conflicting-outputs'],
-        workingDirectory: codableBenchmarksDir.path,
-        environment: _toolchainEnv,
-      );
-      if (res2.exitCode != 0) {
-        stderr.writeln(
-          'build_runner in codable_benchmarks stderr:\n${res2.stderr}',
-        );
-      } else {
-        print('>> build_runner in codable_benchmarks succeeded.');
-      }
+      print('>> build_runner in codable_benchmarks succeeded.');
     }
   }
 
@@ -547,10 +529,28 @@ Future<void> _runBenchmarks({
       );
 
       if (targetLanguages.contains('rust')) {
-        benchmarkRecords.addAll(
-          await _runProcess(
-            '$rootDir/rust/target/release/json_compare_bench_rust',
-            [
+        final rustRecords = await _runProcess(
+          '$rootDir/rust/target/release/json_compare_bench_rust',
+          [
+            '--dataset',
+            datasetPath,
+            '--mode',
+            mode,
+            '--iterations',
+            '$iterations',
+            '--warmup',
+            '$warmup',
+          ],
+        );
+        for (final r in rustRecords) {
+          r['semantic_category'] = 'typed_struct';
+        }
+        benchmarkRecords.addAll(rustRecords);
+      }
+
+      if (targetLanguages.contains('go')) {
+        final goRecords =
+            await _runProcess('$rootDir/go/json_compare_bench_go', [
               '--dataset',
               datasetPath,
               '--mode',
@@ -559,76 +559,92 @@ Future<void> _runBenchmarks({
               '$iterations',
               '--warmup',
               '$warmup',
-            ],
-          ),
-        );
-      }
-
-      if (targetLanguages.contains('go')) {
-        benchmarkRecords.addAll(
-          await _runProcess('$rootDir/go/json_compare_bench_go', [
-            '--dataset',
-            datasetPath,
-            '--mode',
-            mode,
-            '--iterations',
-            '$iterations',
-            '--warmup',
-            '$warmup',
-          ]),
-        );
+            ]);
+        for (final r in goRecords) {
+          r['semantic_category'] = 'typed_struct';
+        }
+        benchmarkRecords.addAll(goRecords);
       }
 
       if (targetLanguages.contains('node')) {
-        benchmarkRecords.addAll(
-          await _runProcess(nodeBin, [
-            '$rootDir/node/index.mjs',
-            '--dataset',
-            datasetPath,
-            '--mode',
-            mode,
-            '--iterations',
-            '$iterations',
-            '--warmup',
-            '$warmup',
-          ]),
-        );
+        final nodeRecords = await _runProcess(nodeBin, [
+          '$rootDir/node/index.mjs',
+          '--dataset',
+          datasetPath,
+          '--mode',
+          mode,
+          '--iterations',
+          '$iterations',
+          '--warmup',
+          '$warmup',
+        ]);
+        for (final r in nodeRecords) {
+          r['semantic_category'] = 'untyped_dom';
+          r['note'] = 'Untyped JS Object';
+        }
+        benchmarkRecords.addAll(nodeRecords);
       }
 
       if (targetLanguages.contains('dart')) {
-        // 1. Custom Dart SDK - Standard Library AOT
-        benchmarkRecords.addAll(
-          await _runProcess('$rootDir/dart/bin/bench_aot.exe', [
-            '--dataset',
-            datasetPath,
-            '--mode',
-            mode,
-            '--impl',
-            'convert_utf8',
-            '--iterations',
-            '$iterations',
-            '--warmup',
-            '$warmup',
-          ], labelPrefix: 'dart_aot'),
-        );
+        // 1. Custom Dart SDK - Standard Library AOT (Untyped Map/DOM)
+        final stdRecords =
+            await _runProcess('$rootDir/dart/bin/bench_aot.exe', [
+              '--dataset',
+              datasetPath,
+              '--mode',
+              mode,
+              '--impl',
+              'convert_utf8',
+              '--iterations',
+              '$iterations',
+              '--warmup',
+              '$warmup',
+            ], labelPrefix: 'dart_aot');
+        for (final r in stdRecords) {
+          r['semantic_category'] = 'untyped_dom';
+          r['note'] = 'Untyped Map/DOM';
+        }
+        benchmarkRecords.addAll(stdRecords);
 
-        // 2. Custom Dart SDK - package:codable AOT
-        benchmarkRecords.addAll(
-          await _runProcess('$rootDir/dart/bin/dart_codable.exe', [
-            '--dataset',
-            datasetPath,
-            '--mode',
-            mode,
-            '--impl',
-            'codable',
-            '--iterations',
-            '$iterations',
-            '--warmup',
-            '$warmup',
-          ], labelPrefix: 'dart_aot'),
-        );
+        // 2. Custom Dart SDK - json_serializable AOT (Typed Struct)
+        final jsRecords =
+            await _runProcess('$rootDir/dart/bin/dart_json_serializable.exe', [
+              '--dataset',
+              datasetPath,
+              '--mode',
+              mode,
+              '--impl',
+              'json_serializable',
+              '--iterations',
+              '$iterations',
+              '--warmup',
+              '$warmup',
+            ], labelPrefix: 'dart_aot');
+        for (final r in jsRecords) {
+          r['semantic_category'] = 'typed_struct';
+        }
+        benchmarkRecords.addAll(jsRecords);
 
-        // 3. Stock Dart SDK - Standard Library AOT (if provided)
+        // 3. Custom Dart SDK - package:codable AOT (Typed Struct)
+        final codableRecords =
+            await _runProcess('$rootDir/dart/bin/dart_codable.exe', [
+              '--dataset',
+              datasetPath,
+              '--mode',
+              mode,
+              '--impl',
+              'codable',
+              '--iterations',
+              '$iterations',
+              '--warmup',
+              '$warmup',
+            ], labelPrefix: 'dart_aot');
+        for (final r in codableRecords) {
+          r['semantic_category'] = 'typed_struct';
+        }
+        benchmarkRecords.addAll(codableRecords);
+
+        // 4. Stock Dart SDK - Standard Library AOT (Untyped Map/DOM)
         if (stockDartBin != null &&
             File('$rootDir/dart/bin/stock_bench_aot.exe').existsSync()) {
           final stockRecords =
@@ -647,8 +663,39 @@ Future<void> _runBenchmarks({
           for (final record in stockRecords) {
             record['language'] = 'dart_stock';
             record['implementation'] = 'stock_convert_utf8';
+            record['semantic_category'] = 'untyped_dom';
+            record['note'] = 'Untyped Map/DOM';
           }
           benchmarkRecords.addAll(stockRecords);
+        }
+
+        // 5. Stock Dart SDK - json_serializable AOT (Typed Struct)
+        if (stockDartBin != null &&
+            File(
+              '$rootDir/dart/bin/stock_json_serializable_aot.exe',
+            ).existsSync()) {
+          final stockJsRecords = await _runProcess(
+            '$rootDir/dart/bin/stock_json_serializable_aot.exe',
+            [
+              '--dataset',
+              datasetPath,
+              '--mode',
+              mode,
+              '--impl',
+              'stock_json_serializable',
+              '--iterations',
+              '$iterations',
+              '--warmup',
+              '$warmup',
+            ],
+            labelPrefix: 'dart_stock_aot',
+          );
+          for (final record in stockJsRecords) {
+            record['language'] = 'dart_stock';
+            record['implementation'] = 'stock_json_serializable';
+            record['semantic_category'] = 'typed_struct';
+          }
+          benchmarkRecords.addAll(stockJsRecords);
         }
       }
     }
@@ -700,7 +747,7 @@ Future<void> _buildBinaries({
 }) async {
   print('>> Compiling benchmark binaries...');
 
-  // 1. Dart AOT (dart:convert std)
+  // 1. Dart AOT (dart:convert std - Untyped Map/DOM)
   print('   Compiling Dart AOT (dart:convert std) -> bin/bench_aot.exe...');
   final dartCompile = Process.runSync(
     customDartExecutable,
@@ -721,7 +768,32 @@ Future<void> _buildBinaries({
     exit(dartCompile.exitCode);
   }
 
-  // 2. Dart AOT (package:codable)
+  // 2. Dart AOT (json_serializable - Typed)
+  print(
+    '   Compiling Dart AOT (json_serializable) -> '
+    'bin/dart_json_serializable.exe...',
+  );
+  final jsCompile = Process.runSync(
+    customDartExecutable,
+    [
+      'compile',
+      'exe',
+      '$rootDir/dart/bin/dart_json_serializable.dart',
+      '-o',
+      '$rootDir/dart/bin/dart_json_serializable.exe',
+    ],
+    workingDirectory: '$rootDir/dart',
+    environment: _toolchainEnv,
+  );
+  if (jsCompile.exitCode != 0) {
+    stderr.writeln(
+      'Error: Dart AOT compile error (dart_json_serializable.dart):\n'
+      '${jsCompile.stderr}',
+    );
+    exit(jsCompile.exitCode);
+  }
+
+  // 3. Dart AOT (package:codable - Typed)
   print('   Compiling Dart AOT (package:codable) -> bin/dart_codable.exe...');
   final codableCompile = Process.runSync(
     customDartExecutable,
@@ -743,9 +815,11 @@ Future<void> _buildBinaries({
     exit(codableCompile.exitCode);
   }
 
-  // 3. Stock Dart SDK (if provided)
+  // 4. Stock Dart SDK (if provided)
   if (stockDartExecutable != null) {
-    print('   Compiling Stock Dart AOT -> bin/stock_bench_aot.exe...');
+    print(
+      '   Compiling Stock Dart AOT (std_convert) -> bin/stock_bench_aot.exe...',
+    );
     final stockCompile = Process.runSync(
       stockDartExecutable,
       [
@@ -764,9 +838,33 @@ Future<void> _buildBinaries({
       );
       exit(stockCompile.exitCode);
     }
+
+    print(
+      '   Compiling Stock Dart AOT (json_serializable) -> '
+      'bin/stock_json_serializable_aot.exe...',
+    );
+    final stockJsCompile = Process.runSync(
+      stockDartExecutable,
+      [
+        'compile',
+        'exe',
+        '$rootDir/dart/bin/dart_json_serializable.dart',
+        '-o',
+        '$rootDir/dart/bin/stock_json_serializable_aot.exe',
+      ],
+      workingDirectory: '$rootDir/dart',
+      environment: _toolchainEnv,
+    );
+    if (stockJsCompile.exitCode != 0) {
+      stderr.writeln(
+        'Error: Stock Dart json_serializable AOT compile error:\n'
+        '${stockJsCompile.stderr}',
+      );
+      exit(stockJsCompile.exitCode);
+    }
   }
 
-  // 4. Non-Dart binaries (unless --dart-only)
+  // 5. Non-Dart binaries (unless --dart-only)
   if (!dartOnly && targetLanguages.contains('rust')) {
     print('   Compiling Rust release binary (cargo build --release)...');
     final rustCompile = Process.runSync(
@@ -802,32 +900,47 @@ Future<List<Map<String, dynamic>>> _runProcess(
   String executable,
   List<String> args, {
   String? labelPrefix,
+  int trials = 3,
 }) async {
-  final results = <Map<String, dynamic>>[];
-  try {
-    final res = await Process.run(executable, args, environment: _toolchainEnv);
-    if (res.exitCode != 0) {
-      stderr.writeln('Error running $executable: ${res.stderr}');
-      return results;
-    }
-
-    final lines = res.stdout.toString().trim().split('\n');
-    for (final line in lines) {
-      if (line.trim().isEmpty) continue;
-      try {
-        final data = jsonDecode(line.trim()) as Map<String, dynamic>;
-        if (labelPrefix != null) {
-          data['runtime'] = labelPrefix;
-        }
-        results.add(data);
-      } catch (e) {
-        stderr.writeln('Failed to parse line: $line ($e)');
+  final bestByKey = <String, Map<String, dynamic>>{};
+  for (var t = 0; t < trials; t++) {
+    try {
+      final res = await Process.run(
+        executable,
+        args,
+        environment: _toolchainEnv,
+      );
+      if (res.exitCode != 0) {
+        stderr.writeln('Error running $executable: ${res.stderr}');
+        continue;
       }
+
+      final lines = res.stdout.toString().trim().split('\n');
+      for (final line in lines) {
+        if (line.trim().isEmpty) continue;
+        try {
+          final data = jsonDecode(line.trim()) as Map<String, dynamic>;
+          if (labelPrefix != null) {
+            data['runtime'] = labelPrefix;
+          }
+          final key =
+              '${data['language']}:${data['implementation']}:'
+              '${data['dataset']}:${data['mode']}';
+          final prev = bestByKey[key];
+          final mb = (data['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+          final prevMb = (prev?['throughput_mb_s'] as num?)?.toDouble() ?? -1.0;
+          if (prev == null || mb > prevMb) {
+            bestByKey[key] = data;
+          }
+        } catch (e) {
+          stderr.writeln('Failed to parse line: $line ($e)');
+        }
+      }
+    } catch (e) {
+      stderr.writeln('Process execution error for $executable: $e');
     }
-  } catch (e) {
-    stderr.writeln('Process execution error for $executable: $e');
   }
-  return results;
+  return bestByKey.values.toList();
 }
 
 Map<String, dynamic> _harvestSystemInfo() {
@@ -934,11 +1047,15 @@ Map<String, dynamic> _harvestToolchainInfo({String? stockDartBin}) {
   var goVersion = 'Unknown';
   var nodeVersion = 'Unknown';
   final dartPackages = <String, String>{
-    'codable': 'package:codable (SDK integration)',
+    'codable': 'package:codable (SDK Layer 1 native substrate)',
+    'json_serializable': 'package:json_serializable (Typed fromJson/toJson)',
+    'convert': 'dart:convert (Untyped Map/DOM)',
   };
   final rustPackages = <String, String>{};
   final goPackages = <String, String>{'encoding/json': 'Standard Library'};
-  final nodePackages = <String, String>{'v8_builtin': 'V8 C++ Built-in'};
+  final nodePackages = <String, String>{
+    'v8_builtin': 'V8 C++ Built-in (Untyped JS Object)',
+  };
 
   final toolchains = <String, dynamic>{};
 
@@ -962,7 +1079,9 @@ Map<String, dynamic> _harvestToolchainInfo({String? stockDartBin}) {
     toolchains['dart_stock'] = {
       'version': stockVersion,
       'packages': <String, String>{
-        'convert': 'Standard Library (stock out-of-the-box)',
+        'json_serializable':
+            'package:json_serializable (Typed fromJson/toJson)',
+        'convert': 'Standard Library (Untyped Map/DOM)',
       },
       'path': stockDartBin,
     };
@@ -1088,6 +1207,21 @@ String? _resolveDartBin(String path) {
   return null;
 }
 
+String _formatLatency(Map<String, dynamic>? item) {
+  if (item == null) return 'N/A';
+  final iterations = (item['iterations'] as num?)?.toDouble() ?? 1.0;
+  final elapsedNs = (item['elapsed_ns'] as num?)?.toDouble() ?? 0.0;
+  if (elapsedNs <= 0 || iterations <= 0) return 'N/A';
+  final latencyNs = elapsedNs / iterations;
+  if (latencyNs < 1000) {
+    return '${latencyNs.toStringAsFixed(0)} ns';
+  } else if (latencyNs < 1000000) {
+    return '${(latencyNs / 1000.0).toStringAsFixed(2)} µs';
+  } else {
+    return '${(latencyNs / 1000000.0).toStringAsFixed(2)} ms';
+  }
+}
+
 String _generateMarkdownReport(Map<String, dynamic> data) {
   final buffer = StringBuffer();
   final timestamp = data['timestamp'] ?? 'Unknown';
@@ -1096,7 +1230,7 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
   final rawBenchmarks = (data['benchmarks'] as List<dynamic>? ?? [])
       .cast<Map<String, dynamic>>();
 
-  buffer.writeln('# Benchmark Results\n');
+  buffer.writeln('# Cross-Language JSON Serialization Benchmark Results\n');
   buffer.writeln('* **Run Date**: `$timestamp`');
   buffer.writeln('* **System**: ${system['os']} | ${system['architecture']}');
   buffer.writeln(
@@ -1125,9 +1259,9 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
     }
   }
 
-  printToolchain('Dart (Custom SDK)', 'dart');
+  printToolchain('New Dart (Custom SDK)', 'dart');
   if (toolchains.containsKey('dart_stock')) {
-    printToolchain('Dart (Stock SDK)', 'dart_stock');
+    printToolchain('Stock Dart (Baseline SDK)', 'dart_stock');
   }
   final rustTc = toolchains['rust'] as Map<String, dynamic>?;
   if (rustTc != null && rustTc['version'] != 'Unknown') {
@@ -1143,21 +1277,26 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
   }
   buffer.writeln('');
   buffer.writeln(
-    '> [!NOTE]\n'
-    '> **Native Byte Buffer Contract & Implementation Context**:\n'
-    '> * **Native Byte Buffer Contract**: Native binaries (Dart AOT, Rust, Go) '
-    'benchmark direct UTF-8 byte serialization/deserialization '
-    '(`Uint8List` / `&[u8]` / `[]byte`), which represents real-world '
-    'production I/O (sockets, files, cache). Node.js executes via V8 C++ '
-    'built-ins.\n'
-    '> * **`Dart AOT (std)`**: Uses standard library `dart:convert`. Decode is '
-    '`utf8.decoder.fuse(json.decoder)` into dynamic `Map<String, dynamic>`. '
-    'Encode is `json.encoder.fuse(utf8.encoder)`.\n'
-    '> * **`Dart AOT (package:codable)`**: Uses the next-generation streaming '
-    'zero-allocation deserializer/serializer (`package:codable`) with '
-    'delimiter-fused reads, SWAR 64-bit jump tables, and Eisel-Lemire float '
-    'parsing operating directly over raw UTF-8 byte spans without '
-    'intermediate DOM maps.\n',
+    '> [!IMPORTANT]\n'
+    '> **Typed Struct Serialization vs. Untyped DOM Parsing**:\n'
+    '> * **Typed Struct Serialization (`Rust serde_json`, `Go encoding/json`, '
+    '`Stock Dart + json_serializable`, `New Dart + json_serializable`, '
+    '`New Dart + package:codable`)**: '
+    'Deserializes raw UTF-8 bytes (`Uint8List` / `&[u8]` / `[]byte`) into '
+    'strongly-typed domain model objects (`SmallDocument`, `TwitterResponse`, '
+    '`CitmCatalog`, `CanadaFeatureCollection`) and serializes those '
+    'strongly-typed models back to UTF-8 bytes.\n'
+    '> * **Untyped DOM Parsing (`Node.js V8`, `Stock Dart std_convert`, '
+    '`New Dart std_convert`)**: '
+    'Only parses UTF-8 bytes into an untyped dynamic AST '
+    '(`Map<String, dynamic>` in Dart or raw V8 JS `Object` in Node.js), '
+    'completely skipping typed `.fromJson(...)` / `.toJson()` model '
+    'hydration and validation.\n'
+    '> * **`New Dart + package:codable`**: Uses single-pass streaming '
+    'pull/push readers/writers (`JsonCodableDecoder.fromBytes` / '
+    '`JsonCodableEncoder.toBytes`) backed by the native `dart:convert` '
+    'Layer 1 UTF-8 token substrate, bypassing intermediate '
+    '`Map<String, dynamic>` AST allocation entirely.\n',
   );
 
   final datasets = rawBenchmarks
@@ -1165,36 +1304,38 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       .toSet()
       .toList();
 
-  final hasStockDart = rawBenchmarks.any(
-    (r) =>
-        r['language'] == 'dart_stock' ||
-        r['runtime'] == 'dart_stock_aot' ||
-        r['implementation'] == 'stock_convert_utf8',
-  );
-  final hasRust = rawBenchmarks.any((r) => r['language'] == 'rust');
-  final hasNode = rawBenchmarks.any((r) => r['language'] == 'node');
-  final hasGo = rawBenchmarks.any((r) => r['language'] == 'go');
+  Map<String, dynamic>? findRecord(
+    List<Map<String, dynamic>> subset,
+    bool Function(Map<String, dynamic>) predicate,
+  ) => subset.where(predicate).firstOrNull;
 
   for (final mode in ['decode', 'encode']) {
-    buffer.writeln('## ${mode.toUpperCase()} Throughput Matrix\n');
+    final modeUpper = mode.toUpperCase();
+    final secNum = mode == 'decode' ? '1' : '2';
+    final dirDesc = mode == 'decode'
+        ? 'deserialization (UTF-8 bytes -> Typed Structs)'
+        : 'serialization (Typed Structs -> UTF-8 bytes)';
     buffer.writeln(
-      'Higher throughput (MB/s) is better. '
-      'Medals (🥇, 🥈, 🥉) indicate top 3 performance per dataset.\n',
+      '## 1.$secNum $modeUpper — Apples-to-Apples Typed Struct Matrix\n',
+    );
+    buffer.writeln(
+      'Strongly-typed domain model $dirDesc. '
+      'Each cell displays **Throughput (`MiB/s`)** and '
+      '**Single-Pass Latency (`ms`/`µs`)**. '
+      'Medals (🥇, 🥈, 🥉) rank the top 3 typed struct contenders '
+      'per dataset.\n',
     );
     buffer.writeln('<!-- mdformat off -->');
-
-    // Build headers dynamically
-    final headerCells = <String>['Dataset'];
-    if (hasStockDart) headerCells.add('Dart AOT (Stock std)');
-    headerCells.add('Dart AOT (std)');
-    headerCells.add('Dart AOT (package:codable)');
-    if (hasRust) headerCells.add('Rust (`serde_json`)');
-    if (hasNode) headerCells.add('Node.js (V8)');
-    if (hasGo) headerCells.add('Go (`encoding/json`)');
-
-    buffer.writeln('| ${headerCells.join(' | ')} |');
     buffer.writeln(
-      '| :--- | ${List.filled(headerCells.length - 1, ':---:').join(' | ')} |',
+      '| Dataset | Rust (`serde_json` Typed) | Go (`encoding/json` Typed) | '
+      'Stock Dart + `json_serializable` (Typed) | '
+      'New Dart + `json_serializable` (Typed) | '
+      'New Dart + `package:codable` (Typed) | '
+      '`codable` vs Stock `json_serializable` | '
+      '`codable` vs Go `encoding/json` |',
+    );
+    buffer.writeln(
+      '| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |',
     );
 
     for (final dataset in datasets) {
@@ -1203,82 +1344,198 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
           .toList();
       if (subset.isEmpty) continue;
 
-      final stockDartBest = subset
-          .where(
-            (r) =>
-                r['language'] == 'dart_stock' ||
-                r['runtime'] == 'dart_stock_aot' ||
-                r['implementation'] == 'stock_convert_utf8',
-          )
-          .firstOrNull;
+      final rustRec = findRecord(subset, (r) => r['language'] == 'rust');
+      final goRec = findRecord(subset, (r) => r['language'] == 'go');
+      final stockJsRec = findRecord(
+        subset,
+        (r) => r['implementation'] == 'stock_json_serializable',
+      );
+      final newJsRec = findRecord(
+        subset,
+        (r) =>
+            r['language'] == 'dart' &&
+            r['implementation'] == 'json_serializable',
+      );
+      final codableRec = findRecord(
+        subset,
+        (r) =>
+            r['language'] == 'dart' &&
+            (r['implementation'] == 'codable' ||
+                r['implementation'] == 'codable_utf8'),
+      );
 
-      final dartStdBest = subset
-          .where(
-            (r) =>
-                (r['language'] == 'dart' || r['runtime'] == 'dart_aot') &&
-                (r['implementation'] == 'convert_utf8' ||
-                    r['implementation'] == 'convert'),
-          )
-          .firstOrNull;
+      final rustMb = (rustRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final goMb = (goRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final stockJsMb =
+          (stockJsRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final newJsMb = (newJsRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final codableMb =
+          (codableRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
 
-      final dartCodableBest = subset
-          .where(
-            (r) =>
-                (r['language'] == 'dart' || r['runtime'] == 'dart_aot') &&
-                (r['implementation'] == 'codable_utf8' ||
-                    r['implementation'] == 'codable' ||
-                    r['implementation'] == 'package_codable'),
-          )
-          .firstOrNull;
-
-      final rustBest = subset.where((r) => r['language'] == 'rust').firstOrNull;
-      final nodeBest = subset.where((r) => r['language'] == 'node').firstOrNull;
-      final goBest = subset.where((r) => r['language'] == 'go').firstOrNull;
-
-      final stockDartMb =
-          (stockDartBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
-      final dartStdMb =
-          (dartStdBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
-      final dartCodableMb =
-          (dartCodableBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
-      final rustMb = (rustBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
-      final nodeMb = (nodeBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
-      final goMb = (goBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
-
-      final scores = <ScoreEntry>[
-        if (hasStockDart) ScoreEntry('dart_stock', stockDartMb),
-        ScoreEntry('dart_std', dartStdMb),
-        ScoreEntry('dart_codable', dartCodableMb),
-        if (hasRust) ScoreEntry('rust', rustMb),
-        if (hasNode) ScoreEntry('node', nodeMb),
-        if (hasGo) ScoreEntry('go', goMb),
+      final typedScores = <ScoreEntry>[
+        if (rustMb > 0) ScoreEntry('rust', rustMb),
+        if (goMb > 0) ScoreEntry('go', goMb),
+        if (stockJsMb > 0) ScoreEntry('stock_js', stockJsMb),
+        if (newJsMb > 0) ScoreEntry('new_js', newJsMb),
+        if (codableMb > 0) ScoreEntry('codable', codableMb),
       ]..sort((a, b) => b.score.compareTo(a.score));
 
-      final winnerMb = scores.first.score > 0 ? scores.first.score : 1.0;
+      String typedMedal(String key) {
+        if (typedScores.isNotEmpty && typedScores[0].name == key) return '🥇 ';
+        if (typedScores.length >= 2 && typedScores[1].name == key) return '🥈 ';
+        if (typedScores.length >= 3 && typedScores[2].name == key) return '🥉 ';
+        return '';
+      }
+
+      String formatTypedCell(
+        Map<String, dynamic>? item,
+        String key,
+        double mb,
+      ) {
+        if (item == null || mb == 0) return 'N/A';
+        final m = typedMedal(key);
+        final lat = _formatLatency(item);
+        final cell = '${mb.toStringAsFixed(1)} MB/s ($lat)';
+        return m.isNotEmpty ? '$m**$cell**' : cell;
+      }
+
+      final vsStockJs = (codableMb > 0 && stockJsMb > 0)
+          ? '**${(codableMb / stockJsMb).toStringAsFixed(2)}x**'
+          : 'N/A';
+      final vsGo = (codableMb > 0 && goMb > 0)
+          ? '**${(codableMb / goMb).toStringAsFixed(2)}x**'
+          : 'N/A';
+
+      final fileBytes = (subset.first['file_bytes'] as num?)?.toInt() ?? 0;
+      final sizeStr = fileBytes > 1048576
+          ? '${(fileBytes / 1048576).toStringAsFixed(2)} MB'
+          : (fileBytes >= 1024
+                ? '${(fileBytes / 1024).toStringAsFixed(1)} KB'
+                : '$fileBytes B');
+
+      buffer.writeln(
+        '| **`$dataset`** ($sizeStr) | '
+        '${formatTypedCell(rustRec, 'rust', rustMb)} | '
+        '${formatTypedCell(goRec, 'go', goMb)} | '
+        '${formatTypedCell(stockJsRec, 'stock_js', stockJsMb)} | '
+        '${formatTypedCell(newJsRec, 'new_js', newJsMb)} | '
+        '${formatTypedCell(codableRec, 'codable', codableMb)} | '
+        '$vsStockJs | '
+        '$vsGo |',
+      );
+    }
+    buffer.writeln('<!-- mdformat on -->\n');
+  }
+
+  for (final mode in ['decode', 'encode']) {
+    final modeUpper = mode.toUpperCase();
+    final secNum = mode == 'decode' ? '1' : '2';
+    buffer.writeln(
+      '## 2.$secNum $modeUpper — Complete Cross-Language Matrix '
+      '(Typed Structs + Untyped DOM)\n',
+    );
+    buffer.writeln(
+      'Includes both **Typed Struct** contenders (`Rust`, `Go`, '
+      '`Dart json_serializable`, `Dart package:codable`) and '
+      '**Untyped DOM** parsers (`Node.js V8 [Untyped JS Object]`, '
+      '`Stock/New Dart std_convert [Untyped Map/DOM]`). '
+      'Medals (🥇, 🥈, 🥉) indicate top 3 raw throughput across all 8 '
+      'columns.\n',
+    );
+    buffer.writeln('<!-- mdformat off -->');
+    buffer.writeln(
+      '| Dataset | Rust (`serde_json` Typed) | Go (`encoding/json` Typed) | '
+      'Node.js V8 (`Untyped JS Object`) | '
+      'Stock Dart + `json_serializable` (`Typed`) | '
+      'New Dart + `json_serializable` (`Typed`) | '
+      'New Dart + `package:codable` (`Typed`) | '
+      'Stock Dart `std_convert` (`Untyped Map/DOM`) | '
+      'New Dart `std_convert` (`Untyped Map/DOM`) |',
+    );
+    buffer.writeln(
+      '| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | '
+      ':---: |',
+    );
+
+    for (final dataset in datasets) {
+      final subset = rawBenchmarks
+          .where((r) => r['dataset'] == dataset && r['mode'] == mode)
+          .toList();
+      if (subset.isEmpty) continue;
+
+      final rustRec = findRecord(subset, (r) => r['language'] == 'rust');
+      final goRec = findRecord(subset, (r) => r['language'] == 'go');
+      final nodeRec = findRecord(subset, (r) => r['language'] == 'node');
+      final stockJsRec = findRecord(
+        subset,
+        (r) => r['implementation'] == 'stock_json_serializable',
+      );
+      final newJsRec = findRecord(
+        subset,
+        (r) =>
+            r['language'] == 'dart' &&
+            r['implementation'] == 'json_serializable',
+      );
+      final codableRec = findRecord(
+        subset,
+        (r) =>
+            r['language'] == 'dart' &&
+            (r['implementation'] == 'codable' ||
+                r['implementation'] == 'codable_utf8'),
+      );
+      final stockStdRec = findRecord(
+        subset,
+        (r) => r['implementation'] == 'stock_convert_utf8',
+      );
+      final newStdRec = findRecord(
+        subset,
+        (r) =>
+            r['language'] == 'dart' &&
+            (r['implementation'] == 'convert_utf8' ||
+                r['implementation'] == 'convert'),
+      );
+
+      final rustMb = (rustRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final goMb = (goRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final nodeMb = (nodeRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final stockJsMb =
+          (stockJsRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final newJsMb = (newJsRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final codableMb =
+          (codableRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final stockStdMb =
+          (stockStdRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final newStdMb =
+          (newStdRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+
+      final allScores = <ScoreEntry>[
+        if (rustMb > 0) ScoreEntry('rust', rustMb),
+        if (goMb > 0) ScoreEntry('go', goMb),
+        if (nodeMb > 0) ScoreEntry('node', nodeMb),
+        if (stockJsMb > 0) ScoreEntry('stock_js', stockJsMb),
+        if (newJsMb > 0) ScoreEntry('new_js', newJsMb),
+        if (codableMb > 0) ScoreEntry('codable', codableMb),
+        if (stockStdMb > 0) ScoreEntry('stock_std', stockStdMb),
+        if (newStdMb > 0) ScoreEntry('new_std', newStdMb),
+      ]..sort((a, b) => b.score.compareTo(a.score));
+
+      final winnerMb = allScores.isNotEmpty && allScores.first.score > 0
+          ? allScores.first.score
+          : 1.0;
 
       String medal(String key) {
-        if (scores.isNotEmpty && scores[0].name == key && scores[0].score > 0) {
-          return '🥇 ';
-        }
-        if (scores.length >= 2 &&
-            scores[1].name == key &&
-            scores[1].score > 0) {
-          return '🥈 ';
-        }
-        if (scores.length >= 3 &&
-            scores[2].name == key &&
-            scores[2].score > 0) {
-          return '🥉 ';
-        }
+        if (allScores.isNotEmpty && allScores[0].name == key) return '🥇 ';
+        if (allScores.length >= 2 && allScores[1].name == key) return '🥈 ';
+        if (allScores.length >= 3 && allScores[2].name == key) return '🥉 ';
         return '';
       }
 
       String formatCell(Map<String, dynamic>? item, String key, double mb) {
         if (item == null || mb == 0) return 'N/A';
         final m = medal(key);
-        final isBold = m.isNotEmpty;
-        final mbStr = '${mb.toStringAsFixed(1)} MB/s';
-        return isBold ? '$m**$mbStr**' : mbStr;
+        final lat = _formatLatency(item);
+        final mbStr = '${mb.toStringAsFixed(1)} MB/s ($lat)';
+        return m.isNotEmpty ? '$m**$mbStr**' : mbStr;
       }
 
       String formatPercent(double mb) {
@@ -1290,32 +1547,34 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
 
       final fileBytes = (subset.first['file_bytes'] as num?)?.toInt() ?? 0;
       final sizeStr = fileBytes > 1048576
-          ? '${(fileBytes / 1048576).toStringAsFixed(1)} MB'
-          : '${(fileBytes / 1024).toStringAsFixed(0)} KB';
+          ? '${(fileBytes / 1048576).toStringAsFixed(2)} MB'
+          : (fileBytes >= 1024
+                ? '${(fileBytes / 1024).toStringAsFixed(1)} KB'
+                : '$fileBytes B');
 
-      // Row 1: Throughput
-      final rowCells = <String>['**`$dataset`** (~$sizeStr)'];
-      if (hasStockDart) {
-        rowCells.add(formatCell(stockDartBest, 'dart_stock', stockDartMb));
-      }
-      rowCells.add(formatCell(dartStdBest, 'dart_std', dartStdMb));
-      rowCells.add(formatCell(dartCodableBest, 'dart_codable', dartCodableMb));
-      if (hasRust) rowCells.add(formatCell(rustBest, 'rust', rustMb));
-      if (hasNode) rowCells.add(formatCell(nodeBest, 'node', nodeMb));
-      if (hasGo) rowCells.add(formatCell(goBest, 'go', goMb));
+      buffer.writeln(
+        '| **`$dataset`** ($sizeStr) | '
+        '${formatCell(rustRec, 'rust', rustMb)} | '
+        '${formatCell(goRec, 'go', goMb)} | '
+        '${formatCell(nodeRec, 'node', nodeMb)} | '
+        '${formatCell(stockJsRec, 'stock_js', stockJsMb)} | '
+        '${formatCell(newJsRec, 'new_js', newJsMb)} | '
+        '${formatCell(codableRec, 'codable', codableMb)} | '
+        '${formatCell(stockStdRec, 'stock_std', stockStdMb)} | '
+        '${formatCell(newStdRec, 'new_std', newStdMb)} |',
+      );
 
-      buffer.writeln('| ${rowCells.join(' | ')} |');
-
-      // Row 2: % of Winner
-      final pctCells = <String>['↳ *% of Winner*'];
-      if (hasStockDart) pctCells.add(formatPercent(stockDartMb));
-      pctCells.add(formatPercent(dartStdMb));
-      pctCells.add(formatPercent(dartCodableMb));
-      if (hasRust) pctCells.add(formatPercent(rustMb));
-      if (hasNode) pctCells.add(formatPercent(nodeMb));
-      if (hasGo) pctCells.add(formatPercent(goMb));
-
-      buffer.writeln('| ${pctCells.join(' | ')} |');
+      buffer.writeln(
+        '| ↳ *% of Winner* | '
+        '${formatPercent(rustMb)} | '
+        '${formatPercent(goMb)} | '
+        '${formatPercent(nodeMb)} | '
+        '${formatPercent(stockJsMb)} | '
+        '${formatPercent(newJsMb)} | '
+        '${formatPercent(codableMb)} | '
+        '${formatPercent(stockStdMb)} | '
+        '${formatPercent(newStdMb)} |',
+      );
     }
     buffer.writeln('<!-- mdformat on -->\n');
   }
@@ -1385,32 +1644,53 @@ void _syncCodableMonorepo(Map<String, dynamic> fullResultPayload) {
           modeEntry['rust_serde_json_typed'] = {
             'throughput_mb_s': mb,
             'latency_ms': latencyMsFormatted,
+            'semantic_category': 'typed_struct',
           };
         } else if (lang == 'node') {
           modeEntry['node_v8_builtin'] = {
             'throughput_mb_s': mb,
             'latency_ms': latencyMsFormatted,
+            'semantic_category': 'untyped_dom',
+            'note': 'Untyped JS Object',
           };
         } else if (lang == 'go') {
           modeEntry['go_encoding_json_typed'] = {
             'throughput_mb_s': mb,
             'latency_ms': latencyMsFormatted,
+            'semantic_category': 'typed_struct',
           };
         } else if (lang == 'dart' && impl == 'convert_utf8') {
           modeEntry['dart_aot_std_convert'] = {
             'throughput_mb_s': mb,
             'latency_ms': latencyMsFormatted,
+            'semantic_category': 'untyped_dom',
+            'note': 'Untyped Map/DOM',
+          };
+        } else if (lang == 'dart' && impl == 'json_serializable') {
+          modeEntry['dart_aot_json_serializable'] = {
+            'throughput_mb_s': mb,
+            'latency_ms': latencyMsFormatted,
+            'semantic_category': 'typed_struct',
           };
         } else if (lang == 'dart' &&
             (impl == 'codable' || impl == 'codable_utf8')) {
           modeEntry['dart_aot_package_codable'] = {
             'throughput_mb_s': mb,
             'latency_ms': latencyMsFormatted,
+            'semantic_category': 'typed_struct',
           };
-        } else if (lang == 'dart_stock' || impl == 'stock_convert_utf8') {
+        } else if (impl == 'stock_convert_utf8') {
           modeEntry['dart_aot_stock_convert'] = {
             'throughput_mb_s': mb,
             'latency_ms': latencyMsFormatted,
+            'semantic_category': 'untyped_dom',
+            'note': 'Untyped Map/DOM',
+          };
+        } else if (impl == 'stock_json_serializable') {
+          modeEntry['dart_aot_stock_json_serializable'] = {
+            'throughput_mb_s': mb,
+            'latency_ms': latencyMsFormatted,
+            'semantic_category': 'typed_struct',
           };
         }
       }
@@ -1429,7 +1709,6 @@ void _syncCodableMonorepo(Map<String, dynamic> fullResultPayload) {
     try {
       final content = reportFile.readAsStringSync();
       final updatedTables = _generateReportDocSection(rawBenchmarks);
-      // Replace Section 2 if marker exists
       final s2Start = content.indexOf('## 2. Multi-Language Macro Benchmark');
       final s3Start = content.indexOf('## 3. Kostya');
 
@@ -1471,12 +1750,16 @@ String _generateReportDocSection(List<Map<String, dynamic>> rawBenchmarks) {
     buffer.writeln('### $modeLabel\n');
     buffer.writeln('<!-- mdformat off(prevent table wrapping) -->');
     buffer.writeln(
-      '| Dataset | Dart AOT (std `dart:convert`) | '
-      'Dart AOT (`package:codable`) | '
-      'Rust (`serde_json` Typed) | Node.js (V8 Built-in) | '
-      'Go (`encoding/json` Typed) |',
+      '| Dataset | Rust (`serde_json` Typed) | Go (`encoding/json` Typed) | '
+      'Stock Dart + `json_serializable` (Typed) | '
+      'New Dart + `json_serializable` (Typed) | '
+      'New Dart + `package:codable` (Typed) | '
+      'Node.js V8 (`Untyped JS Object`) | '
+      'New Dart `std_convert` (`Untyped Map/DOM`) |',
     );
-    buffer.writeln('| :--- | :---: | :---: | :---: | :---: | :---: |');
+    buffer.writeln(
+      '| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |',
+    );
 
     for (final dataset in datasets) {
       final subset = rawBenchmarks
@@ -1484,15 +1767,18 @@ String _generateReportDocSection(List<Map<String, dynamic>> rawBenchmarks) {
           .toList();
       if (subset.isEmpty) continue;
 
-      final dartStdBest = subset
+      final rustBest = subset.where((r) => r['language'] == 'rust').firstOrNull;
+      final goBest = subset.where((r) => r['language'] == 'go').firstOrNull;
+      final stockJsBest = subset
+          .where((r) => r['implementation'] == 'stock_json_serializable')
+          .firstOrNull;
+      final newJsBest = subset
           .where(
             (r) =>
-                (r['language'] == 'dart' || r['runtime'] == 'dart_aot') &&
-                (r['implementation'] == 'convert_utf8' ||
-                    r['implementation'] == 'convert'),
+                r['language'] == 'dart' &&
+                r['implementation'] == 'json_serializable',
           )
           .firstOrNull;
-
       final dartCodableBest = subset
           .where(
             (r) =>
@@ -1502,28 +1788,37 @@ String _generateReportDocSection(List<Map<String, dynamic>> rawBenchmarks) {
                     r['implementation'] == 'package_codable'),
           )
           .firstOrNull;
-
-      final rustBest = subset.where((r) => r['language'] == 'rust').firstOrNull;
       final nodeBest = subset.where((r) => r['language'] == 'node').firstOrNull;
-      final goBest = subset.where((r) => r['language'] == 'go').firstOrNull;
+      final dartStdBest = subset
+          .where(
+            (r) =>
+                (r['language'] == 'dart' || r['runtime'] == 'dart_aot') &&
+                (r['implementation'] == 'convert_utf8' ||
+                    r['implementation'] == 'convert'),
+          )
+          .firstOrNull;
 
-      final dartStdMb =
-          (dartStdBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final rustMb = (rustBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final goMb = (goBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final stockJsMb =
+          (stockJsBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final newJsMb =
+          (newJsBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
       final dartCodableMb =
           (dartCodableBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
-      final rustMb = (rustBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
       final nodeMb = (nodeBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
-      final goMb = (goBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+      final dartStdMb =
+          (dartStdBest?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
 
       final scores = <ScoreEntry>[
-        ScoreEntry('dart_std', dartStdMb),
-        ScoreEntry('dart_codable', dartCodableMb),
-        ScoreEntry('rust', rustMb),
-        ScoreEntry('node', nodeMb),
-        ScoreEntry('go', goMb),
+        if (rustMb > 0) ScoreEntry('rust', rustMb),
+        if (goMb > 0) ScoreEntry('go', goMb),
+        if (stockJsMb > 0) ScoreEntry('stock_js', stockJsMb),
+        if (newJsMb > 0) ScoreEntry('new_js', newJsMb),
+        if (dartCodableMb > 0) ScoreEntry('dart_codable', dartCodableMb),
+        if (nodeMb > 0) ScoreEntry('node', nodeMb),
+        if (dartStdMb > 0) ScoreEntry('dart_std', dartStdMb),
       ]..sort((a, b) => b.score.compareTo(a.score));
-
-      final winnerMb = scores.first.score > 0 ? scores.first.score : 1.0;
 
       String medal(String key) {
         if (scores.isNotEmpty && scores[0].name == key && scores[0].score > 0) {
@@ -1546,31 +1841,9 @@ String _generateReportDocSection(List<Map<String, dynamic>> rawBenchmarks) {
         if (item == null || mb == 0) return 'N/A';
         final m = medal(key);
         final isBold = m.isNotEmpty;
-        final iterations = (item['iterations'] as num?)?.toDouble() ?? 1.0;
-        final elapsedNs = (item['elapsed_ns'] as num?)?.toDouble() ?? 0.0;
-        final fileBytes = (item['file_bytes'] as num?)?.toDouble() ?? 0.0;
-        final totalBytes = fileBytes * iterations;
-        final elapsedSec = elapsedNs / 1e9;
-        final mib = elapsedSec > 0
-            ? (totalBytes / (1024 * 1024)) / elapsedSec
-            : 0.0;
-        final latencyNs = elapsedNs / iterations;
-        final latencyStr = latencyNs < 1000
-            ? '${latencyNs.toStringAsFixed(0)} ns'
-            : (latencyNs < 1000000
-                  ? '${(latencyNs / 1000.0).toStringAsFixed(2)} μs'
-                  : '${(latencyNs / 1000000.0).toStringAsFixed(2)} ms');
-
-        final formatted =
-            '${mib.toStringAsFixed(1)} MiB/s (${mb.toStringAsFixed(1)} MB/s, $latencyStr)';
+        final latencyStr = _formatLatency(item);
+        final formatted = '${mb.toStringAsFixed(1)} MB/s ($latencyStr)';
         return isBold ? '$m**$formatted**' : formatted;
-      }
-
-      String formatPercent(double mb) {
-        if (mb == 0) return 'N/A';
-        final pct = (mb / winnerMb * 100.0).toStringAsFixed(1);
-        final isWinner = mb == winnerMb;
-        return isWinner ? '**$pct%**' : '$pct%';
       }
 
       final fileBytes = (subset.first['file_bytes'] as num?)?.toInt() ?? 0;
@@ -1582,20 +1855,13 @@ String _generateReportDocSection(List<Map<String, dynamic>> rawBenchmarks) {
 
       buffer.writeln(
         '| **`$dataset`** ($sizeStr) | '
-        '${formatDocCell(dartStdBest, 'dart_std', dartStdMb)} | '
-        '${formatDocCell(dartCodableBest, 'dart_codable', dartCodableMb)} | '
         '${formatDocCell(rustBest, 'rust', rustMb)} | '
+        '${formatDocCell(goBest, 'go', goMb)} | '
+        '${formatDocCell(stockJsBest, 'stock_js', stockJsMb)} | '
+        '${formatDocCell(newJsBest, 'new_js', newJsMb)} | '
+        '${formatDocCell(dartCodableBest, 'dart_codable', dartCodableMb)} | '
         '${formatDocCell(nodeBest, 'node', nodeMb)} | '
-        '${formatDocCell(goBest, 'go', goMb)} |',
-      );
-
-      buffer.writeln(
-        '| ↳ *% of Winner* | '
-        '${formatPercent(dartStdMb)} | '
-        '${formatPercent(dartCodableMb)} | '
-        '${formatPercent(rustMb)} | '
-        '${formatPercent(nodeMb)} | '
-        '${formatPercent(goMb)} |',
+        '${formatDocCell(dartStdBest, 'dart_std', dartStdMb)} |',
       );
     }
     buffer.writeln('<!-- mdformat on -->\n');
