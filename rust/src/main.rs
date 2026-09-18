@@ -11,6 +11,7 @@ use models::*;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
+#[allow(clippy::large_enum_variant)]
 enum PredecodedModel {
     Small(SmallDocument),
     Twitter(TwitterResponse),
@@ -78,16 +79,19 @@ fn main() {
         let m: SmallDocument = serde_json::from_slice(&bytes).expect("Initial parse small failed");
         PredecodedModel::Small(m)
     } else if dataset_name.contains("twitter") {
-        let m: TwitterResponse = serde_json::from_slice(&bytes).expect("Initial parse twitter failed");
+        let m: TwitterResponse =
+            serde_json::from_slice(&bytes).expect("Initial parse twitter failed");
         PredecodedModel::Twitter(m)
     } else if dataset_name.contains("citm") {
         let m: CitmCatalog = serde_json::from_slice(&bytes).expect("Initial parse citm failed");
         PredecodedModel::Citm(m)
     } else if dataset_name.contains("canada") {
-        let m: CanadaFeatureCollection = serde_json::from_slice(&bytes).expect("Initial parse canada failed");
+        let m: CanadaFeatureCollection =
+            serde_json::from_slice(&bytes).expect("Initial parse canada failed");
         PredecodedModel::Canada(m)
     } else {
-        let m: serde_json::Value = serde_json::from_slice(&bytes).expect("Initial parse unknown failed");
+        let m: serde_json::Value =
+            serde_json::from_slice(&bytes).expect("Initial parse unknown failed");
         PredecodedModel::Unknown(m)
     };
 
@@ -103,7 +107,8 @@ fn main() {
                 let val: CitmCatalog = serde_json::from_slice(&bytes).expect("decode failed");
                 std::hint::black_box(val);
             } else if dataset_name.contains("canada") {
-                let val: CanadaFeatureCollection = serde_json::from_slice(&bytes).expect("decode failed");
+                let val: CanadaFeatureCollection =
+                    serde_json::from_slice(&bytes).expect("decode failed");
                 std::hint::black_box(val);
             } else {
                 let val: serde_json::Value = serde_json::from_slice(&bytes).expect("decode failed");
