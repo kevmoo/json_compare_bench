@@ -13,6 +13,7 @@ import 'package:json_compare_bench_dart/src/models/citm_catalog.dart';
 import 'package:json_compare_bench_dart/src/models/small.dart';
 import 'package:json_compare_bench_dart/src/models/twitter.dart';
 
+@pragma('vm:entry-point')
 Object? blackholeSink;
 
 @pragma('vm:never-inline')
@@ -153,6 +154,10 @@ void runBenchmark({
     runPass();
   }
   stopwatch.stop();
+
+  if (identical(blackholeSink, Object())) {
+    stderr.writeln(blackholeSink);
+  }
 
   final elapsedMicros = stopwatch.elapsedMicroseconds;
   final elapsedNs = elapsedMicros * 1000;

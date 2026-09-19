@@ -16,6 +16,7 @@ import 'package:json_compare_bench_dart/src/models/json_serializable/twitter.dar
 final utf8JsonDecoder = utf8.decoder.fuse(json.decoder);
 final utf8JsonEncoder = json.encoder.fuse(utf8.encoder);
 
+@pragma('vm:entry-point')
 Object? blackholeSink;
 
 @pragma('vm:never-inline')
@@ -155,6 +156,10 @@ void runBenchmark({
     runPass();
   }
   stopwatch.stop();
+
+  if (identical(blackholeSink, Object())) {
+    stderr.writeln(blackholeSink);
+  }
 
   final elapsedMicros = stopwatch.elapsedMicroseconds;
   final elapsedNs = elapsedMicros * 1000;

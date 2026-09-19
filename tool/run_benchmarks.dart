@@ -1416,15 +1416,14 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
           (codableRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
 
       final typedScores = <ScoreEntry>[
-        if (rustMb > 0 && rustRec?['is_robust_stable'] != false)
+        if (rustMb > 0 && _isVerifiedStable(rustRec))
           ScoreEntry('rust', rustMb),
-        if (goMb > 0 && goRec?['is_robust_stable'] != false)
-          ScoreEntry('go', goMb),
-        if (stockJsMb > 0 && stockJsRec?['is_robust_stable'] != false)
+        if (goMb > 0 && _isVerifiedStable(goRec)) ScoreEntry('go', goMb),
+        if (stockJsMb > 0 && _isVerifiedStable(stockJsRec))
           ScoreEntry('stock_js', stockJsMb),
-        if (newJsMb > 0 && newJsRec?['is_robust_stable'] != false)
+        if (newJsMb > 0 && _isVerifiedStable(newJsRec))
           ScoreEntry('new_js', newJsMb),
-        if (codableMb > 0 && codableRec?['is_robust_stable'] != false)
+        if (codableMb > 0 && _isVerifiedStable(codableRec))
           ScoreEntry('codable', codableMb),
       ]..sort((a, b) => b.score.compareTo(a.score));
 
@@ -1593,21 +1592,20 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
           (newStdRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
 
       final allScores = <ScoreEntry>[
-        if (rustMb > 0 && rustRec?['is_robust_stable'] != false)
+        if (rustMb > 0 && _isVerifiedStable(rustRec))
           ScoreEntry('rust', rustMb),
-        if (goMb > 0 && goRec?['is_robust_stable'] != false)
-          ScoreEntry('go', goMb),
-        if (nodeMb > 0 && nodeRec?['is_robust_stable'] != false)
+        if (goMb > 0 && _isVerifiedStable(goRec)) ScoreEntry('go', goMb),
+        if (nodeMb > 0 && _isVerifiedStable(nodeRec))
           ScoreEntry('node', nodeMb),
-        if (stockJsMb > 0 && stockJsRec?['is_robust_stable'] != false)
+        if (stockJsMb > 0 && _isVerifiedStable(stockJsRec))
           ScoreEntry('stock_js', stockJsMb),
-        if (newJsMb > 0 && newJsRec?['is_robust_stable'] != false)
+        if (newJsMb > 0 && _isVerifiedStable(newJsRec))
           ScoreEntry('new_js', newJsMb),
-        if (codableMb > 0 && codableRec?['is_robust_stable'] != false)
+        if (codableMb > 0 && _isVerifiedStable(codableRec))
           ScoreEntry('codable', codableMb),
-        if (stockStdMb > 0 && stockStdRec?['is_robust_stable'] != false)
+        if (stockStdMb > 0 && _isVerifiedStable(stockStdRec))
           ScoreEntry('stock_std', stockStdMb),
-        if (newStdMb > 0 && newStdRec?['is_robust_stable'] != false)
+        if (newStdMb > 0 && _isVerifiedStable(newStdRec))
           ScoreEntry('new_std', newStdMb),
       ]..sort((a, b) => b.score.compareTo(a.score));
 
@@ -1634,11 +1632,11 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
       }
 
       String formatPercent(Map<String, dynamic>? item, double mb) {
-        if (item == null || mb == 0) return 'N/A';
-        final isUnstable = item['is_robust_stable'] == false;
+        if (item == null || mb == 0 || winnerMb <= 0) return 'N/A';
+        final isStable = _isVerifiedStable(item);
         final pct = (mb / winnerMb * 100.0).toStringAsFixed(1);
-        final isWinner = !isUnstable && mb == winnerMb;
-        return isWinner ? '**$pct%**' : '$pct%';
+        if (!isStable) return '$pct% ❓';
+        return mb == winnerMb ? '**$pct%**' : '$pct%';
       }
 
       final fileBytes = (subset.first['file_bytes'] as num?)?.toInt() ?? 0;
@@ -1800,6 +1798,12 @@ void _syncCodableMonorepo(Map<String, dynamic> fullResultPayload) {
   final markdownOutput = _generateMarkdownReport(fullResultPayload);
   reportFile.writeAsStringSync(markdownOutput);
   print('>> Synchronized benchmark report to: ${reportFile.path}');
+}
+
+bool _isVerifiedStable(Map<String, dynamic>? r) {
+  if (r == null || r['is_robust_stable'] != true) return false;
+  final samples = r['raw_samples_ns'] as List<dynamic>?;
+  return samples != null && samples.length >= 2;
 }
 
 class ScoreEntry {

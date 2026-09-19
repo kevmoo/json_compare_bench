@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:args/args.dart';
 import 'package:json_compare_bench_dart/json_rw.dart';
 
+@pragma('vm:entry-point')
 Object? blackholeSink;
 
 @pragma('vm:never-inline')
@@ -169,6 +170,10 @@ void runBenchmark({
     runPass();
   }
   stopwatch.stop();
+
+  if (identical(blackholeSink, Object())) {
+    stderr.writeln(blackholeSink);
+  }
 
   final elapsedMicros = stopwatch.elapsedMicroseconds;
   final elapsedNs = elapsedMicros * 1000;
