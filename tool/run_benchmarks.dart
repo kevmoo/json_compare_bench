@@ -5,12 +5,11 @@ import 'package:args/args.dart';
 import 'package:bench_press/bench_press.dart';
 
 final rootDir = File(Platform.script.toFilePath()).parent.parent.path;
-const sdkRepoDir =
-    '/usr/local/google/home/kevmoo/github/dart-sdk/core/agent-json-utf8-kernels/sdk';
+final homeDir = Platform.environment['HOME'] ?? '';
+final sdkRepoDir = '$homeDir/github/dart-sdk/core/agent-json-utf8-kernels/sdk';
 final customSdkDeployDir =
-    '${Platform.environment['HOME'] ?? ''}/.local/share/dart-sdk-json-utf8-kernels/dart-sdk';
-const codableMonorepoDir =
-    '/usr/local/google/home/kevmoo/github/kevmoo/codable.dart';
+    '$homeDir/.local/share/dart-sdk-json-utf8-kernels/dart-sdk';
+final codableMonorepoDir = '$homeDir/github/kevmoo/codable.dart';
 
 String get nodeBin => _findNode();
 String get customDartBin => _findCustomDart();
