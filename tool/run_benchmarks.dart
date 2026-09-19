@@ -817,50 +817,65 @@ Future<void> _buildBinaries({
 
   // 4. Stock Dart SDK (if provided)
   if (stockDartExecutable != null) {
-    print(
-      '   Compiling Stock Dart AOT (std_convert) -> bin/stock_bench_aot.exe...',
+    final substrateFile = File(
+      '$codableMonorepoDir/pkgs/codable/lib/src/substrate/substrate.dart',
     );
-    final stockCompile = Process.runSync(
-      stockDartExecutable,
-      [
-        'compile',
-        'exe',
-        '$rootDir/dart/bin/bench.dart',
-        '-o',
-        '$rootDir/dart/bin/stock_bench_aot.exe',
-      ],
-      workingDirectory: '$rootDir/dart',
-      environment: _toolchainEnv,
-    );
-    if (stockCompile.exitCode != 0) {
-      stderr.writeln(
-        'Error: Stock Dart AOT compile error:\n${stockCompile.stderr}',
+    final originalSubstrate = substrateFile.existsSync()
+        ? substrateFile.readAsStringSync()
+        : null;
+    try {
+      if (substrateFile.existsSync()) {
+        substrateFile.writeAsStringSync("export 'substrate_mock.dart';\n");
+      }
+      print(
+        '   Compiling Stock Dart AOT (std_convert) -> bin/stock_bench_aot.exe...',
       );
-      exit(stockCompile.exitCode);
-    }
+      final stockCompile = Process.runSync(
+        stockDartExecutable,
+        [
+          'compile',
+          'exe',
+          '$rootDir/dart/bin/bench.dart',
+          '-o',
+          '$rootDir/dart/bin/stock_bench_aot.exe',
+        ],
+        workingDirectory: '$rootDir/dart',
+        environment: _toolchainEnv,
+      );
+      if (stockCompile.exitCode != 0) {
+        stderr.writeln(
+          'Error: Stock Dart AOT compile error:\n${stockCompile.stderr}',
+        );
+        exit(stockCompile.exitCode);
+      }
 
-    print(
-      '   Compiling Stock Dart AOT (json_serializable) -> '
-      'bin/stock_json_serializable_aot.exe...',
-    );
-    final stockJsCompile = Process.runSync(
-      stockDartExecutable,
-      [
-        'compile',
-        'exe',
-        '$rootDir/dart/bin/dart_json_serializable.dart',
-        '-o',
-        '$rootDir/dart/bin/stock_json_serializable_aot.exe',
-      ],
-      workingDirectory: '$rootDir/dart',
-      environment: _toolchainEnv,
-    );
-    if (stockJsCompile.exitCode != 0) {
-      stderr.writeln(
-        'Error: Stock Dart json_serializable AOT compile error:\n'
-        '${stockJsCompile.stderr}',
+      print(
+        '   Compiling Stock Dart AOT (json_serializable) -> '
+        'bin/stock_json_serializable_aot.exe...',
       );
-      exit(stockJsCompile.exitCode);
+      final stockJsCompile = Process.runSync(
+        stockDartExecutable,
+        [
+          'compile',
+          'exe',
+          '$rootDir/dart/bin/dart_json_serializable.dart',
+          '-o',
+          '$rootDir/dart/bin/stock_json_serializable_aot.exe',
+        ],
+        workingDirectory: '$rootDir/dart',
+        environment: _toolchainEnv,
+      );
+      if (stockJsCompile.exitCode != 0) {
+        stderr.writeln(
+          'Error: Stock Dart json_serializable AOT compile error:\n'
+          '${stockJsCompile.stderr}',
+        );
+        exit(stockJsCompile.exitCode);
+      }
+    } finally {
+      if (originalSubstrate != null && substrateFile.existsSync()) {
+        substrateFile.writeAsStringSync(originalSubstrate);
+      }
     }
   }
 
