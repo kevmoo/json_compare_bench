@@ -1684,11 +1684,97 @@ void _syncCodableMonorepo(Map<String, dynamic> fullResultPayload) {
     try {
       final matrix =
           jsonDecode(matrixFile.readAsStringSync()) as Map<String, dynamic>;
-      // Add data tracking etc if required
+      matrix['generated_at'] = DateTime.now().toUtc().toIso8601String();
+      matrix['host'] = {
+        'hostname': Platform.localHostname,
+        'cpu':
+            '${systemInfo['cpu_model']} '
+            '(${systemInfo['logical_cores']} logical cores)',
+        'ram': '${systemInfo['total_ram']}',
+        'os': '${systemInfo['os']}',
+        'architecture': '${systemInfo['architecture']}',
+      };
+
+      final datasetsMap =
+          matrix['datasets'] as Map<String, dynamic>? ?? <String, dynamic>{};
+
+      for (final record in rawBenchmarks) {
+        final dataset = record['dataset'] as String?;
+        final mode = record['mode'] as String?;
+        if (dataset == null || mode == null) continue;
+
+        final dsEntry =
+            datasetsMap.putIfAbsent(dataset, () => <String, dynamic>{})
+                as Map<String, dynamic>;
+        dsEntry['file_bytes'] = record['file_bytes'];
+
+        final modeEntry =
+            dsEntry.putIfAbsent(mode, () => <String, dynamic>{})
+                as Map<String, dynamic>;
+
+        final mb = (record['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
+        final elapsedNs = (record['elapsed_ns'] as num?)?.toDouble() ?? 0.0;
+        final latencyMs = elapsedNs / 1e6;
+        final latencyMsFormatted = double.parse(
+          latencyMs < 0.01
+              ? latencyMs.toStringAsFixed(4)
+              : latencyMs.toStringAsFixed(2),
+        );
+
+        final lang = record['language'] as String?;
+        final impl = record['implementation'] as String?;
+
+        final dataObj = <String, dynamic>{
+          'throughput_mb_s': mb,
+          'latency_ms': latencyMsFormatted,
+          'is_robust_stable': record['is_robust_stable'] ?? false,
+        };
+
+        if (record.containsKey('metrics')) {
+          dataObj['metrics'] = record['metrics'];
+        }
+
+        if (lang == 'rust') {
+          dataObj['semantic_category'] = 'typed_struct';
+          modeEntry['rust_serde_json_typed'] = dataObj;
+        } else if (lang == 'node') {
+          dataObj['semantic_category'] = 'untyped_dom';
+          dataObj['note'] = 'Untyped JS Object';
+          modeEntry['node_v8_builtin'] = dataObj;
+        } else if (lang == 'go') {
+          dataObj['semantic_category'] = 'typed_struct';
+          modeEntry['go_encoding_json_typed'] = dataObj;
+        } else if (lang == 'dart' && impl == 'convert_utf8') {
+          dataObj['semantic_category'] = 'untyped_dom';
+          dataObj['note'] = 'Untyped Map/DOM';
+          modeEntry['dart_aot_std_convert'] = dataObj;
+        } else if (lang == 'dart' && impl == 'json_serializable') {
+          dataObj['semantic_category'] = 'typed_struct';
+          modeEntry['dart_aot_json_serializable'] = dataObj;
+        } else if (lang == 'dart' &&
+            (impl == 'codable' ||
+                impl == 'codable_utf8' ||
+                impl == 'package_codable')) {
+          dataObj['semantic_category'] = 'typed_struct';
+          modeEntry['dart_aot_package_codable'] = dataObj;
+        } else if (impl == 'stock_convert_utf8') {
+          dataObj['semantic_category'] = 'untyped_dom';
+          dataObj['note'] = 'Untyped Map/DOM';
+          modeEntry['dart_aot_stock_convert'] = dataObj;
+        } else if (impl == 'stock_json_serializable') {
+          dataObj['semantic_category'] = 'typed_struct';
+          modeEntry['dart_aot_stock_json_serializable'] = dataObj;
+        }
+      }
+
+      matrix['datasets'] = datasetsMap;
       matrixFile.writeAsStringSync(
         const JsonEncoder.withIndent('  ').convert(matrix),
       );
-    } catch (e) {}
+      print('>> Synchronized matrix to: ${matrixFile.path}');
+    } catch (e) {
+      stderr.writeln('Warning: Failed to sync matrix JSON: $e');
+    }
   }
 
   // Pure deterministic generation
