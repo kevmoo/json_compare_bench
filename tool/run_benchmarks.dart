@@ -553,17 +553,19 @@ Future<void> _runBenchmarks({
       }
 
       if (targetLanguages.contains('go')) {
-        final goRecords =
-            await _runProcess('$rootDir/go/json_compare_bench_go', [
-              '--dataset',
-              datasetPath,
-              '--mode',
-              mode,
-              '--iterations',
-              '$iterations',
-              '--warmup',
-              '$warmup',
-            ]);
+        final goRecords = await _runProcess(
+          '$rootDir/go/json_compare_bench_go',
+          [
+            '--dataset',
+            datasetPath,
+            '--mode',
+            mode,
+            '--iterations',
+            '$iterations',
+            '--warmup',
+            '$warmup',
+          ],
+        );
         for (final r in goRecords) {
           r['semantic_category'] = 'typed_struct';
         }
@@ -591,8 +593,78 @@ Future<void> _runBenchmarks({
 
       if (targetLanguages.contains('dart')) {
         // 1. Custom Dart SDK - Standard Library AOT (Untyped Map/DOM)
-        final stdRecords =
-            await _runProcess('$rootDir/dart/bin/bench_aot.exe', [
+        final stdRecords = await _runProcess(
+          '$rootDir/dart/bin/bench_aot.exe',
+          [
+            '--dataset',
+            datasetPath,
+            '--mode',
+            mode,
+            '--impl',
+            'convert_utf8',
+            '--iterations',
+            '$iterations',
+            '--warmup',
+            '$warmup',
+          ],
+          labelPrefix: 'dart_aot',
+        );
+        for (final r in stdRecords) {
+          r['semantic_category'] = 'untyped_dom';
+          r['note'] = 'Untyped Map/DOM';
+        }
+        benchmarkRecords.addAll(stdRecords);
+
+        // 2. Custom Dart SDK - json_serializable AOT (Typed Struct)
+        final jsRecords = await _runProcess(
+          '$rootDir/dart/bin/dart_json_serializable.exe',
+          [
+            '--dataset',
+            datasetPath,
+            '--mode',
+            mode,
+            '--impl',
+            'json_serializable',
+            '--iterations',
+            '$iterations',
+            '--warmup',
+            '$warmup',
+          ],
+          labelPrefix: 'dart_aot',
+        );
+        for (final r in jsRecords) {
+          r['semantic_category'] = 'typed_struct';
+        }
+        benchmarkRecords.addAll(jsRecords);
+
+        // 3. Custom Dart SDK - package:codable AOT (Typed Struct)
+        final codableRecords = await _runProcess(
+          '$rootDir/dart/bin/dart_codable.exe',
+          [
+            '--dataset',
+            datasetPath,
+            '--mode',
+            mode,
+            '--impl',
+            'codable',
+            '--iterations',
+            '$iterations',
+            '--warmup',
+            '$warmup',
+          ],
+          labelPrefix: 'dart_aot',
+        );
+        for (final r in codableRecords) {
+          r['semantic_category'] = 'typed_struct';
+        }
+        benchmarkRecords.addAll(codableRecords);
+
+        // 4. Stock Dart SDK - Standard Library AOT (Untyped Map/DOM)
+        if (stockDartBin != null &&
+            File('$rootDir/dart/bin/stock_bench_aot.exe').existsSync()) {
+          final stockRecords = await _runProcess(
+            '$rootDir/dart/bin/stock_bench_aot.exe',
+            [
               '--dataset',
               datasetPath,
               '--mode',
@@ -603,67 +675,9 @@ Future<void> _runBenchmarks({
               '$iterations',
               '--warmup',
               '$warmup',
-            ], labelPrefix: 'dart_aot');
-        for (final r in stdRecords) {
-          r['semantic_category'] = 'untyped_dom';
-          r['note'] = 'Untyped Map/DOM';
-        }
-        benchmarkRecords.addAll(stdRecords);
-
-        // 2. Custom Dart SDK - json_serializable AOT (Typed Struct)
-        final jsRecords =
-            await _runProcess('$rootDir/dart/bin/dart_json_serializable.exe', [
-              '--dataset',
-              datasetPath,
-              '--mode',
-              mode,
-              '--impl',
-              'json_serializable',
-              '--iterations',
-              '$iterations',
-              '--warmup',
-              '$warmup',
-            ], labelPrefix: 'dart_aot');
-        for (final r in jsRecords) {
-          r['semantic_category'] = 'typed_struct';
-        }
-        benchmarkRecords.addAll(jsRecords);
-
-        // 3. Custom Dart SDK - package:codable AOT (Typed Struct)
-        final codableRecords =
-            await _runProcess('$rootDir/dart/bin/dart_codable.exe', [
-              '--dataset',
-              datasetPath,
-              '--mode',
-              mode,
-              '--impl',
-              'codable',
-              '--iterations',
-              '$iterations',
-              '--warmup',
-              '$warmup',
-            ], labelPrefix: 'dart_aot');
-        for (final r in codableRecords) {
-          r['semantic_category'] = 'typed_struct';
-        }
-        benchmarkRecords.addAll(codableRecords);
-
-        // 4. Stock Dart SDK - Standard Library AOT (Untyped Map/DOM)
-        if (stockDartBin != null &&
-            File('$rootDir/dart/bin/stock_bench_aot.exe').existsSync()) {
-          final stockRecords =
-              await _runProcess('$rootDir/dart/bin/stock_bench_aot.exe', [
-                '--dataset',
-                datasetPath,
-                '--mode',
-                mode,
-                '--impl',
-                'convert_utf8',
-                '--iterations',
-                '$iterations',
-                '--warmup',
-                '$warmup',
-              ], labelPrefix: 'dart_stock_aot');
+            ],
+            labelPrefix: 'dart_stock_aot',
+          );
           for (final record in stockRecords) {
             record['language'] = 'dart_stock';
             record['implementation'] = 'stock_convert_utf8';
@@ -675,9 +689,8 @@ Future<void> _runBenchmarks({
 
         // 5. Stock Dart SDK - json_serializable AOT (Typed Struct)
         if (stockDartBin != null &&
-            File(
-              '$rootDir/dart/bin/stock_json_serializable_aot.exe',
-            ).existsSync()) {
+            File('$rootDir/dart/bin/stock_json_serializable_aot.exe')
+                .existsSync()) {
           final stockJsRecords = await _runProcess(
             '$rootDir/dart/bin/stock_json_serializable_aot.exe',
             [
@@ -1416,11 +1429,16 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
           (codableRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
 
       final typedScores = <ScoreEntry>[
-        if (rustMb > 0) ScoreEntry('rust', rustMb),
-        if (goMb > 0) ScoreEntry('go', goMb),
-        if (stockJsMb > 0) ScoreEntry('stock_js', stockJsMb),
-        if (newJsMb > 0) ScoreEntry('new_js', newJsMb),
-        if (codableMb > 0) ScoreEntry('codable', codableMb),
+        if (rustMb > 0 && rustRec?['is_robust_stable'] != false)
+          ScoreEntry('rust', rustMb),
+        if (goMb > 0 && goRec?['is_robust_stable'] != false)
+          ScoreEntry('go', goMb),
+        if (stockJsMb > 0 && stockJsRec?['is_robust_stable'] != false)
+          ScoreEntry('stock_js', stockJsMb),
+        if (newJsMb > 0 && newJsRec?['is_robust_stable'] != false)
+          ScoreEntry('new_js', newJsMb),
+        if (codableMb > 0 && codableRec?['is_robust_stable'] != false)
+          ScoreEntry('codable', codableMb),
       ]..sort((a, b) => b.score.compareTo(a.score));
 
       String typedMedal(String key) {
@@ -1588,14 +1606,22 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
           (newStdRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
 
       final allScores = <ScoreEntry>[
-        if (rustMb > 0) ScoreEntry('rust', rustMb),
-        if (goMb > 0) ScoreEntry('go', goMb),
-        if (nodeMb > 0) ScoreEntry('node', nodeMb),
-        if (stockJsMb > 0) ScoreEntry('stock_js', stockJsMb),
-        if (newJsMb > 0) ScoreEntry('new_js', newJsMb),
-        if (codableMb > 0) ScoreEntry('codable', codableMb),
-        if (stockStdMb > 0) ScoreEntry('stock_std', stockStdMb),
-        if (newStdMb > 0) ScoreEntry('new_std', newStdMb),
+        if (rustMb > 0 && rustRec?['is_robust_stable'] != false)
+          ScoreEntry('rust', rustMb),
+        if (goMb > 0 && goRec?['is_robust_stable'] != false)
+          ScoreEntry('go', goMb),
+        if (nodeMb > 0 && nodeRec?['is_robust_stable'] != false)
+          ScoreEntry('node', nodeMb),
+        if (stockJsMb > 0 && stockJsRec?['is_robust_stable'] != false)
+          ScoreEntry('stock_js', stockJsMb),
+        if (newJsMb > 0 && newJsRec?['is_robust_stable'] != false)
+          ScoreEntry('new_js', newJsMb),
+        if (codableMb > 0 && codableRec?['is_robust_stable'] != false)
+          ScoreEntry('codable', codableMb),
+        if (stockStdMb > 0 && stockStdRec?['is_robust_stable'] != false)
+          ScoreEntry('stock_std', stockStdMb),
+        if (newStdMb > 0 && newStdRec?['is_robust_stable'] != false)
+          ScoreEntry('new_std', newStdMb),
       ]..sort((a, b) => b.score.compareTo(a.score));
 
       final winnerMb = allScores.isNotEmpty && allScores.first.score > 0
@@ -1620,10 +1646,11 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
         return formatted;
       }
 
-      String formatPercent(double mb) {
-        if (mb == 0) return 'N/A';
+      String formatPercent(Map<String, dynamic>? item, double mb) {
+        if (item == null || mb == 0) return 'N/A';
+        final isUnstable = item['is_robust_stable'] == false;
         final pct = (mb / winnerMb * 100.0).toStringAsFixed(1);
-        final isWinner = mb == winnerMb;
+        final isWinner = !isUnstable && mb == winnerMb;
         return isWinner ? '**$pct%**' : '$pct%';
       }
 
@@ -1648,14 +1675,14 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
 
       buffer.writeln(
         '| ↳ *% of Winner* | '
-        '${formatPercent(rustMb)} | '
-        '${formatPercent(goMb)} | '
-        '${formatPercent(nodeMb)} | '
-        '${formatPercent(stockJsMb)} | '
-        '${formatPercent(newJsMb)} | '
-        '${formatPercent(codableMb)} | '
-        '${formatPercent(stockStdMb)} | '
-        '${formatPercent(newStdMb)} |',
+        '${formatPercent(rustRec, rustMb)} | '
+        '${formatPercent(goRec, goMb)} | '
+        '${formatPercent(nodeRec, nodeMb)} | '
+        '${formatPercent(stockJsRec, stockJsMb)} | '
+        '${formatPercent(newJsRec, newJsMb)} | '
+        '${formatPercent(codableRec, codableMb)} | '
+        '${formatPercent(stockStdRec, stockStdMb)} | '
+        '${formatPercent(newStdRec, newStdMb)} |',
       );
     }
     buffer.writeln('<!-- mdformat on -->\n');
@@ -1708,14 +1735,16 @@ void _syncCodableMonorepo(Map<String, dynamic> fullResultPayload) {
         final mode = record['mode'] as String?;
         if (dataset == null || mode == null) continue;
 
-        final dsEntry =
-            datasetsMap.putIfAbsent(dataset, () => <String, dynamic>{})
-                as Map<String, dynamic>;
+        final dsEntry = datasetsMap.putIfAbsent(
+          dataset,
+          () => <String, dynamic>{},
+        ) as Map<String, dynamic>;
         dsEntry['file_bytes'] = record['file_bytes'];
 
-        final modeEntry =
-            dsEntry.putIfAbsent(mode, () => <String, dynamic>{})
-                as Map<String, dynamic>;
+        final modeEntry = dsEntry.putIfAbsent(
+          mode,
+          () => <String, dynamic>{},
+        ) as Map<String, dynamic>;
 
         final mb = (record['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
         final elapsedNs = (record['elapsed_ns'] as num?)?.toDouble() ?? 0.0;
