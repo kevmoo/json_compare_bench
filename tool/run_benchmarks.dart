@@ -233,10 +233,14 @@ void main(List<String> rawArgs) async {
 
   // Resolve optional stock SDK
   String? stockDartBin;
-  final stockSdkArg = args['stock-sdk'] as String?;
+  final stockSdkDefault =
+      '/usr/local/google/home/kevmoo/github/flutter/bin/cache/dart-sdk/bin/dart';
+  final stockSdkArg =
+      (args['stock-sdk'] as String?) ??
+      (File(stockSdkDefault).existsSync() ? stockSdkDefault : null);
   if (stockSdkArg != null) {
     stockDartBin = _resolveDartBin(stockSdkArg);
-    if (stockDartBin == null) {
+    if (stockDartBin == null && args.wasParsed('stock-sdk')) {
       stderr.writeln(
         'Error: Stock Dart SDK executable not found at: $stockSdkArg',
       );
@@ -1437,8 +1441,9 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
         final lat = _formatLatency(item);
         final cell = '${mb.toStringAsFixed(1)} MB/s ($lat)';
         final isUnstable = item['is_robust_stable'] == false;
-        if (isUnstable) return '$cell ❓';
-        return m.isNotEmpty ? '$m**$cell**' : cell;
+        final formatted = m.isNotEmpty ? '$m**$cell**' : cell;
+        if (isUnstable) return '$formatted ❓';
+        return formatted;
       }
 
       String formatComparison(
@@ -1611,8 +1616,9 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
         final lat = _formatLatency(item);
         final mbStr = '${mb.toStringAsFixed(1)} MB/s ($lat)';
         final isUnstable = item['is_robust_stable'] == false;
-        if (isUnstable) return '$mbStr ❓';
-        return m.isNotEmpty ? '$m**$mbStr**' : mbStr;
+        final formatted = m.isNotEmpty ? '$m**$mbStr**' : mbStr;
+        if (isUnstable) return '$formatted ❓';
+        return formatted;
       }
 
       String formatPercent(double mb) {
