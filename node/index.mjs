@@ -38,9 +38,9 @@ let blackhole;
 
 function runPass() {
   if (mode === 'decode') {
-    blackhole = JSON.parse(stringSource);
+    blackhole = JSON.parse(buffer.toString('utf-8'));
   } else {
-    blackhole = JSON.stringify(parsedObject);
+    blackhole = Buffer.from(JSON.stringify(parsedObject), 'utf-8');
   }
 }
 

@@ -1416,11 +1416,15 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
           (codableRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
 
       final typedScores = <ScoreEntry>[
-        if (rustMb > 0) ScoreEntry('rust', rustMb),
-        if (goMb > 0) ScoreEntry('go', goMb),
-        if (stockJsMb > 0) ScoreEntry('stock_js', stockJsMb),
-        if (newJsMb > 0) ScoreEntry('new_js', newJsMb),
-        if (codableMb > 0) ScoreEntry('codable', codableMb),
+        if (rustMb > 0 && _isVerifiedStable(rustRec))
+          ScoreEntry('rust', rustMb),
+        if (goMb > 0 && _isVerifiedStable(goRec)) ScoreEntry('go', goMb),
+        if (stockJsMb > 0 && _isVerifiedStable(stockJsRec))
+          ScoreEntry('stock_js', stockJsMb),
+        if (newJsMb > 0 && _isVerifiedStable(newJsRec))
+          ScoreEntry('new_js', newJsMb),
+        if (codableMb > 0 && _isVerifiedStable(codableRec))
+          ScoreEntry('codable', codableMb),
       ]..sort((a, b) => b.score.compareTo(a.score));
 
       String typedMedal(String key) {
@@ -1588,14 +1592,21 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
           (newStdRec?['throughput_mb_s'] as num?)?.toDouble() ?? 0.0;
 
       final allScores = <ScoreEntry>[
-        if (rustMb > 0) ScoreEntry('rust', rustMb),
-        if (goMb > 0) ScoreEntry('go', goMb),
-        if (nodeMb > 0) ScoreEntry('node', nodeMb),
-        if (stockJsMb > 0) ScoreEntry('stock_js', stockJsMb),
-        if (newJsMb > 0) ScoreEntry('new_js', newJsMb),
-        if (codableMb > 0) ScoreEntry('codable', codableMb),
-        if (stockStdMb > 0) ScoreEntry('stock_std', stockStdMb),
-        if (newStdMb > 0) ScoreEntry('new_std', newStdMb),
+        if (rustMb > 0 && _isVerifiedStable(rustRec))
+          ScoreEntry('rust', rustMb),
+        if (goMb > 0 && _isVerifiedStable(goRec)) ScoreEntry('go', goMb),
+        if (nodeMb > 0 && _isVerifiedStable(nodeRec))
+          ScoreEntry('node', nodeMb),
+        if (stockJsMb > 0 && _isVerifiedStable(stockJsRec))
+          ScoreEntry('stock_js', stockJsMb),
+        if (newJsMb > 0 && _isVerifiedStable(newJsRec))
+          ScoreEntry('new_js', newJsMb),
+        if (codableMb > 0 && _isVerifiedStable(codableRec))
+          ScoreEntry('codable', codableMb),
+        if (stockStdMb > 0 && _isVerifiedStable(stockStdRec))
+          ScoreEntry('stock_std', stockStdMb),
+        if (newStdMb > 0 && _isVerifiedStable(newStdRec))
+          ScoreEntry('new_std', newStdMb),
       ]..sort((a, b) => b.score.compareTo(a.score));
 
       final winnerMb = allScores.isNotEmpty && allScores.first.score > 0
@@ -1620,11 +1631,12 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
         return formatted;
       }
 
-      String formatPercent(double mb) {
-        if (mb == 0) return 'N/A';
+      String formatPercent(Map<String, dynamic>? item, double mb) {
+        if (item == null || mb == 0 || winnerMb <= 0) return 'N/A';
+        final isStable = _isVerifiedStable(item);
         final pct = (mb / winnerMb * 100.0).toStringAsFixed(1);
-        final isWinner = mb == winnerMb;
-        return isWinner ? '**$pct%**' : '$pct%';
+        if (!isStable) return '$pct% ❓';
+        return mb == winnerMb ? '**$pct%**' : '$pct%';
       }
 
       final fileBytes = (subset.first['file_bytes'] as num?)?.toInt() ?? 0;
@@ -1648,14 +1660,14 @@ String _generateMarkdownReport(Map<String, dynamic> data) {
 
       buffer.writeln(
         '| ↳ *% of Winner* | '
-        '${formatPercent(rustMb)} | '
-        '${formatPercent(goMb)} | '
-        '${formatPercent(nodeMb)} | '
-        '${formatPercent(stockJsMb)} | '
-        '${formatPercent(newJsMb)} | '
-        '${formatPercent(codableMb)} | '
-        '${formatPercent(stockStdMb)} | '
-        '${formatPercent(newStdMb)} |',
+        '${formatPercent(rustRec, rustMb)} | '
+        '${formatPercent(goRec, goMb)} | '
+        '${formatPercent(nodeRec, nodeMb)} | '
+        '${formatPercent(stockJsRec, stockJsMb)} | '
+        '${formatPercent(newJsRec, newJsMb)} | '
+        '${formatPercent(codableRec, codableMb)} | '
+        '${formatPercent(stockStdRec, stockStdMb)} | '
+        '${formatPercent(newStdRec, newStdMb)} |',
       );
     }
     buffer.writeln('<!-- mdformat on -->\n');
@@ -1786,6 +1798,12 @@ void _syncCodableMonorepo(Map<String, dynamic> fullResultPayload) {
   final markdownOutput = _generateMarkdownReport(fullResultPayload);
   reportFile.writeAsStringSync(markdownOutput);
   print('>> Synchronized benchmark report to: ${reportFile.path}');
+}
+
+bool _isVerifiedStable(Map<String, dynamic>? r) {
+  if (r == null || r['is_robust_stable'] != true) return false;
+  final samples = r['raw_samples_ns'] as List<dynamic>?;
+  return samples != null && samples.length >= 2;
 }
 
 class ScoreEntry {

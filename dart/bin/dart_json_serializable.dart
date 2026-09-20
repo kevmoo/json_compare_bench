@@ -16,11 +16,12 @@ import 'package:json_compare_bench_dart/src/models/json_serializable/twitter.dar
 final utf8JsonDecoder = utf8.decoder.fuse(json.decoder);
 final utf8JsonEncoder = json.encoder.fuse(utf8.encoder);
 
-int blackholeSink = 0;
+@pragma('vm:entry-point')
+Object? blackholeSink;
 
 @pragma('vm:never-inline')
 void consumeBlackBox(Object? value) {
-  blackholeSink ^= value.hashCode;
+  blackholeSink = value;
 }
 
 void main(List<String> arguments) {
@@ -149,20 +150,18 @@ void runBenchmark({
     runPass();
   }
 
-  // Measured run (best of 3 trials to filter OS/GC jitter)
-  var bestElapsedMicros = 1 << 62;
-  for (var trial = 0; trial < 3; trial++) {
-    final stopwatch = Stopwatch()..start();
-    for (var i = 0; i < iterations; i++) {
-      runPass();
-    }
-    stopwatch.stop();
-    if (stopwatch.elapsedMicroseconds < bestElapsedMicros) {
-      bestElapsedMicros = stopwatch.elapsedMicroseconds;
-    }
+  // Measured run
+  final stopwatch = Stopwatch()..start();
+  for (var i = 0; i < iterations; i++) {
+    runPass();
+  }
+  stopwatch.stop();
+
+  if (identical(blackholeSink, Object())) {
+    stderr.writeln(blackholeSink);
   }
 
-  final elapsedMicros = bestElapsedMicros;
+  final elapsedMicros = stopwatch.elapsedMicroseconds;
   final elapsedNs = elapsedMicros * 1000;
   final totalBytes = bytes.length * iterations;
   final throughputMbPerSec =
