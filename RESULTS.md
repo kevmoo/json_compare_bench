@@ -1,14 +1,14 @@
 # Cross-Language JSON Serialization Benchmark Results
 
-* **Run Date**: `2026-09-19T12:39:39.665069Z`
+* **Run Date**: `2026-09-20T02:28:19.320956Z`
 * **System**: macos (Version 15.7.9 (Build 24G830)) | arm64
 * **Hardware**: Apple M4 Pro (14 logical cores) | RAM: 48.0 GB
 * **Toolchains & Packages**:
-  * **New Dart (Custom SDK)**: `Dart SDK version: 3.14.0-json-next.04411fb24e8ed6395eb858265d1214c192d23419 (main) (Fri Sep 18 23:25:20 2026 -0700) on "macos_arm64"`
+  * **New Dart (Custom SDK)**: `Dart SDK version: 3.14.0-json-next.e676935b72bd801c2fdec5188d1e4d8e69dcbf61 (main) (Sat Sep 19 16:14:26 2026 -0700) on "macos_arm64"`
     * `codable`: `package:codable (SDK Layer 1 native substrate)`
     * `json_serializable`: `package:json_serializable (Typed fromJson/toJson)`
     * `convert`: `dart:convert (Untyped Map/DOM)`
-  * **Stock Dart (Baseline SDK)**: `Dart SDK version: 3.14.0-247.0.dev (dev) (Fri Sep 18 21:02:24 2026 -0700) on "macos_arm64"`
+  * **Stock Dart (Baseline SDK)**: `Dart SDK version: 3.14.0-248.0.dev (dev) (Sat Sep 19 01:09:06 2026 -0700) on "macos_arm64"`
     * `json_serializable`: `package:json_serializable (Typed fromJson/toJson)`
     * `convert`: `Standard Library (Untyped Map/DOM)`
   * **Rust**: `rustc 1.98.1 (48a229cea 2026-09-01)`
@@ -33,10 +33,10 @@ Strongly-typed domain model deserialization (UTF-8 bytes -> Typed Structs). Each
 <!-- mdformat off -->
 | Dataset | Rust (`serde_json` Typed) | Go (`encoding/json` Typed) | Stock Dart + `json_serializable` (Typed) | New Dart + `json_serializable` (Typed) | New Dart + `package:codable` (Typed) | `codable` vs Stock `json_serializable` | `codable` vs Go `encoding/json` |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`small.json`** (546 B) | 🥇 **842.2 MB/s (618 ns)** | 163.1 MB/s (3.19 µs) | 🥉 **387.0 MB/s (1.35 µs)** | 386.2 MB/s (1.35 µs) | 🥈 **433.3 MB/s (1.20 µs)** | **1.12x** [ 1.11x - 1.13x ] | **2.66x** [ 2.59x - 2.80x ] |
-| **`twitter.json`** (616.7 KB) | 🥇 **1414.8 MB/s (425.69 µs)** | 225.9 MB/s (2.67 ms) | 🥈 **511.3 MB/s (1.18 ms)** | 🥉 **504.2 MB/s (1.19 ms)** | 438.3 MB/s (1.37 ms) | **0.86x** [ 0.84x - 0.87x ] | **1.94x** [ 1.91x - 1.95x ] |
-| **`citm_catalog.json`** (1.65 MB) | 🥇 **1441.7 MB/s (1.14 ms)** | 213.1 MB/s (7.73 ms) | 🥉 **585.5 MB/s (2.81 ms)** | 563.7 MB/s (2.92 ms) | 🥈 **745.3 MB/s (2.21 ms)** | **1.27x** [ 1.27x - 1.31x ] | **3.50x** [ 3.41x - 3.55x ] |
-| **`canada.json`** (2.15 MB) | 🥇 **946.0 MB/s (2.27 ms)** | 152.0 MB/s (14.12 ms) | 147.5 MB/s (14.55 ms) | 🥉 **200.1 MB/s (10.73 ms)** | 🥈 **441.7 MB/s (4.86 ms)** | **2.99x** [ 2.96x - 3.03x ] | **2.91x** [ 2.86x - 2.93x ] |
+| **`small.json`** (546 B) | 🥇 **858.1 MB/s (607 ns)** | 149.4 MB/s (3.49 µs) | 337.6 MB/s (1.54 µs) | 🥉 **340.9 MB/s (1.53 µs)** | 🥈 **380.1 MB/s (1.37 µs)** | **1.13x** [ 1.11x - 1.14x ] | **2.54x** [ 2.52x - 2.57x ] |
+| **`twitter.json`** (616.7 KB) | 🥇 **1246.9 MB/s (482.99 µs)** | 199.5 MB/s (3.02 ms) | 🥉 **437.6 MB/s (1.38 ms)** | 🥈 **441.9 MB/s (1.36 ms)** | 376.8 MB/s (1.60 ms) | **0.86x** [ 0.85x - 0.88x ] | **1.89x** [ 1.87x - 1.91x ] |
+| **`citm_catalog.json`** (1.65 MB) | 🥇 **1523.8 MB/s (1.08 ms)** | 210.3 MB/s (7.83 ms) | 537.4 MB/s (3.07 ms) | 🥉 **538.4 MB/s (3.06 ms)** | 🥈 **721.1 MB/s (2.28 ms)** | **1.34x** [ 1.32x - 1.35x ] | **3.43x** [ 3.38x - 3.45x ] |
+| **`canada.json`** (2.15 MB) | 🥇 **875.8 MB/s (2.45 ms)** | 133.3 MB/s (16.10 ms) | 108.0 MB/s (19.88 ms) | 🥉 **144.5 MB/s (14.86 ms)** | 🥈 **359.7 MB/s (5.97 ms)** | **3.33x** [ 3.32x - 3.36x ] | **2.70x** [ 2.69x - 2.73x ] |
 <!-- mdformat on -->
 
 ## 1.2 ENCODE — Apples-to-Apples Typed Struct Matrix
@@ -46,10 +46,10 @@ Strongly-typed domain model serialization (Typed Structs -> UTF-8 bytes). Each c
 <!-- mdformat off -->
 | Dataset | Rust (`serde_json` Typed) | Go (`encoding/json` Typed) | Stock Dart + `json_serializable` (Typed) | New Dart + `json_serializable` (Typed) | New Dart + `package:codable` (Typed) | `codable` vs Stock `json_serializable` | `codable` vs Go `encoding/json` |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`small.json`** (546 B) | 1825.9 MB/s (285 ns) ❓ | 🥇 **868.0 MB/s (600 ns)** | 247.3 MB/s (2.11 µs) | 🥉 **273.2 MB/s (1.91 µs)** | 🥈 **793.2 MB/s (656 ns)** | **3.21x** [ 3.17x - 3.25x ] | **0.91x** [ 0.89x - 0.93x ] |
-| **`twitter.json`** (616.7 KB) | 🥇 **2788.5 MB/s (215.98 µs)** | 🥈 **1592.1 MB/s (378.29 µs)** | 283.7 MB/s (2.12 ms) | 539.0 MB/s (1.12 ms) | 🥉 **1207.0 MB/s (498.97 µs)** | **4.26x** [ 4.19x - 4.42x ] | **0.76x** [ 0.75x - 0.77x ] |
-| **`citm_catalog.json`** (1.65 MB) | 🥇 **6202.7 MB/s (265.56 µs)** | 🥈 **3008.4 MB/s (547.53 µs)** | 518.9 MB/s (3.17 ms) | 751.2 MB/s (2.19 ms) | 🥉 **1827.1 MB/s (901.52 µs)** | **3.52x** [ 3.41x - 3.58x ] | **0.61x** [ 0.58x - 0.61x ] |
-| **`canada.json`** (2.15 MB) | 🥇 **1516.5 MB/s (1.42 ms)** | 🥈 **363.9 MB/s (5.90 ms)** | 120.4 MB/s (17.83 ms) | 🥉 **316.2 MB/s (6.79 ms)** | 252.5 MB/s (8.50 ms) | **2.10x** [ 2.09x - 2.10x ] | **0.69x** [ 0.69x - 0.70x ] |
+| **`small.json`** (546 B) | 🥇 **1697.7 MB/s (307 ns)** | 🥈 **916.5 MB/s (568 ns)** | 224.8 MB/s (2.32 µs) | 359.6 MB/s (1.45 µs) | 🥉 **721.6 MB/s (722 ns)** | **3.21x** [ 3.16x - 3.23x ] | **0.79x** [ 0.78x - 0.81x ] |
+| **`twitter.json`** (616.7 KB) | 🥇 **2584.6 MB/s (233.02 µs)** | 🥈 **1484.8 MB/s (405.62 µs)** | 261.0 MB/s (2.31 ms) | 492.6 MB/s (1.22 ms) | 🥉 **1093.5 MB/s (550.75 µs)** | **4.19x** [ 4.12x - 4.22x ] | **0.74x** [ 0.72x - 0.74x ] |
+| **`citm_catalog.json`** (1.65 MB) | 🥇 **5972.9 MB/s (275.78 µs)** | 🥈 **2865.3 MB/s (574.87 µs)** | 465.9 MB/s (3.54 ms) | 676.4 MB/s (2.44 ms) | 🥉 **1639.6 MB/s (1.00 ms)** | **3.52x** [ 3.46x - 3.58x ] | **0.57x** [ 0.56x - 0.58x ] |
+| **`canada.json`** (2.15 MB) | 🥇 **1490.7 MB/s (1.44 ms)** | 🥈 **349.4 MB/s (6.14 ms)** | 110.7 MB/s (19.40 ms) | 🥉 **277.1 MB/s (7.75 ms)** | 228.5 MB/s (9.40 ms) | **2.06x** [ 2.04x - 2.08x ] | **0.65x** [ 0.65x - 0.66x ] |
 <!-- mdformat on -->
 
 ## 2.1 DECODE — Complete Cross-Language Matrix (Typed Structs + Untyped DOM)
@@ -59,14 +59,14 @@ Includes both **Typed Struct** contenders (`Rust`, `Go`, `Dart json_serializable
 <!-- mdformat off -->
 | Dataset | Rust (`serde_json` Typed) | Go (`encoding/json` Typed) | Node.js V8 (`Untyped JS Object`) | Stock Dart + `json_serializable` (`Typed`) | New Dart + `json_serializable` (`Typed`) | New Dart + `package:codable` (`Typed`) | Stock Dart `std_convert` (`Untyped Map/DOM`) | New Dart `std_convert` (`Untyped Map/DOM`) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`small.json`** (546 B) | 🥇 **842.2 MB/s (618 ns)** | 163.1 MB/s (3.19 µs) | 🥈 **638.3 MB/s (816 ns)** | 387.0 MB/s (1.35 µs) | 386.2 MB/s (1.35 µs) | 433.3 MB/s (1.20 µs) | 🥉 **499.3 MB/s (1.04 µs)** | 492.2 MB/s (1.06 µs) |
-| ↳ *% of Winner* | **100.0%** | 19.4% | 75.8% | 46.0% | 45.9% | 51.5% | 59.3% | 58.4% |
-| **`twitter.json`** (616.7 KB) | 🥇 **1414.8 MB/s (425.69 µs)** | 225.9 MB/s (2.67 ms) | 🥈 **1048.3 MB/s (574.53 µs)** | 511.3 MB/s (1.18 ms) | 504.2 MB/s (1.19 ms) | 438.3 MB/s (1.37 ms) | 🥉 **574.7 MB/s (1.05 ms)** | 554.4 MB/s (1.09 ms) |
-| ↳ *% of Winner* | **100.0%** | 16.0% | 74.1% | 36.1% | 35.6% | 31.0% | 40.6% | 39.2% |
-| **`citm_catalog.json`** (1.65 MB) | 🥇 **1441.7 MB/s (1.14 ms)** | 213.1 MB/s (7.73 ms) | 🥈 **1094.5 MB/s (1.51 ms)** | 585.5 MB/s (2.81 ms) | 563.7 MB/s (2.92 ms) | 🥉 **745.3 MB/s (2.21 ms)** | 697.3 MB/s (2.36 ms) | 706.1 MB/s (2.33 ms) |
-| ↳ *% of Winner* | **100.0%** | 14.8% | 75.9% | 40.6% | 39.1% | 51.7% | 48.4% | 49.0% |
-| **`canada.json`** (2.15 MB) | 🥇 **946.0 MB/s (2.27 ms)** | 152.0 MB/s (14.12 ms) | 🥈 **612.8 MB/s (3.50 ms)** | 147.5 MB/s (14.55 ms) | 200.1 MB/s (10.73 ms) | 🥉 **441.7 MB/s (4.86 ms)** | 189.6 MB/s (11.32 ms) | 322.8 MB/s (6.65 ms) |
-| ↳ *% of Winner* | **100.0%** | 16.1% | 64.8% | 15.6% | 21.2% | 46.7% | 20.0% | 34.1% |
+| **`small.json`** (546 B) | 🥇 **858.1 MB/s (607 ns)** | 149.4 MB/s (3.49 µs) | 🥈 **516.4 MB/s (1.01 µs)** | 337.6 MB/s (1.54 µs) | 340.9 MB/s (1.53 µs) | 380.1 MB/s (1.37 µs) | 442.3 MB/s (1.18 µs) | 🥉 **449.8 MB/s (1.16 µs)** |
+| ↳ *% of Winner* | **100.0%** | 17.4% | 60.2% | 39.3% | 39.7% | 44.3% | 51.5% | 52.4% |
+| **`twitter.json`** (616.7 KB) | 🥇 **1246.9 MB/s (482.99 µs)** | 199.5 MB/s (3.02 ms) | 🥈 **724.6 MB/s (831.21 µs)** | 437.6 MB/s (1.38 ms) | 441.9 MB/s (1.36 ms) | 376.8 MB/s (1.60 ms) | 488.4 MB/s (1.23 ms) | 🥉 **490.7 MB/s (1.23 ms)** |
+| ↳ *% of Winner* | **100.0%** | 16.0% | 58.1% | 35.1% | 35.4% | 30.2% | 39.2% | 39.4% |
+| **`citm_catalog.json`** (1.65 MB) | 🥇 **1523.8 MB/s (1.08 ms)** | 210.3 MB/s (7.83 ms) | 🥈 **839.9 MB/s (1.96 ms)** | 537.4 MB/s (3.07 ms) | 538.4 MB/s (3.06 ms) | 🥉 **721.1 MB/s (2.28 ms)** | 579.1 MB/s (2.84 ms) | 588.9 MB/s (2.80 ms) |
+| ↳ *% of Winner* | **100.0%** | 13.8% | 55.1% | 35.3% | 35.3% | 47.3% | 38.0% | 38.6% |
+| **`canada.json`** (2.15 MB) | 🥇 **875.8 MB/s (2.45 ms)** | 133.3 MB/s (16.10 ms) | 🥈 **513.2 MB/s (4.18 ms)** | 108.0 MB/s (19.88 ms) | 144.5 MB/s (14.86 ms) | 🥉 **359.7 MB/s (5.97 ms)** | 146.8 MB/s (14.62 ms) | 254.1 MB/s (8.45 ms) |
+| ↳ *% of Winner* | **100.0%** | 15.2% | 58.6% | 12.3% | 16.5% | 41.1% | 16.8% | 29.0% |
 <!-- mdformat on -->
 
 ## 2.2 ENCODE — Complete Cross-Language Matrix (Typed Structs + Untyped DOM)
@@ -76,13 +76,13 @@ Includes both **Typed Struct** contenders (`Rust`, `Go`, `Dart json_serializable
 <!-- mdformat off -->
 | Dataset | Rust (`serde_json` Typed) | Go (`encoding/json` Typed) | Node.js V8 (`Untyped JS Object`) | Stock Dart + `json_serializable` (`Typed`) | New Dart + `json_serializable` (`Typed`) | New Dart + `package:codable` (`Typed`) | Stock Dart `std_convert` (`Untyped Map/DOM`) | New Dart `std_convert` (`Untyped Map/DOM`) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`small.json`** (546 B) | 1825.9 MB/s (285 ns) ❓ | 🥈 **868.0 MB/s (600 ns)** | 🥇 **917.6 MB/s (567 ns)** | 247.3 MB/s (2.11 µs) | 273.2 MB/s (1.91 µs) | 🥉 **793.2 MB/s (656 ns)** | 320.0 MB/s (1.63 µs) | 336.5 MB/s (1.55 µs) |
-| ↳ *% of Winner* | 199.0% ❓ | 94.6% | **100.0%** | 26.9% | 29.8% | 86.4% | 34.9% | 36.7% |
-| **`twitter.json`** (616.7 KB) | 🥇 **2788.5 MB/s (215.98 µs)** | 🥈 **1592.1 MB/s (378.29 µs)** | 1089.9 MB/s (552.60 µs) ❓ | 283.7 MB/s (2.12 ms) | 539.0 MB/s (1.12 ms) | 🥉 **1207.0 MB/s (498.97 µs)** | 342.6 MB/s (1.76 ms) | 724.8 MB/s (830.96 µs) |
-| ↳ *% of Winner* | **100.0%** | 57.1% | 39.1% ❓ | 10.2% | 19.3% | 43.3% | 12.3% | 26.0% |
-| **`citm_catalog.json`** (1.65 MB) | 🥇 **6202.7 MB/s (265.56 µs)** | 🥈 **3008.4 MB/s (547.53 µs)** | 🥉 **2070.5 MB/s (795.57 µs)** | 518.9 MB/s (3.17 ms) | 751.2 MB/s (2.19 ms) | 1827.1 MB/s (901.52 µs) | 682.5 MB/s (2.41 ms) | 1218.3 MB/s (1.35 ms) |
-| ↳ *% of Winner* | **100.0%** | 48.5% | 33.4% | 8.4% | 12.1% | 29.5% | 11.0% | 19.6% |
-| **`canada.json`** (2.15 MB) | 🥇 **1516.5 MB/s (1.42 ms)** | 🥈 **363.9 MB/s (5.90 ms)** | 🥉 **346.4 MB/s (6.20 ms)** | 120.4 MB/s (17.83 ms) | 316.2 MB/s (6.79 ms) | 252.5 MB/s (8.50 ms) | 120.3 MB/s (17.85 ms) | 317.3 MB/s (6.77 ms) |
-| ↳ *% of Winner* | **100.0%** | 24.0% | 22.8% | 7.9% | 20.8% | 16.7% | 7.9% | 20.9% |
+| **`small.json`** (546 B) | 🥇 **1697.7 MB/s (307 ns)** | 🥈 **916.5 MB/s (568 ns)** | 715.1 MB/s (728 ns) | 224.8 MB/s (2.32 µs) | 359.6 MB/s (1.45 µs) | 🥉 **721.6 MB/s (722 ns)** | 288.8 MB/s (1.80 µs) | 554.7 MB/s (939 ns) |
+| ↳ *% of Winner* | **100.0%** | 54.0% | 42.1% | 13.2% | 21.2% | 42.5% | 17.0% | 32.7% |
+| **`twitter.json`** (616.7 KB) | 🥇 **2584.6 MB/s (233.02 µs)** | 🥈 **1484.8 MB/s (405.62 µs)** | 524.6 MB/s (1.15 ms) | 261.0 MB/s (2.31 ms) | 492.6 MB/s (1.22 ms) | 🥉 **1093.5 MB/s (550.75 µs)** | 311.2 MB/s (1.94 ms) | 731.5 MB/s (823.38 µs) |
+| ↳ *% of Winner* | **100.0%** | 57.4% | 20.3% | 10.1% | 19.1% | 42.3% | 12.0% | 28.3% |
+| **`citm_catalog.json`** (1.65 MB) | 🥇 **5972.9 MB/s (275.78 µs)** | 🥈 **2865.3 MB/s (574.87 µs)** | 1069.2 MB/s (1.54 ms) | 465.9 MB/s (3.54 ms) | 676.4 MB/s (2.44 ms) | 🥉 **1639.6 MB/s (1.00 ms)** | 609.7 MB/s (2.70 ms) | 1092.1 MB/s (1.51 ms) |
+| ↳ *% of Winner* | **100.0%** | 48.0% | 17.9% | 7.8% | 11.3% | 27.5% | 10.2% | 18.3% |
+| **`canada.json`** (2.15 MB) | 🥇 **1490.7 MB/s (1.44 ms)** | 🥈 **349.4 MB/s (6.14 ms)** | 🥉 **297.8 MB/s (7.21 ms)** | 110.7 MB/s (19.40 ms) | 277.1 MB/s (7.75 ms) | 228.5 MB/s (9.40 ms) | 111.5 MB/s (19.25 ms) | 287.5 MB/s (7.47 ms) |
+| ↳ *% of Winner* | **100.0%** | 23.4% | 20.0% | 7.4% | 18.6% | 15.3% | 7.5% | 19.3% |
 <!-- mdformat on -->
 

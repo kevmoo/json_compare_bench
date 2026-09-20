@@ -37,8 +37,8 @@ packages:
     dependency: "direct dev"
     description:
       path: "."
-      ref: "5bb7e7ad99cc55d3095165ed1e9697663509c0fa"
-      resolved-ref: "5bb7e7ad99cc55d3095165ed1e9697663509c0fa"
+      ref: "84c5455"
+      resolved-ref: "84c54552fa0f566d8105b9f9e2e32ed901009238"
       url: "https://github.com/kevmoo/bench_press.git"
     source: git
     version: "0.3.2-wip"

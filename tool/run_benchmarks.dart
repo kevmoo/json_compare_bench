@@ -751,6 +751,20 @@ Future<void> _buildBinaries({
 }) async {
   print('>> Compiling benchmark binaries...');
 
+  if (!File('$rootDir/dart/.dart_tool/package_config.json').existsSync()) {
+    print('   Resolving dependencies in dart/ subpackage...');
+    final pubGet = Process.runSync(
+      customDartExecutable,
+      ['pub', 'get', '--no-precompile'],
+      workingDirectory: '$rootDir/dart',
+      environment: _toolchainEnv,
+    );
+    if (pubGet.exitCode != 0) {
+      stderr.writeln('Error: dart pub get failed in dart/:\n${pubGet.stderr}');
+      exit(pubGet.exitCode);
+    }
+  }
+
   // 1. Dart AOT (dart:convert std - Untyped Map/DOM)
   print('   Compiling Dart AOT (dart:convert std) -> bin/bench_aot.exe...');
   final dartCompile = Process.runSync(
